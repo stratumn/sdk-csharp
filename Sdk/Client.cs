@@ -40,15 +40,13 @@ namespace StratumSdk
 
         //
         // The mutex used to prevent concurrent login requests
-        ///
-        // private Mutex mutex;
+
 
         public Client(ClientOptions opts)
         {
             this.endpoints = Helper.makeEndpoints(opts.Endpoints);
 
             this.secret = opts.Secret;
-            // this.mutex = new Mutex();
         }
 
 
@@ -107,7 +105,7 @@ namespace StratumSdk
             // if another concurrent execution has already
             // done the job, then release and return, nothing to do.
 
-            // if (this.token) { release(); return; }
+
 
             // otherwise do the job...
             if (SdkSecret.IsCredentialSecret(this.secret))
@@ -136,9 +134,6 @@ namespace StratumSdk
                 throw new ApplicationException("The provided secret does not have the right format");
             }
 
-            //Todo:
-            //in case no error were thrown, release here
-            // release();
         }
 
         //

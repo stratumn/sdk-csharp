@@ -12,11 +12,6 @@ namespace StratumSdk.Model.Clients
         public string Account { get; set; }
         public string Media { get; set; }
 
-        //  private static String TRACE_RELEASE_URL = "https://trace.stratumn.com";
-        //  private static String ACCOUNT_RELEASE_URL = "https://account.stratumn.com";
-        //  private static String MEDIA_RELEASE_URL = "https://media.stratumn.com";
-        //  
-
         internal readonly string ACCOUNT_RELEASE_URL = "https://account-api.staging.stratumn.com";
         internal readonly string TRACE_RELEASE_URL = "https://trace-api.staging.stratumn.com";
         internal readonly string MEDIA_RELEASE_URL = "https://media-api.staging.stratumn.com";
