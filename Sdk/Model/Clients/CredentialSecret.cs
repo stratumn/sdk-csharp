@@ -1,4 +1,4 @@
-﻿namespace StratumSdk.Model.Clients
+﻿namespace stratumn.sdk.Model.Clients
 {
     public class CredentialSecret
     {

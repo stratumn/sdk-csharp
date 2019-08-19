@@ -1,4 +1,4 @@
-﻿using StratumSdk.Model.Clients;
+﻿using stratumn.sdk.Model.Clients;
 
 namespace stratumn.sdk
 {

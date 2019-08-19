@@ -1,5 +1,5 @@
 ﻿using stratumn.sdk;
-using StratumSdk.Model.Clients;
+using stratumn.sdk.Model.Clients;
 using System;
 using System.Diagnostics;
 using System.Threading.Tasks;

@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Org.BouncyCastle.Crypto.Parameters;
+using stratumn.sdk.Model.Clients;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,7 +10,6 @@ using System.Net.Http;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using StratumSdk.Model.Clients;
 
 namespace stratumn.sdk
 {

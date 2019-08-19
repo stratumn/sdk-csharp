@@ -1,5 +1,5 @@
 ﻿using Org.BouncyCastle.Security;
-using StratumSdk.Model.Clients;
+using stratumn.sdk.Model.Clients;
 using System;
 
 namespace stratumn.sdk
