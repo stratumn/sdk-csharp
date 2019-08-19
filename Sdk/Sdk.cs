@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-namespace StratumSdk
+namespace stratumn.sdk
 {
-   public class Sdk
+    public class Sdk
     {
         private SdkOptions opts;
 

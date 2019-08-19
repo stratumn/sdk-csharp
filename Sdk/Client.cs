@@ -1,24 +1,17 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web.Helpers;
-using System.Web.Script.Serialization;
-using BCrypt.Net;
 using StratumSdk.Model.Clients;
 
-namespace StratumSdk
+namespace stratumn.sdk
 {
 
 
@@ -40,20 +33,22 @@ namespace StratumSdk
 
         //
         // The mutex used to prevent concurrent login requests
-
+        ///
+        // private Mutex mutex;
 
         public Client(ClientOptions opts)
         {
             this.endpoints = Helper.makeEndpoints(opts.Endpoints);
 
             this.secret = opts.Secret;
+            // this.mutex = new Mutex();
         }
 
 
         public string GetBearerToken(string pem)
         {
 
-            string publicKeyPem = Regex.Unescape(Settings.Default.publikKey);
+            string publicKeyPem = Regex.Unescape(Settings.Default.publicKey);
 
             Ed25519PrivateKeyParameters privateKey = CryptoUtils.DecodeEd25519PrivateKey(pem);
 
@@ -105,7 +100,7 @@ namespace StratumSdk
             // if another concurrent execution has already
             // done the job, then release and return, nothing to do.
 
-
+            // if (this.token) { release(); return; }
 
             // otherwise do the job...
             if (SdkSecret.IsCredentialSecret(this.secret))
@@ -134,6 +129,9 @@ namespace StratumSdk
                 throw new ApplicationException("The provided secret does not have the right format");
             }
 
+            //Todo:
+            //in case no error were thrown, release here
+            // release();
         }
 
         //

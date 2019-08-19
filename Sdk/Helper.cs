@@ -1,14 +1,8 @@
 ﻿using Org.BouncyCastle.Security;
 using StratumSdk.Model.Clients;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace StratumSdk
+namespace stratumn.sdk
 {
     static class Helper
     {

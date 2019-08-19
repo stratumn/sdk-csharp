@@ -1,11 +1,6 @@
 ﻿using StratumSdk.Model.Clients;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace StratumSdk
+namespace stratumn.sdk
 {
     public class SdkOptions : ClientOptions
     {

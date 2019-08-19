@@ -1,16 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace StratumSdk.Model.Clients
+﻿namespace StratumSdk.Model.Clients
 {
     public class Endpoints
     {
         public string Trace { get; set; }
         public string Account { get; set; }
         public string Media { get; set; }
+
+        //  private static String TRACE_RELEASE_URL = "https://trace.stratumn.com";
+        //  private static String ACCOUNT_RELEASE_URL = "https://account.stratumn.com";
+        //  private static String MEDIA_RELEASE_URL = "https://media.stratumn.com";
+        //  
 
         internal readonly string ACCOUNT_RELEASE_URL = "https://account-api.staging.stratumn.com";
         internal readonly string TRACE_RELEASE_URL = "https://trace-api.staging.stratumn.com";
