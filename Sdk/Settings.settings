@@ -1,0 +1,9 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="stratumn.sdk" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="publicKey" Type="System.String" Scope="User">
+      <Value Profile="(Default)">-----BEGIN ED25519 PUBLIC KEY-----\nMCowBQYDK2VwAyEAewajeBYqSKxqcnJb209RSkH2CyaXgV3gotjq60DE4Is=\n-----END ED25519 PUBLIC KEY-----</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
