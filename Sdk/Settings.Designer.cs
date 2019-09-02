@@ -8,11 +8,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace stratumn.sdk {
+namespace Stratumn {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.3.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "15.0.1.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -27,12 +27,12 @@ namespace stratumn.sdk {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("-----BEGIN ED25519 PUBLIC KEY-----\\nMCowBQYDK2VwAyEAewajeBYqSKxqcnJb209RSkH2CyaXg" +
             "V3gotjq60DE4Is=\\n-----END ED25519 PUBLIC KEY-----")]
-        public string publicKey {
+        public string publikKey {
             get {
-                return ((string)(this["publicKey"]));
+                return ((string)(this["publikKey"]));
             }
             set {
-                this["publicKey"] = value;
+                this["publikKey"] = value;
             }
         }
     }
