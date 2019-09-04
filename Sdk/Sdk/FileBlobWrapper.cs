@@ -24,17 +24,18 @@ namespace Stratumn.Sdk
 
         public override MemoryStream DecrytptedData()
         {
-            throw new NotImplementedException();
+            return blob; 
         }
 
         public override MemoryStream EncryptedData()
         {
-            throw new NotImplementedException();
+            MemoryStream data = base.EncryptData(this.blob);
+            return data;
         }
 
         public override Model.File.FileInfo Info()
         {
-            throw new NotImplementedException();
+           return  this.fileInfo;
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Stratumn.Sdk.Model.Misc;
+﻿using Stratumn.Chainscript.utils;
+using Stratumn.Sdk.Model.Misc;
 using System;
 using System.IO;
 
@@ -10,13 +11,11 @@ namespace Stratumn.Sdk
         /// A unique identifier of the file wrapper. Satisfies the Identifiable constraint.
         /// </summary>
         private string id = System.Guid.NewGuid().ToString();
-         
-        public string Id
+
+        public string GetId()
         {
-            get
-            {
                 return this.id;
-            }
+            
         }
 
 
@@ -30,8 +29,8 @@ namespace Stratumn.Sdk
 
         }
 
-        public FileWrapper():this(true,null)
-        { 
+        public FileWrapper() : this(true, null)
+        {
         }
 
         public FileWrapper(Boolean disableEncryption, String key)
@@ -88,8 +87,18 @@ namespace Stratumn.Sdk
         }
 
         public abstract Sdk.Model.File.FileInfo Info();
-
         public abstract MemoryStream EncryptedData();
+
+        public MemoryStream EncryptedData(MemoryStream stream)
+        {
+            if (Key == null)
+            {
+                return stream;
+            }
+            return null;
+        }
+
+
 
         public abstract MemoryStream DecrytptedData();
 
@@ -104,14 +113,23 @@ namespace Stratumn.Sdk
             return new FilePathWrapper(path);
         }
 
-        public static FileWrapper FromFileBlob(MemoryStream blob,Sdk.Model.File.FileInfo fileInfo)
+        public static FileWrapper FromFileBlob(MemoryStream blob, Sdk.Model.File.FileInfo fileInfo)
         {
-            return new FileBlobWrapper(blob,fileInfo);
+            return new FileBlobWrapper(blob, fileInfo);
         }
 
         public static Boolean isFileWrapper(Object obj)
         {
             return (obj is FileWrapper);
         }
+
+
+        public static FileWrapper FromObject(Object obj)
+        {
+            return JsonHelper.ObjectToObject<FilePathWrapper>(obj);
+        }
     }
 }
+
+
+

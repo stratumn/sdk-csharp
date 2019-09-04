@@ -1,4 +1,5 @@
-﻿using Stratumn.Chainscript.utils;
+﻿using Newtonsoft.Json;
+using Stratumn.Chainscript.utils;
 using Stratumn.Sdk.Model.File;
 using Stratumn.Sdk.Model.Misc;
 using System;
@@ -17,14 +18,6 @@ namespace Stratumn.Sdk
     /// </summary>
     public class FileRecord : Identifiable
     {
-
-        public string Id
-        {
-            get
-            {
-                return Digest;
-            }
-        }
 
 
         public FileRecord()
@@ -51,28 +44,38 @@ namespace Stratumn.Sdk
             return new MediaRecord(this.Name, this.Digest);
         }
 
+
+        public string GetId()
+        {
+
+            return Digest;
+
+        }
+
+        [JsonProperty(PropertyName = "name")]
         public string Name
         {
             get; private set;
 
         }
-
+        [JsonProperty(PropertyName = "mimetype")]
         public string Mimetype
         {
             get; private set;
         }
-
+        [JsonProperty(PropertyName = "key")]
         public string Key
         {
             get; private set;
         }
 
+        [JsonProperty(PropertyName = "size")]
         public long Size
         {
             get; private set;
         }
 
-
+        [JsonProperty(PropertyName = "digest")]
         public string Digest
         {
             get; private set;
@@ -80,12 +83,12 @@ namespace Stratumn.Sdk
 
         public static FileRecord FromObject(Object obj)
         {
-            return  JsonHelper.ObjectToObject< FileRecord>(obj);
+            return JsonHelper.ObjectToObject<FileRecord>(obj);
         }
 
 
         public static bool IsFileRecord(Object obj)
-        { 
+        {
             bool isFileRecord = false;
             if (obj is FileRecord)
                 isFileRecord = true;

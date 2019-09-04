@@ -18,6 +18,7 @@
     using Stratumn.Sdk.Model.Misc;
     using Stratumn.Sdk.Model.File;
     using System.IO;
+    using System.Diagnostics;
 
     /// <summary>
     /// Defines the <see cref="Sdk{TState}" />
@@ -189,7 +190,7 @@
                 ["link"] = linkObj,
                 ["data"] = dataObj
             };
-
+           // Debug.WriteLine("Request : " + JsonHelper.ToJson(dataObj));
             // execute graphql query 
             GraphQLResponse jsonResponse = await this.client.GraphqlAsync(GraphQL.MUTATION_CREATELINK, variables, null, null);
             var trace = jsonResponse.Data.createLink.trace;
@@ -357,7 +358,7 @@
         /// </summary>
         /// <typeparam name="TLinkData"></typeparam>
         /// <param name="data"> the link data that contains file wrappers to upload </param>
-        private async void UploadFilesInLinkData<TLinkData>(TLinkData data)
+        private async Task UploadFilesInLinkData<TLinkData>(TLinkData data)
         {
             Dictionary<string, Property<FileWrapper>> fileWrapperMap = Helpers.ExtractFileWrappers(data);
             if (fileWrapperMap.Count == 0) return;
@@ -374,7 +375,7 @@
             {
                 MediaRecord mediaRecord = mediaRecords[i];
                 //get the fileWrapper property by index of file in the list uploaded.
-                Property<FileWrapper> fileWrapperProp = fileWrapperMap[fileList[i].Id];
+                Property<FileWrapper> fileWrapperProp = fileWrapperMap[fileList[i].GetId()];
                 //build FileRecord property
                 Property<FileRecord> fileRecordProp = fileWrapperProp.Transform((f)=> new FileRecord(mediaRecord, f.Info()));
                 fileRecordList.Add(fileRecordProp);
@@ -453,8 +454,8 @@
             string ownerId = sdkConfig.OwnerId;
             string groupId = sdkConfig.GroupId;
             IDictionary<string, string> actionNames = sdkConfig.ActionNames;
-            // upload files and transform data
-            //this.UploadFilesInLinkData(data);
+            // upload files and transform data  
+           await this.UploadFilesInLinkData(data); 
 
             TraceLinkBuilderConfig<TLinkData> cfg = new TraceLinkBuilderConfig<TLinkData>()
             {
@@ -496,7 +497,7 @@
             string groupId = sdkConfig.GroupId;
             IDictionary<string, string> actionNames = sdkConfig.ActionNames;
             // upload files and transform data
-            //this.UploadFilesInLinkData(data);
+            await this.UploadFilesInLinkData(data);
 
             TraceLinkBuilderConfig<TLinkData> cfg = new TraceLinkBuilderConfig<TLinkData>()
             {

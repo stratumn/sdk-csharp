@@ -14,7 +14,7 @@ namespace Stratumn.Sdk.Model.Misc
         /// <summary>
         /// A unique identifier  
         /// </summary>
-          string Id { get; }
+        string GetId();
     }
 
 }

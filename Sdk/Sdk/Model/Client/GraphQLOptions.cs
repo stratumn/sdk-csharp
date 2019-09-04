@@ -17,13 +17,13 @@ namespace Stratumn.Sdk.Model.Client
         /// </summary>
         private int retry;
 
-        public GraphQLOptions(int retry)
+        public GraphQLOptions(int? retry)
         {
             if (retry == null)
             {
                 throw new System.ArgumentException("retry cannot be null");
             }
-            this.retry = retry;
+            this.retry = retry.Value;
         }
 
         public int Retry

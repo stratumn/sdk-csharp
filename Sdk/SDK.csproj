@@ -76,7 +76,6 @@
     <Compile Include="Sdk\Model\Client\Service.cs" />
     <Compile Include="Sdk\Model\File\FileInfo.cs" />
     <Compile Include="Sdk\Model\File\MediaRecord.cs" />
-    <Compile Include="Sdk\Model\Graph\GraphQlRequest.cs" />
     <Compile Include="Sdk\Model\Misc\Identifiable.cs" />
     <Compile Include="Sdk\Model\Misc\Property.cs" />
     <Compile Include="Sdk\Model\ResponseModels\FragmentTraceStateResponse.cs" />
