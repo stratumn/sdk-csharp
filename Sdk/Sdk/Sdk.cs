@@ -454,7 +454,7 @@
             string groupId = sdkConfig.GroupId;
             IDictionary<string, string> actionNames = sdkConfig.ActionNames;
             // upload files and transform data
-            this.UploadFilesInLinkData(data);
+            //this.UploadFilesInLinkData(data);
 
             TraceLinkBuilderConfig<TLinkData> cfg = new TraceLinkBuilderConfig<TLinkData>()
             {
@@ -496,7 +496,7 @@
             string groupId = sdkConfig.GroupId;
             IDictionary<string, string> actionNames = sdkConfig.ActionNames;
             // upload files and transform data
-            this.UploadFilesInLinkData(data);
+            //this.UploadFilesInLinkData(data);
 
             TraceLinkBuilderConfig<TLinkData> cfg = new TraceLinkBuilderConfig<TLinkData>()
             {
