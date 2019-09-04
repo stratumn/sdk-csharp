@@ -8,6 +8,8 @@ using Stratumn.Sdk.Model.Trace;
 using System.Diagnostics;
 using System.Collections.Generic;
 using Stratumn.Chainscript.utils;
+using System.IO;
+using Stratumn.Sdk.Model.Misc;
 
 namespace SDKTest
 {
@@ -199,7 +201,7 @@ namespace SDKTest
             IDictionary<string, string> data = new Dictionary<string, string>() { { "why", "because im testing the pushTrace 2" } };
 
             PullTransferInput<object> pull = new PullTransferInput<object>(someTraceState.TraceId, data, null);
-            TraceState <object, object> statepul = await GetSdk().PullTraceAsync(pull);
+            TraceState<object, object> statepul = await GetSdk().PullTraceAsync(pull);
 
             Assert.IsNotNull(statepul.TraceId);
 
@@ -256,6 +258,33 @@ namespace SDKTest
             TraceState<Object, Object> statecancel = await GetSdk().CancelTransferAsync(responseInput);
 
             Assert.IsNotNull(statecancel.TraceId); ;
+
+        }
+
+
+
+        [TestMethod]
+        public async Task newTraceUploadTest()
+        {
+
+            Sdk<Object> sdk = GetSdk();
+
+            IDictionary<string, object> data = new Dictionary<string, object>
+            {
+                ["weight"] = "123",
+                ["valid"] = true,
+                ["operators"] = new string[] { "1", "2" },
+                ["operation"] = "my new operation 1"
+            };
+
+            data.Add("Certificate1",FileWrapper.FromFilePath(Path.GetFullPath("../../Resources/TestFile1.txt")));
+            data.Add("Certificates", new Identifiable[] { FileWrapper.FromFilePath(Path.GetFullPath("../../Resources/TestFile1.txt")) });
+
+            NewTraceInput<Object> newTraceInput = new NewTraceInput<Object>(FORM_ID, data);
+
+            TraceState<object, object> state = await sdk.NewTraceAsync<object>(newTraceInput);
+            Assert.IsNotNull(state.TraceId);
+            someTraceState = state;
 
         }
 
