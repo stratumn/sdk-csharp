@@ -1,4 +1,6 @@
-﻿using Stratumn.Chainscript.utils;
+﻿using Newtonsoft.Json.Linq;
+using Stratumn.CanonicalJson;
+using Stratumn.Chainscript.utils;
 using Stratumn.Sdk.Model.Misc;
 using System;
 using System.IO;
@@ -14,8 +16,8 @@ namespace Stratumn.Sdk
 
         public string GetId()
         {
-                return this.id;
-            
+            return this.id;
+
         }
 
 
@@ -120,13 +122,77 @@ namespace Stratumn.Sdk
 
         public static Boolean isFileWrapper(Object obj)
         {
-            return (obj is FileWrapper);
+            bool isFileWrapper = false;
+            try
+            {
+                string json = null;
+
+                if (obj is FileWrapper)
+                    isFileWrapper = true;
+                else
+                if (obj != null)
+                {
+                    if (obj is JObject)
+                        json = JsonHelper.ToCanonicalJson(obj);
+                    else
+                      if (obj is String)//assume json
+                        json = Canonicalizer.Canonizalize((String)obj);
+                    else
+                        json = JsonHelper.ToCanonicalJson(obj);
+                    if (json != null)
+                    {
+
+                        Object ob = null;
+                        //attempt to generate FileWrapper from json.
+                        if (json.ToUpper().Contains("PATH"))
+                        {
+                            ob = JsonHelper.FromJson<FilePathWrapper>(json);
+                        }
+                        else if (json.ToUpper().Contains("FILEINFO"))
+                        {
+                            ob = JsonHelper.FromJson<FileBlobWrapper>(json);
+                        }
+                        else if (json.ToUpper().Contains("FILE"))
+                        {
+                            ob = JsonHelper.FromJson<BrowserFileWrapper>(json);
+                        }
+                        if (ob != null)
+                        {
+                            String json2 = JsonHelper.ToCanonicalJson(ob);
+                            if (json2.Equals(json))
+
+                                isFileWrapper = true;
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+            return isFileWrapper;
         }
 
 
         public static FileWrapper FromObject(Object obj)
         {
-            return JsonHelper.ObjectToObject<FilePathWrapper>(obj);
+            String json = JsonHelper.ToJson(obj);
+            if (json.ToUpper().Contains("FILEINFO"))
+            {
+                return JsonHelper.ObjectToObject<FileBlobWrapper>(obj);
+            }
+            else if (json.ToUpper().Contains("PATH"))
+            {
+                return JsonHelper.ObjectToObject<FilePathWrapper>(obj);
+            }
+            else if (json.ToUpper().Contains("FILE"))
+
+            {
+                return JsonHelper.ObjectToObject<BrowserFileWrapper>(obj);
+            }
+            else throw new TraceSdkException($"cannot convert {obj}  to FileWrapper");
+
         }
     }
 }

@@ -407,7 +407,7 @@ namespace Stratumn.Sdk
                 {
                     return this.MakeAuthorizationHeader(opts.AuthToken);
                 }
-                if (opts.SkipAuth != null)
+                if (opts.SkipAuth != null && opts.SkipAuth.Value)
                 {
                     return this.MakeAuthorizationHeader(null);
                 }
@@ -546,12 +546,55 @@ namespace Stratumn.Sdk
         public async Task<MemoryStream> DownloadFile(FileRecord fileRecord)
         {
 
+
+            int BUFFER_SIZE = 4096;
+
             HttpResponseMessage clientResponse = await this.GetAsync<String>(Service.MEDIA, "files/" + fileRecord.Digest + "/info", null, null);
 
             string jsonResponse = await clientResponse.Content.ReadAsStringAsync();
-            var tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(jsonResponse);
-            this.SetToken(tokenResponse.Token);
-            return null;// return tokenResponse.Token; 
+            var tokenJson = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject> (jsonResponse);
+
+            string downloadURL = tokenJson.GetValue("download_url").ToString();
+            string s;
+
+            WebRequest httpConn = WebRequest.Create(downloadURL);
+
+
+
+            if (proxy != null)
+            {
+                httpConn.Proxy = proxy;
+            }
+
+            // Get the response.  
+            HttpWebResponse response = (HttpWebResponse)httpConn.GetResponse();
+            
+
+            HttpStatusCode status = response.StatusCode;
+            if (status != HttpStatusCode.OK)
+            {
+                throw new HttpError((int)status, "error");
+            }
+            ;
+            MemoryStream baos = new MemoryStream();
+            byte[] buffer = new byte[BUFFER_SIZE];
+            int bytesRead = 0;
+            using (Stream dataStream = response.GetResponseStream())
+            {
+                // Open the stream using a StreamReader for easy access.  
+                StreamReader reader = new StreamReader(dataStream);
+                // Read the content.  
+
+                while ((bytesRead = reader.BaseStream.Read(buffer, 0, buffer.Length)) != 0)
+                {
+                    baos.Write(buffer, 0, bytesRead);
+                }
+            
+            
+            }
+
+
+            return baos;
         }
 
         /// <summary>

@@ -22,7 +22,7 @@ namespace Stratumn.Sdk
 
         public override MemoryStream DecrytptedData()
         {
-            throw new NotImplementedException();
+            return Data();
         }
 
         public override MemoryStream EncryptedData()

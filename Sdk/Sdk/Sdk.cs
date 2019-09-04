@@ -454,8 +454,8 @@
             string ownerId = sdkConfig.OwnerId;
             string groupId = sdkConfig.GroupId;
             IDictionary<string, string> actionNames = sdkConfig.ActionNames;
-            // upload files and transform data  
-           await this.UploadFilesInLinkData(data); 
+            // upload files and transform data
+           await this.UploadFilesInLinkData(data);
 
             TraceLinkBuilderConfig<TLinkData> cfg = new TraceLinkBuilderConfig<TLinkData>()
             {
@@ -497,7 +497,7 @@
             string groupId = sdkConfig.GroupId;
             IDictionary<string, string> actionNames = sdkConfig.ActionNames;
             // upload files and transform data
-            await this.UploadFilesInLinkData(data);
+            this.UploadFilesInLinkData(data);
 
             TraceLinkBuilderConfig<TLinkData> cfg = new TraceLinkBuilderConfig<TLinkData>()
             {
@@ -638,7 +638,7 @@
         /// <typeparam name="TLinkData"></typeparam>
         /// <param name="input">The input<see cref="GetTraceStateInput"/></param>
         /// <returns>The <see cref="Task{TraceState{TState, TLinkData}}"/></returns>
-        public async Task<TraceState<TState, TLinkData>> GetTraceState<TLinkData>(GetTraceStateInput input)
+        public async Task<TraceState<TState, TLinkData>> GetTraceStateAsync<TLinkData>(GetTraceStateInput input)
         {
             Dictionary<string, object> var = new Dictionary<string, object>
             {

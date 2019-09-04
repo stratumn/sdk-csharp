@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using Stratumn.Chainscript.utils;
 using System.IO;
 using Stratumn.Sdk.Model.Misc;
+using Newtonsoft.Json.Linq;
 
 namespace SDKTest
 {
@@ -66,7 +67,7 @@ namespace SDKTest
             Sdk<object> sdk = GetSdk();
             string traceId = "a41257f9-2d9d-4d42-ab2a-fd0c83ea31df";
             GetTraceStateInput input = new GetTraceStateInput(traceId);
-            TraceState<object, object> state = await sdk.GetTraceState<object>(input);
+            TraceState<object, object> state = await sdk.GetTraceStateAsync<object>(input);
             Assert.AreEqual(state.TraceId, traceId);
         }
 
@@ -264,7 +265,7 @@ namespace SDKTest
 
 
         [TestMethod]
-        public async Task newTraceUploadTest()
+        public async Task NewTraceUploadTest()
         {
 
             Sdk<Object> sdk = GetSdk();
@@ -288,5 +289,66 @@ namespace SDKTest
 
         }
 
+
+        [TestMethod]
+        public async Task downloadFilesInObjectTest()
+        {
+
+            TraceState<Object, Object> state;
+            try
+            {
+                state = await GetSdk().GetTraceStateAsync<object>(new GetTraceStateInput("dee0dd04-5d58-4c4e-a72d-a759e37ae337"));
+            }
+            catch (Exception e)
+            {  //trace not found
+                await NewTraceUploadTest();
+                state = someTraceState;
+            }
+
+            Object dataWithRecords = state.HeadLink.FormData();
+
+            object dataWithFiles = await GetSdk().DownloadFilesInObject(dataWithRecords);
+            IDictionary<String, Property<FileWrapper>> fileWrappers = Helpers.ExtractFileWrappers(dataWithFiles);
+
+            foreach (Property<FileWrapper> fileWrapperProp in fileWrappers.Values)
+            {
+                WriteFileToDisk(fileWrapperProp.Value);
+                //assert files are equal
+            }
+
+
+        }
+        private void WriteFileToDisk(FileWrapper fWrapper)
+        {
+
+            MemoryStream buffer = fWrapper.DecrytptedData();
+
+            FileInfo file = new FileInfo(Path.GetFullPath("./Resources/out/" + fWrapper.Info().Name));
+
+
+            if (!Directory.Exists(file.DirectoryName))
+            {
+                Directory.CreateDirectory(file.DirectoryName);
+            }
+            //    if (File.Exists(file.FullName))
+            //        try
+            //        {
+            //            File.Create(file.FullName);
+            //        }
+            //        catch (IOException e1)
+            //        {
+            //            throw new TraceSdkException("Failed to create output file");
+            //        }
+            //}
+
+            using (FileStream fs = new FileStream(file.FullName, FileMode.Create, System.IO.FileAccess.Write))
+            {
+                byte[] bytes = new byte[buffer.Length];
+                buffer.Read(bytes, 0, (int)buffer.Length);
+                fs.Write(bytes, 0, bytes.Length);
+                buffer.Close();
+            }
+
+        }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Stratumn.CanonicalJson;
 using Stratumn.Chainscript.utils;
 using Stratumn.Sdk.Model.File;
 using Stratumn.Sdk.Model.Misc;
@@ -90,10 +92,35 @@ namespace Stratumn.Sdk
         public static bool IsFileRecord(Object obj)
         {
             bool isFileRecord = false;
-            if (obj is FileRecord)
-                isFileRecord = true;
-            return isFileRecord;
+            try
+            {
+                string json = null;
 
+                if (obj is FileRecord)
+                    isFileRecord = true;
+                else
+                if (obj != null)
+                {
+                    if (obj is JObject)
+                        json = JsonHelper.ToCanonicalJson(obj);
+                    else
+                      if (obj is String)//assume json
+                        json = Canonicalizer.Canonizalize((String)obj);
+                    else
+                        json = JsonHelper.ToCanonicalJson(obj);
+                    if (json != null)
+                    {
+                        //attempt to generate FileRecord from json.
+                        Object ob = JsonHelper.FromJson<FileRecord>(json);
+                        String json2 = JsonHelper.ToCanonicalJson(ob);
+                        if (json2.Equals(json))
+                            isFileRecord = true;
+                    }
+                }
+
+            }
+            catch (Exception) { }
+            return isFileRecord;
         }
 
 

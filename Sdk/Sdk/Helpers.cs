@@ -19,7 +19,7 @@ using Stratumn.Chainscript.utils;
 
 namespace Stratumn.Sdk
 {
-    static class Helpers
+    public static class Helpers
     {
         public static Int64 GetTime()
         {
@@ -79,7 +79,7 @@ namespace Stratumn.Sdk
             });
         }
 
-     
+
         private static Regex KeyIndex = new Regex("\\[(\\d+)\\]|\\((\\d+)\\)$");
 
         //JAVA TO C# CONVERTER WARNING: Method 'throws' clauses are not available in C#:
@@ -118,7 +118,7 @@ namespace Stratumn.Sdk
                 {
                     if (parent is JObject)
                     {
-                        ((JObject)parent).Add(key, JsonHelper.ObjectToObject<JObject>(propertyElement.Value));
+                        ((JObject)parent)[key] = JsonHelper.ObjectToObject<JObject>(propertyElement.Value);
                     }
                     else if (parent is JArray)
                     {
@@ -301,5 +301,5 @@ namespace Stratumn.Sdk
         }
 
 
-   }
+    }
 }
