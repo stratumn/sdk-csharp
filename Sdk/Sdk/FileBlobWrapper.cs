@@ -13,28 +13,29 @@ namespace Stratumn.Sdk
     /// </summary>
     public class FileBlobWrapper : FileWrapper
     {
-        private MemoryStream blob;
-        private Model.File.FileInfo fileInfo;
+        public MemoryStream Blob { get; set; }
+        public Model.File.FileInfo FileInfo { get; set; }
 
         public FileBlobWrapper(MemoryStream blob, Model.File.FileInfo fileInfo)
         {
-            this.blob = blob;
-            this.fileInfo = fileInfo;
+            this.Blob = blob;
+            this.FileInfo = fileInfo;
         }
 
         public override MemoryStream DecrytptedData()
         {
-            throw new NotImplementedException();
+            return Blob; 
         }
 
         public override MemoryStream EncryptedData()
         {
-            throw new NotImplementedException();
+            MemoryStream data = base.EncryptData(this.Blob);
+            return data;
         }
 
         public override Model.File.FileInfo Info()
         {
-            throw new NotImplementedException();
+           return  this.FileInfo;
         }
     }
 }

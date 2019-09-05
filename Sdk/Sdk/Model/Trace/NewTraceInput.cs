@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,7 @@ namespace Stratumn.Sdk.Model.Trace
     {
 
         private string formId;
+
         private TLinkData data;
 
         public NewTraceInput(string formId, TLinkData data)
@@ -26,7 +28,7 @@ namespace Stratumn.Sdk.Model.Trace
             this.data = data;
         }
 
-
+        [JsonProperty(PropertyName = "formId")]
         public string FormId
         {
             get
@@ -40,6 +42,7 @@ namespace Stratumn.Sdk.Model.Trace
         }
 
 
+        [JsonProperty(PropertyName = "data")]
         public TLinkData Data
         {
             get

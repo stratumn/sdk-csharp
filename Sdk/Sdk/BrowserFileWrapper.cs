@@ -13,7 +13,7 @@ namespace Stratumn.Sdk
     /// </summary>
     public class BrowserFileWrapper : FileWrapper
     { 
-        private System.IO.FileInfo File ;
+        public System.IO.FileInfo File { get; set; }
 
         
         public BrowserFileWrapper(System.IO.FileInfo File)

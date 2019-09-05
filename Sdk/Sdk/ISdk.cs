@@ -71,7 +71,7 @@
         /// <typeparam name="TLinkData"></typeparam>
         /// <param name="input">The input<see cref="GetTraceStateInput"/></param>
         /// <returns>The <see cref="TraceState{TState, TLinkData}"/></returns>
-         Task<TraceState<TState, TLinkData>> GetTraceState<TLinkData>(GetTraceStateInput input);
+         Task<TraceState<TState, TLinkData>> GetTraceStateAsync<TLinkData>(GetTraceStateInput input);
 
         /// <summary>
         /// The GetTraceDetails

@@ -17,15 +17,17 @@ using Utils;
 using Org.BouncyCastle.Crypto;
 using Stratumn.Chainscript;
 using Stratumn.Sdk.Model.Client;
-using Stratumn.Sdk.Model.Graph;
 using GraphQL.Common.Response;
 using Lucene.Net.Support;
 using Stratumn.Sdk.Model.File;
+using System.Net.Http.Headers;
+using Stratumn.Chainscript.utils;
+using System.Threading;
+using GraphQL.Client;
+using GraphQL.Common.Request;
 
 namespace Stratumn.Sdk
-
 {
-
 
     public class Client
     {
@@ -43,18 +45,16 @@ namespace Stratumn.Sdk
         ///
         private string token;
 
-        private  GraphQLOptions defaultGraphQLOptions =new GraphQLOptions(1);
-        //
-        // The mutex used to prevent concurrent login requests
-        ///
-        // private Mutex mutex;
+        private WebProxy proxy;
+
+        private GraphQLOptions defaultGraphQLOptions = new GraphQLOptions(1);
 
         public Client(ClientOptions opts)
         {
             this.endpoints = Helpers.MakeEndpoints(opts.Endpoints);
 
             this.secret = opts.Secret;
-            // this.mutex = new Mutex();
+            this.proxy = opts.Proxy;
         }
 
 
@@ -119,14 +119,6 @@ namespace Stratumn.Sdk
         public async Task<string> Login()
         {
 
-            // acquire the mutex
-            // final release = await this.mutex.acquire();
-
-            // if another concurrent execution has already
-            // done the job, then release and return, nothing to do.
-
-            // if (this.token) { release(); return; }
-
             // otherwise do the job...
             if (Secret.IsCredentialSecret(this.secret))
             {
@@ -154,9 +146,6 @@ namespace Stratumn.Sdk
                 throw new ApplicationException("The provided secret does not have the right format");
             }
 
-            //Todo:
-            //in case no error were thrown, release here
-            // release();
         }
 
 
@@ -231,7 +220,7 @@ namespace Stratumn.Sdk
             HttpContent httpContent = new StringContent(body, Encoding.UTF8, "application/json");
 
 
-            using (var client = new HttpClient())
+            using (var client = new HttpClient(CreateHttpMessageHandler()))
             {
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
@@ -280,7 +269,7 @@ namespace Stratumn.Sdk
             }
 
 
-            using (var client = new HttpClient())
+            using (var client = new HttpClient(CreateHttpMessageHandler()))
             {
                 client.DefaultRequestHeaders.Accept.Clear();
 
@@ -292,15 +281,18 @@ namespace Stratumn.Sdk
                 int _retry = opts.Retry;
 
                 // delegate to fetch wrapper
-                return await FetchAsync<T>(requestClient, client, _retry);
+                var clientResponse = await FetchAsync<T>(requestClient, client, _retry);
+
+                if (clientResponse.StatusCode != HttpStatusCode.OK)
+                {
+                    string res = clientResponse.StatusCode + ":";
+                    string error = clientResponse.Content.ReadAsStringAsync().Result;
+                    throw new ApplicationException(res + error);
+                }
+                return clientResponse;
             }
 
-
-
         }
-
-
-
 
 
 
@@ -329,7 +321,7 @@ namespace Stratumn.Sdk
             };
 
 
-            HttpClient client = new HttpClient();
+            HttpClient client = new HttpClient(CreateHttpMessageHandler());
             var result = client.GetAsync(builder.Uri).Result;
 
             try
@@ -415,7 +407,7 @@ namespace Stratumn.Sdk
                 {
                     return this.MakeAuthorizationHeader(opts.AuthToken);
                 }
-                if (opts.SkipAuth != null)
+                if (opts.SkipAuth != null && opts.SkipAuth.Value)
                 {
                     return this.MakeAuthorizationHeader(null);
                 }
@@ -441,26 +433,63 @@ namespace Stratumn.Sdk
 
             HttpResponseMessage clientResponse = await this.GetAsync<string>(Service.ACCOUNT, "login", null, new FetchOptions(signinToken, false, 1));
 
-            if (clientResponse.StatusCode == HttpStatusCode.OK)
-            {
-                string jsonResponse = await clientResponse.Content.ReadAsStringAsync();
-                var tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(jsonResponse);
-                this.SetToken(tokenResponse.Token);
-                return tokenResponse.Token;
-
-            }
-            else
-            {
-                string res = clientResponse.StatusCode + ":";
-                string error = clientResponse.Content.ReadAsStringAsync().Result;
-                throw new ApplicationException(res + error);
-            }
+            string jsonResponse = await clientResponse.Content.ReadAsStringAsync();
+            var tokenResponse = JsonConvert.DeserializeObject<TokenResponse>(jsonResponse);
+            this.SetToken(tokenResponse.Token);
+            return tokenResponse.Token;
 
         }
 
-        public Task<MediaRecord[]> UploadFiles(List<FileWrapper> fileList)
+        /// <summary>
+        ///  Uploads an array of files to media api 
+        /// </summary>
+        /// <param name="fileList"></param>
+        /// <returns></returns>
+        public async Task<MediaRecord[]> UploadFiles(List<FileWrapper> fileWrapperList)
         {
-            throw new NotImplementedException();
+            if (fileWrapperList.Count == 0) return new MediaRecord[0];
+            String path = this.endpoints.Media + "/files";
+            MediaRecord[] mediaRecords = null;
+            mediaRecords = await UploadFiles<MediaRecord[]>(path, fileWrapperList);
+
+            return mediaRecords;
+
+        }
+
+
+        /// <summary>
+        /// Uploads multiple files to the server path 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="fileWrapperList"></param>
+        /// <returns></returns>
+        private async Task<T> UploadFiles<T>(String path, List<FileWrapper> fileWrapperList)
+        {
+            Uri url = new Uri(path);
+            HttpResponseMessage response;
+            using (var client = new HttpClient(CreateHttpMessageHandler()))
+            {
+                client.DefaultRequestHeaders.Accept.Clear();
+                client.DefaultRequestHeaders.Add("Accept", "application/json");
+                client.DefaultRequestHeaders.Add("Authorization", await this.GetAuthorizationHeader(null));
+                MultipartFormDataContent filesContent = new MultipartFormDataContent("--------------");
+                foreach (FileWrapper file in fileWrapperList)
+                {
+                    Model.File.FileInfo fileInfo = file.Info();
+
+                    var fileContent = new StreamContent(file.EncryptedData());
+                    fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
+                    {
+                        Name = "\"" + fileInfo.Name + "\"",
+                        FileName = "\"" + fileInfo.Name + "\""
+                    };
+
+
+                    filesContent.Add(fileContent);
+                }
+                response = await client.PostAsync(url, filesContent);
+            }
+            return JsonHelper.ObjectToObject<T>(response.Content.ReadAsStringAsync().Result);
         }
 
 
@@ -491,7 +520,7 @@ namespace Stratumn.Sdk
             HttpContent c = new StringContent(strPayload, Encoding.UTF8, "application/json");
 
 
-            using (var client = new HttpClient())
+            using (var client = new HttpClient(CreateHttpMessageHandler()))
             {
                 HttpResponseMessage responseMessage = client.PostAsync(loginAccountUri, c).Result;
 
@@ -516,7 +545,56 @@ namespace Stratumn.Sdk
 
         public async Task<MemoryStream> DownloadFile(FileRecord fileRecord)
         {
-            throw new NotImplementedException();
+
+
+            int BUFFER_SIZE = 4096;
+
+            HttpResponseMessage clientResponse = await this.GetAsync<String>(Service.MEDIA, "files/" + fileRecord.Digest + "/info", null, null);
+
+            string jsonResponse = await clientResponse.Content.ReadAsStringAsync();
+            var tokenJson = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject> (jsonResponse);
+
+            string downloadURL = tokenJson.GetValue("download_url").ToString();
+            string s;
+
+            WebRequest httpConn = WebRequest.Create(downloadURL);
+
+
+
+            if (proxy != null)
+            {
+                httpConn.Proxy = proxy;
+            }
+
+            // Get the response.  
+            HttpWebResponse response = (HttpWebResponse)httpConn.GetResponse();
+            
+
+            HttpStatusCode status = response.StatusCode;
+            if (status != HttpStatusCode.OK)
+            {
+                throw new HttpError((int)status, "error");
+            }
+            ;
+            MemoryStream baos = new MemoryStream();
+            byte[] buffer = new byte[BUFFER_SIZE];
+            int bytesRead = 0;
+            using (Stream dataStream = response.GetResponseStream())
+            {
+                // Open the stream using a StreamReader for easy access.  
+                StreamReader reader = new StreamReader(dataStream);
+                // Read the content.  
+
+                while ((bytesRead = reader.BaseStream.Read(buffer, 0, buffer.Length)) != 0)
+                {
+                    baos.Write(buffer, 0, bytesRead);
+                }
+            
+            
+            }
+
+
+            return baos;
         }
 
         /// <summary>
@@ -533,12 +611,12 @@ namespace Stratumn.Sdk
             String gqlUrl = this.endpoints.Trace + "/graphql";
 
             // delegate the graphql request execution 
-            GraphQLResponse response = await GraphQlRequest.RequestAsync(gqlUrl, await this.GetAuthorizationHeader(null), query, variables, tclass);
-            if(opts==null)
+            GraphQLResponse response = await GraphqlExecute(gqlUrl, await this.GetAuthorizationHeader(null), query, variables, tclass);
+            if (opts == null)
             {
                 opts = defaultGraphQLOptions;
             }
-           
+
             if (response.Errors == null)
             {
                 // if the response is empty, throw.
@@ -555,7 +633,7 @@ namespace Stratumn.Sdk
                 // handle errors explicitly 
                 // extract the status from the error response 
                 // if 401 and retry > 0 then we can retry
-                if (statusCode!=null&&statusCode.ToString() == "401" && retry > 0)
+                if (statusCode != null && statusCode.ToString() == "401" && retry > 0)
                 {
                     // unauthenticated request might be because token expired
                     // clear token and retry
@@ -570,7 +648,117 @@ namespace Stratumn.Sdk
 
         }
 
+        private HttpMessageHandler CreateHttpMessageHandler()
+        {
+            LoggingHandler httpHandler;
+            if (proxy != null)
+                httpHandler = new LoggingHandler(new HttpClientHandler
+                {
+                    Proxy = this.proxy
+                });
+            else
+                httpHandler = new LoggingHandler(new HttpClientHandler());
+            return httpHandler;
+        }
 
+
+        /// <summary>
+        /// Executes the query and returns a responseEntity of type passed </summary>
+        /// <param name="url"> </param>
+        /// <param name="auth"> </param>
+        /// <param name="query"> </param>
+        /// <param name="Variables"> </param>
+        /// <param name="tClass">
+        /// @return </param>
+        public async Task<GraphQLResponse> GraphqlExecute(string url, string auth, string query, IDictionary<string, object> variables, Type tClass)
+        {
+
+            GraphQLClientOptions clientOptions = new GraphQLClientOptions();
+            clientOptions.HttpMessageHandler = CreateHttpMessageHandler();
+            clientOptions.JsonSerializerSettings = new JsonSerializerSettings()
+            {
+
+                ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver()
+            };
+
+
+            GraphQLClient graphClient = new GraphQLClient(url, clientOptions);
+            graphClient.DefaultRequestHeaders.Add("Authorization", auth);
+            var request = new GraphQLRequestCamel(query, variables);
+
+            return await graphClient.PostAsync(request);
+
+
+        }
     }
+
+
+    public class GraphQLRequestCamel : GraphQLRequest
+    {
+
+
+        public GraphQLRequestCamel(string query, dynamic Variables)
+        {
+
+            base.Query = query;
+            base.Variables = Variables;
+        }
+        [JsonProperty(PropertyName = "query")]
+        public string CamelCaseQuery
+        {
+            get
+            {
+                return base.Query;
+
+
+            }
+
+        }
+
+
+        [JsonProperty(PropertyName = "variables")]
+        public dynamic CamelCaseVariables
+        {
+            get
+            {
+
+                return base.Variables;
+            }
+
+        }
+    }
+
+    class LoggingHandler : DelegatingHandler
+    {
+        public LoggingHandler(HttpMessageHandler innerHandler)
+            : base(innerHandler)
+        {
+        }
+
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            Debug.WriteLine("===========================request begin================================================");
+            Debug.WriteLine("URI         : " + request.RequestUri);
+            Debug.WriteLine("Method      : " + request.Method);
+            Debug.WriteLine("Headers     : " + request.Headers);
+            if (request.Content != null)
+                Debug.WriteLine("Request body: " + await request.Content.ReadAsStringAsync());
+            Debug.WriteLine("==========================request end================================================");
+
+
+            HttpResponseMessage response = await base.SendAsync(request, cancellationToken);
+
+            Debug.WriteLine("============================response begin==========================================");
+            Debug.WriteLine("Status code  : " + response.StatusCode);
+            Debug.WriteLine("Status text  : " + response.ReasonPhrase);
+            Debug.WriteLine("Headers      : " + response.Headers);
+            if (response.Content != null)
+                Debug.WriteLine("Response body: " + await response.Content.ReadAsStringAsync());
+            Debug.WriteLine("=======================response end=================================================");
+
+            return response;
+        }
+    }
+
 }
 
