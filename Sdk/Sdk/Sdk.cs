@@ -429,7 +429,7 @@
 
 
             TraceState<TState, TLinkData> traceState = new TraceState<TState, TLinkData>(headLink.TraceId(), headLink, headLink.CreatedAt(),
-              headLink.CreatedBy(), (TState)trace.state.data, trace.tags ?? new string[0] 
+              headLink.CreatedBy(), JsonHelper.ObjectToObject<TState>(trace.state.data), trace.tags ?? new string[0]
            );
 
             return traceState;

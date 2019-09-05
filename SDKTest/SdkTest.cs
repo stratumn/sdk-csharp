@@ -23,6 +23,20 @@ namespace SDKTest
         private const string WORFKLOW_ID = "591";
 
         private const String MY_GROUP = "1744";
+
+
+
+        public Sdk<T> GetSdk<T>()
+        {
+            var pem = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRACaNT4cup/ZQAq4IULZCrlPB7eR1QTCN9V3Qzct8S\nYp57BqN4FipIrGpyclvbT1FKQfYLJpeBXeCi2OrrQMTgiw==\n-----END ED25519 PRIVATE KEY-----\n";
+            var workflowId = "591";
+            Secret s = Secret.NewPrivateKeySecret(pem);
+            SdkOptions opts = new SdkOptions(workflowId, s);
+            Sdk<T> sdk = new Sdk<T>(opts);
+
+            return sdk;
+        }
+
         public Sdk<object> GetSdk()
         {
             var pem = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRACaNT4cup/ZQAq4IULZCrlPB7eR1QTCN9V3Qzct8S\nYp57BqN4FipIrGpyclvbT1FKQfYLJpeBXeCi2OrrQMTgiw==\n-----END ED25519 PRIVATE KEY-----\n";
@@ -40,6 +54,54 @@ namespace SDKTest
             string token = await sdk.LoginAsync();
             Debug.WriteLine(token); // write to output window
             Console.WriteLine(token); // write to console window
+        }
+
+
+        //used to pass the trace from one test method to another
+        private TraceState<StateExample, SomeClass> someTraceState2;
+        [TestMethod]
+        public async Task NewTraceTestWithGenericType()
+        {
+            var sdk = GetSdk<StateExample>();
+
+
+            Dictionary<string, object> data = new Dictionary<string, object>
+            {
+                ["weight"] = "123",
+                ["valid"] = true,
+                ["operators"] = new string[] { "1", "2" },
+                ["operation"] = "my new operation 1"
+            };
+
+            SomeClass d = new SomeClass()
+            {
+                f11 = 1,
+                f22 = data
+            };
+
+            NewTraceInput<SomeClass> input = new NewTraceInput<SomeClass>(FORM_ID, d);
+
+            TraceState<StateExample, SomeClass> state = await sdk.NewTraceAsync<SomeClass>(input);
+            someTraceState2 = state;
+
+
+
+            Assert.IsNotNull(state.TraceId);
+        }
+
+
+        public class SomeClass
+        {
+
+            public int f11;
+            public Dictionary<string, object> f22;
+        }
+
+        public class StateExample
+        {
+
+            public string f1;
+            public SomeClass f2;
         }
 
         [TestMethod]
@@ -95,7 +157,7 @@ namespace SDKTest
         }
 
         [TestMethod]
-        public async Task GetOutoingTrafesTest()
+        public async Task GetOutgoingTracesTest()
         {
 
             Sdk<object> sdk = GetSdk();
