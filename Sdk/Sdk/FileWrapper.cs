@@ -136,7 +136,7 @@ namespace Stratumn.Sdk
                         json = JsonHelper.ToCanonicalJson(obj);
                     else
                       if (obj is String)//assume json
-                        json = Canonicalizer.Canonizalize((String)obj);
+                        json = Canonicalizer.Canonicalize((String)obj);
                     else
                         json = JsonHelper.ToCanonicalJson(obj);
                     if (json != null)
