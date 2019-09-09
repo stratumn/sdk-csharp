@@ -31,7 +31,15 @@ namespace SDKTest
             var pem = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRACaNT4cup/ZQAq4IULZCrlPB7eR1QTCN9V3Qzct8S\nYp57BqN4FipIrGpyclvbT1FKQfYLJpeBXeCi2OrrQMTgiw==\n-----END ED25519 PRIVATE KEY-----\n";
             var workflowId = "591";
             Secret s = Secret.NewPrivateKeySecret(pem);
+
             SdkOptions opts = new SdkOptions(workflowId, s);
+            opts.Endpoints = new Endpoints
+            {
+                Trace = "https://trace-api.staging.stratumn.com",
+                Account = "https://account-api.staging.stratumn.com",
+                Media = "https://media-api.staging.stratumn.com",
+            };
+            opts.EnableDebuging = true;
             Sdk<T> sdk = new Sdk<T>(opts);
 
             return sdk;
@@ -43,6 +51,13 @@ namespace SDKTest
             var workflowId = "591";
             Secret s = Secret.NewPrivateKeySecret(pem);
             SdkOptions opts = new SdkOptions(workflowId, s);
+            opts.Endpoints = new Endpoints
+            {
+                Trace = "https://trace-api.staging.stratumn.com",
+                Account = "https://account-api.staging.stratumn.com",
+                Media = "https://media-api.staging.stratumn.com",
+            };
+            opts.EnableDebuging = true;
             Sdk<object> sdk = new Sdk<object>(opts);
 
             return sdk;
