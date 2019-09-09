@@ -45,6 +45,11 @@ namespace Stratumn.Sdk
         ///
         private string token;
 
+        /// <summary>
+        /// Enable low level debugging of http 
+        /// </summary>
+        private bool enableDebuging = false;
+
         private WebProxy proxy;
 
         private GraphQLOptions defaultGraphQLOptions = new GraphQLOptions(1);
@@ -52,7 +57,7 @@ namespace Stratumn.Sdk
         public Client(ClientOptions opts)
         {
             this.endpoints = Helpers.MakeEndpoints(opts.Endpoints);
-
+            this.enableDebuging = opts.EnableDebuging;
             this.secret = opts.Secret;
             this.proxy = opts.Proxy;
         }
@@ -650,14 +655,22 @@ namespace Stratumn.Sdk
 
         private HttpMessageHandler CreateHttpMessageHandler()
         {
-            LoggingHandler httpHandler;
-            if (proxy != null)
+            HttpMessageHandler httpHandler = null;
+            if (proxy != null && enableDebuging)
                 httpHandler = new LoggingHandler(new HttpClientHandler
                 {
                     Proxy = this.proxy
                 });
-            else
+            else if (enableDebuging)
                 httpHandler = new LoggingHandler(new HttpClientHandler());
+            else if (proxy != null)
+                httpHandler = new HttpClientHandler
+                {
+                    Proxy = this.proxy
+                };
+            else
+                httpHandler = new HttpClientHandler();
+            
             return httpHandler;
         }
 
@@ -674,7 +687,9 @@ namespace Stratumn.Sdk
         {
 
             GraphQLClientOptions clientOptions = new GraphQLClientOptions();
-            clientOptions.HttpMessageHandler = CreateHttpMessageHandler();
+            HttpMessageHandler handler = CreateHttpMessageHandler();
+            if (handler!=null)
+             clientOptions.HttpMessageHandler = handler;
             clientOptions.JsonSerializerSettings = new JsonSerializerSettings()
             {
 

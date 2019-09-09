@@ -19,7 +19,8 @@ namespace Stratumn.Sdk.Model.Client
 
         public Secret Secret { get; set; }
 
-        
+        public bool EnableDebuging { get; set; }
+
         public ClientOptions(Endpoints endpoints, Secret secret)
         {
             this.Endpoints = endpoints;
