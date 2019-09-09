@@ -1,6 +1,6 @@
 # Stratumn SDK for .Net
 
-The official Stratumn SDK for .Netto interact with [Trace](https://trace.stratumn.com).
+The official Stratumn SDK for .Net to interact with [Trace](https://trace.stratumn.com).
 
 ## :satellite: Installing
 
@@ -50,13 +50,30 @@ Notes:
 ```
 Secret s = Secret.NewPrivateKeySecret(YOUR_SECRETS.privateKey);
 SdkOptions opts = new SdkOptions(YOUR_CONFIG.workflowId, s);
-opts.Endpoints = Helpers.MakeEndpoints(new Endpoints
+opts.Endpoints =new Endpoints
             {
                 Trace = "https://trace-api.staging.stratumn.com",
                 Account = "https://account-api.staging.stratumn.com",
                 Media = "https://media-api.staging.stratumn.com",
-            });
-Sdk<object> sdk = new Sdk<object>(opts);
+            } ;
+```
+    
+- To enable low level http debuging set the enableDebugging option to true;
+
+```
+opts.setEnableDebuging(true);
+```
+
+- To connect through a proxy server: 
+
+```
+opts.setProxy("MyProxyHost", 1234);
+```
+
+Finally to create the sdk instance:
+
+```
+Sdk<MyStateType> sdk = new Sdk<MyStateType>(opts, MyStateType.class);
 ```
 
 ### Creating a new trace
@@ -86,7 +103,7 @@ The Sdk will return an object corresponding to the "state" of your new trace. Th
 - `headLink`: the link that was last appended to the trace,
 - `updatedAt`: the `Date` at which the trace was last updated,
 - `updatedBy`: the id of the user who last updated the trace,
-- `data`: the aggregated data modelling the state the trace is in.
+- `data`: the aggregated data modeling the state the trace is in.
 
 Notes:
 
@@ -185,7 +202,7 @@ TraceState<Object, Object> stateReject = await GetSdk().RejectTransferAsync(trIn
 
 ```
 
-Alternatively, if you have initiated the transfer (push or pull), you can also before it has been accepted:
+Alternatively, if you have initiated the transfer (push or pull), you can  also cancel before it has been accepted:
 
 ```
 TransferResponseInput<Object> responseInput = new TransferResponseInput<Object>(TraceId, null, null);
