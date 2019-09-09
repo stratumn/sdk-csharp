@@ -31,17 +31,13 @@ namespace Stratumn.Sdk
         }
         public static Endpoints MakeEndpoints(Endpoints endpoints)
         {
-
-            const string ACCOUNT_RELEASE_URL = "https://account-api.staging.stratumn.com";
-            const string TRACE_RELEASE_URL = "https://trace-api.staging.stratumn.com";
-            const string MEDIA_RELEASE_URL = "https://media-api.staging.stratumn.com";
-
             if (endpoints == null)
-            {
+            {   
+                string ACCOUNT_RELEASE_URL = "https://account.stratumn.com";
+                string TRACE_RELEASE_URL = "https://trace.stratumn.com";
+                string  MEDIA_RELEASE_URL = "https://media.stratumn.com";
                 return new Endpoints(ACCOUNT_RELEASE_URL, TRACE_RELEASE_URL, MEDIA_RELEASE_URL);
             }
-
-
             if (endpoints.Account == null || endpoints.Trace == null || endpoints.Media == null)
             {
                 throw new InvalidParameterException("The provided endpoints argument is not valid.");
