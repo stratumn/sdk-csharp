@@ -159,6 +159,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SdkTest.cs" />
+    <Compile Include="SdkTestWithPojo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config">
@@ -167,68 +168,6 @@
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Resources\test\malformed\empty\input.json" />
-    <None Include="Resources\test\malformed\hex_number\input.json" />
-    <None Include="Resources\test\malformed\invalid_string_character\input.json" />
-    <None Include="Resources\test\malformed\invalid_string_escape\input.json" />
-    <None Include="Resources\test\malformed\invalid_string_unicode_escape\input.json" />
-    <None Include="Resources\test\malformed\leading_plus_number\input.json" />
-    <None Include="Resources\test\malformed\leading_zero_number\input.json" />
-    <None Include="Resources\test\malformed\missing_array_element\input.json" />
-    <None Include="Resources\test\malformed\missing_integer_number\input.json" />
-    <None Include="Resources\test\malformed\missing_object_colon\input.json" />
-    <None Include="Resources\test\malformed\missing_object_element\input.json" />
-    <None Include="Resources\test\malformed\partial_fraction_number\input.json" />
-    <None Include="Resources\test\malformed\unclosed_array\input.json" />
-    <None Include="Resources\test\malformed\unclosed_object\input.json" />
-    <None Include="Resources\test\malformed\unclosed_string\input.json" />
-    <None Include="Resources\test\malformed\unopened_array\input.json" />
-    <None Include="Resources\test\malformed\unopened_object\input.json" />
-    <None Include="Resources\test\malformed\unopened_string\input.json" />
-    <None Include="Resources\tokens\3.object-ordering\expected.json" />
-    <None Include="Resources\tokens\3.object-ordering\input.json" />
-    <None Include="Resources\tokens\4.integer\1.no-negative-zero\expected.json" />
-    <None Include="Resources\tokens\4.integer\1.no-negative-zero\input.json" />
-    <None Include="Resources\tokens\4.integer\2.no-decimal-point\expected.json" />
-    <None Include="Resources\tokens\4.integer\2.no-decimal-point\input.json" />
-    <None Include="Resources\tokens\4.integer\3.no-exponent\expected.json" />
-    <None Include="Resources\tokens\4.integer\3.no-exponent\input.json" />
-    <None Include="Resources\tokens\5.non-integer\1.single-digit-nonzero-significand-integer\expected.json" />
-    <None Include="Resources\tokens\5.non-integer\1.single-digit-nonzero-significand-integer\input.json" />
-    <None Include="Resources\tokens\5.non-integer\2.nonempty-significand-fraction\expected.json" />
-    <None Include="Resources\tokens\5.non-integer\2.nonempty-significand-fraction\input.json" />
-    <None Include="Resources\tokens\5.non-integer\3.no-significand-fraction-trailing-zeroes\expected.json" />
-    <None Include="Resources\tokens\5.non-integer\3.no-significand-fraction-trailing-zeroes\input.json" />
-    <None Include="Resources\tokens\5.non-integer\4.capital-E\expected.json" />
-    <None Include="Resources\tokens\5.non-integer\4.capital-E\input.json" />
-    <None Include="Resources\tokens\5.non-integer\5.no-exponent-plus\expected.json" />
-    <None Include="Resources\tokens\5.non-integer\5.no-exponent-plus\input.json" />
-    <None Include="Resources\tokens\5.non-integer\6.no-exponent-leading-zeroes\expected.json" />
-    <None Include="Resources\tokens\5.non-integer\6.no-exponent-leading-zeroes\input.json" />
-    <None Include="Resources\tokens\6.string\1.no-unnecessary-escapes\expected.json" />
-    <None Include="Resources\tokens\6.string\1.no-unnecessary-escapes\input.json" />
-    <None Include="Resources\tokens\6.string\2.no-combining-escapes\expected.json" />
-    <None Include="Resources\tokens\6.string\2.no-combining-escapes\input.json" />
-    <None Include="Resources\tokens\6.string\3.short-escapes\expected.json" />
-    <None Include="Resources\tokens\6.string\3.short-escapes\input.json" />
-    <None Include="Resources\tokens\6.string\4.other-control-escapes\expected.json" />
-    <None Include="Resources\tokens\6.string\4.other-control-escapes\input.json" />
-    <None Include="Resources\tokens\6.string\5.lone-surrogate-escapes\expected.json" />
-    <None Include="Resources\tokens\6.string\5.lone-surrogate-escapes\input.json" />
-    <None Include="Resources\whitespace\array\expected.json" />
-    <None Include="Resources\whitespace\array\input.json" />
-    <None Include="Resources\whitespace\false\expected.json" />
-    <None Include="Resources\whitespace\false\input.json" />
-    <None Include="Resources\whitespace\null\expected.json" />
-    <None Include="Resources\whitespace\null\input.json" />
-    <None Include="Resources\whitespace\number\expected.json" />
-    <None Include="Resources\whitespace\number\input.json" />
-    <None Include="Resources\whitespace\object\expected.json" />
-    <None Include="Resources\whitespace\object\input.json" />
-    <None Include="Resources\whitespace\string\expected.json" />
-    <None Include="Resources\whitespace\string\input.json" />
-    <None Include="Resources\whitespace\true\expected.json" />
-    <None Include="Resources\whitespace\true\input.json" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">

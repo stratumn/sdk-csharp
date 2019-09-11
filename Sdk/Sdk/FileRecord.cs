@@ -85,6 +85,8 @@ namespace Stratumn.Sdk
 
         public static FileRecord FromObject(Object obj)
         {
+            if (obj is FileRecord)
+                return (FileRecord)obj;
             return JsonHelper.ObjectToObject<FileRecord>(obj);
         }
 
@@ -96,7 +98,7 @@ namespace Stratumn.Sdk
             {
                 string json = null;
 
-                if (obj is FileRecord)
+                if (typeof(FileRecord).IsInstanceOfType(obj))
                     isFileRecord = true;
                 else
                 if (obj != null)
