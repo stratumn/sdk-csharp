@@ -124,6 +124,7 @@
     <Compile Include="Sdk\GraphQL.cs" />
     <Compile Include="Sdk\Helpers.cs" />
     <Compile Include="Sdk\HttpError.cs" />
+    <Compile Include="Sdk\IdentifiableConverter.cs" />
     <Compile Include="Sdk\ISdk.cs" />
     <Compile Include="Sdk\Model\Client\ClientOptions.cs" />
     <Compile Include="Sdk\Model\Client\CredentialSecret.cs" />
