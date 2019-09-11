@@ -217,14 +217,11 @@ namespace Stratumn.Sdk
             {
                 opts = new FetchOptions();
             }
-
-            // References: https://www.baeldung.com/java-http-request
-            // https://juffalow.com/java/how-to-send-http-get-post-request-in-java
+           
             string path = this.endpoints.GetEndpoint(service) + '/' + route;
 
             Uri url = new Uri(path);
-
-            //  string strPayload = JsonConvert.SerializeObject(payload);
+           
             HttpContent httpContent = new StringContent(body, Encoding.UTF8, "application/json");
 
 
