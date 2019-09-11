@@ -77,9 +77,7 @@ namespace Stratumn.Sdk
 
 
         private static Regex KeyIndex = new Regex("\\[(\\d+)\\]|\\((\\d+)\\)$");
-
-        //JAVA TO C# CONVERTER WARNING: Method 'throws' clauses are not available in C#:
-        //ORIGINAL LINE: private static int extractIndexFromKey(String key) throws com.stratumn.sdk.TraceSdkException
+      
         private static int extractIndexFromKey(string key)
         {
             //get the index of the value in the array or collection
@@ -133,9 +131,7 @@ namespace Stratumn.Sdk
                         int index = extractIndexFromKey(key);
                         //object could be an identifiable or it could be a deserialized map
                         if (typeof(System.Collections.IDictionary).IsAssignableFrom(parent.GetType().GetElementType()))
-                        { //convert the value to map~
-                          //JAVA TO C# CONVERTER WARNING: Java wildcard generics have no direct equivalent in .NET:
-                          //ORIGINAL LINE: java.util.Map<?,?> map = com.stratumn.chainscript.utils.JsonHelper.objectToMap(propertyElement.getValue());
+                        { //convert the value to map~                                              
                             IDictionary<string, object> map = JsonHelper.ObjectToMap(propertyElement.Value);
                             ((Array)parent).SetValue(map, index);
                         }
@@ -150,8 +146,7 @@ namespace Stratumn.Sdk
                         {
                             try
                             {
-                                //write the object to the field
-                                //in java there is currently no way of changing the type of a field. A field has to be of type identifiable
+                                //write the object to the field                                
                                 System.Reflection.FieldInfo field = parent.GetType().GetTypeInfo().GetDeclaredField(key);
 
                                 if (field.FieldType.IsAssignableFrom(typeof(System.Collections.IDictionary)))
