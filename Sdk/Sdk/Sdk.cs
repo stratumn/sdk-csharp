@@ -48,6 +48,7 @@
         public Sdk(SdkOptions opts)
         {
             this.opts = opts;
+            JsonHelper.RegisterConverter(new IdentifiableConverter());
             this.client = new Client(opts);
         }
 
@@ -680,11 +681,11 @@
             // get all the groups that are owned by one of my accounts
             foreach (var lNode in trace.links.nodes)
             {
-               
+
                 JObject nodeRaw = lNode.raw;
-           
-                links.Add((TraceLink<TLinkData>)TraceLink<TLinkData>.FromObject<TLinkData>(nodeRaw.ToString(Newtonsoft.Json.Formatting.None), 
-                                                                                                                          lNode.data));
+                TLinkData nodeData = JsonHelper.ObjectToObject<TLinkData>(lNode.data);
+                links.Add((TraceLink<TLinkData>)TraceLink<TLinkData>.FromObject<TLinkData>(nodeRaw.ToString(Newtonsoft.Json.Formatting.None),
+                                                                                                                         nodeData));
 
             }
 

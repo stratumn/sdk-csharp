@@ -127,7 +127,7 @@ namespace Stratumn.Sdk
             {
                 string json = null;
 
-                if (obj is FileWrapper)
+                if ( typeof(FileWrapper).IsInstanceOfType(obj) )
                     isFileWrapper = true;
                 else
                 if (obj != null)
@@ -144,17 +144,23 @@ namespace Stratumn.Sdk
 
                         Object ob = null;
                         //attempt to generate FileWrapper from json.
-                        if (json.ToUpper().Contains("PATH"))
+                        try
                         {
-                            ob = JsonHelper.FromJson<FilePathWrapper>(json);
+                            if (json.ToUpper().Contains("PATH"))
+                            {
+                                ob = JsonHelper.FromJson<FilePathWrapper>(json);
+                            }
+                            else if (json.ToUpper().Contains("FILEINFO"))
+                            {
+                                ob = JsonHelper.FromJson<FileBlobWrapper>(json);
+                            }
+                            else if (json.ToUpper().Contains("FILE"))
+                            {
+                                ob = JsonHelper.FromJson<BrowserFileWrapper>(json);
+                            }
                         }
-                        else if (json.ToUpper().Contains("FILEINFO"))
-                        {
-                            ob = JsonHelper.FromJson<FileBlobWrapper>(json);
-                        }
-                        else if (json.ToUpper().Contains("FILE"))
-                        {
-                            ob = JsonHelper.FromJson<BrowserFileWrapper>(json);
+                        catch (Exception e)
+                        { //obj can not be converted
                         }
                         if (ob != null)
                         {
@@ -177,6 +183,8 @@ namespace Stratumn.Sdk
 
         public static FileWrapper FromObject(Object obj)
         {
+            if (obj is FileWrapper)
+                return (FileWrapper)obj ;
             String json = JsonHelper.ToJson(obj);
             if (json.ToUpper().Contains("FILEINFO"))
             {

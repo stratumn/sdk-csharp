@@ -52,9 +52,9 @@ namespace Stratumn.Sdk
         /// <param name="data"></param>
         /// <returns></returns>
 
-        public static Dictionary<string, Property<FileWrapper>> ExtractFileWrappers<T>(T data)
+        public static Dictionary<string, Property<FileWrapper>> ExtractFileWrappers(object data)
         {
-            return ExtractObjects<T, FileWrapper>(data, (X) => FileWrapper.isFileWrapper(X), (Y) =>
+            return ExtractObjects<  FileWrapper>(data, (X) => FileWrapper.isFileWrapper(X), (Y) =>
             {
                 return FileWrapper.FromObject((object)Y);
             });
@@ -66,10 +66,10 @@ namespace Stratumn.Sdk
         /// <typeparam name="T"></typeparam>
         /// <param name="data"></param>
         /// <returns></returns>
-        public static Dictionary<string, Property<FileRecord>> ExtractFileRecords<T>(T data)
+        public static Dictionary<string, Property<FileRecord>> ExtractFileRecords(object data)
         {
 
-            return ExtractObjects<T, FileRecord>(data, (X) => FileRecord.IsFileRecord(X), (Y) =>
+            return ExtractObjects<  FileRecord>(data, (X) => FileRecord.IsFileRecord(X), (Y) =>
             {
                 return FileRecord.FromObject((object)Y);
             });
@@ -180,7 +180,7 @@ namespace Stratumn.Sdk
 
 
 
-        private static void ExtractObjectsImpl<T, V>(dynamic data, object parent, string path, IDictionary<string, Property<V>> idToObjectMap, System.Predicate<T> predicate, System.Func<T, V> reviver) where V : Identifiable
+        private static void ExtractObjectsImpl<  V>(object data, object parent, string path, IDictionary<string, Property<V>> idToObjectMap, System.Predicate<object> predicate, System.Func<object, V> reviver) where V : Identifiable
         {
             if (data == null)
             {
@@ -200,7 +200,7 @@ namespace Stratumn.Sdk
                 { //loop over subelements
                     foreach (var element in ((JObject)data))
                     {
-                        ExtractObjectsImpl<T, V>(element.Value, data, path.Length == 0 ? element.Key : path + "." + element.Key, idToObjectMap, predicate, reviver);
+                        ExtractObjectsImpl<  V>(element.Value, data, path.Length == 0 ? element.Key : path + "." + element.Key, idToObjectMap, predicate, reviver);
                     }
                 }
                 else if (data is JArray)
@@ -208,16 +208,16 @@ namespace Stratumn.Sdk
                     int idx = 0;
                     foreach (var value in ((JArray)data))
                     {
-                        ExtractObjectsImpl<T, V>(value, data, path + "[" + idx + "]", idToObjectMap, predicate, reviver);
+                        ExtractObjectsImpl<V>(value, data, path + "[" + idx + "]", idToObjectMap, predicate, reviver);
                         idx++;
                     }
                 }
             }
-            else if (data.GetType().IsArray)
+            else if (data.GetType().IsArray )
             {
                 // if it is an array, iterate through each element  extract objects recursively
                 int idx = 0;
-                foreach (var value in data)
+                foreach (var value in (object[])data)
                 {
                     ExtractObjectsImpl(value, data, path + "[" + idx + "]", idToObjectMap, predicate, reviver);
                     idx++;
@@ -238,34 +238,27 @@ namespace Stratumn.Sdk
             {
                 foreach (KeyValuePair<string, object> element in ((IDictionary<string, object>)data).SetOfKeyValuePairs())
                 {
-                    ExtractObjectsImpl((T)element.Value, data, path.Length == 0 ? element.Key : path + "." + element.Key, idToObjectMap, predicate, reviver);
+                    ExtractObjectsImpl(element.Value, data, path.Length == 0 ? element.Key : path + "." + element.Key, idToObjectMap, predicate, reviver);
                 }
             }
             else
             {
-                //JAVA TO C# CONVERTER WARNING: The .NET Type.FullName property will not always yield results identical to the Java Class.getName method:
-                if (data is object && !data.GetType().FullName.StartsWith("System.", StringComparison.Ordinal))
-                {
-                    // if it is an object, iterate through each entry
-                    // and extract objects recursively
-                    Type clazz = data.GetType();
+                // if it is an object, iterate through each entry
+                // and extract objects recursively
+                Type clazz = data.GetType();
+                //if (data is object && !data.GetType().FullName.StartsWith("System.", StringComparison.Ordinal))
+                if (clazz.IsClass && !data.GetType().Namespace.StartsWith("System"))
+                { 
+                    
                     System.Reflection.FieldInfo[] fields = clazz.GetFields(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
                     foreach (FieldInfo field in fields)
                     {
-                        if (field.FieldType.IsPrimitive || field.FieldType.IsEnum  /*|| field.FieldType.isSyntheic*/ || field.IsStatic)
+                        if (field.FieldType.IsPrimitive || field.FieldType.IsValueType || field.FieldType.IsEnum   || field.IsStatic)
                         {
                             continue;
                         }
-
-                        T value;
-                        try
-                        {
-                            value = (T)field.GetValue(data);
-                        }
-                        catch (Exception)
-                        {
-                            continue;
-                        }
+                        object value =  field.GetValue(data);
+                   
                         ExtractObjectsImpl(value, data, path.Length == 0 ? field.Name : path + "." + field.Name, idToObjectMap, predicate, reviver);
                     }
 
@@ -275,7 +268,7 @@ namespace Stratumn.Sdk
         }
 
 
-        private static Dictionary<String, Property<V>> ExtractObjects<T, V>(dynamic data, Predicate<T> predicate, Func<T, V> reviver) where V : Identifiable
+        private static Dictionary<String, Property<V>> ExtractObjects<  V>(object data, Predicate<object> predicate, Func<object, V> reviver) where V : Identifiable
         {
             // create a new idToObject map
             Dictionary<String, Property<V>> idToObjectMap = new Dictionary<String, Property<V>>();

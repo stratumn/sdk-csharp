@@ -60,6 +60,9 @@ namespace Stratumn.Sdk
             this.enableDebuging = opts.EnableDebuging;
             this.secret = opts.Secret;
             this.proxy = opts.Proxy;
+
+          
+         
         }
 
 
