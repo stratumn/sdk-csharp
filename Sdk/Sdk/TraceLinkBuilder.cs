@@ -93,12 +93,13 @@
 
                 string hash = Convert.ToBase64String(
                                         CryptoUtils.Sha256(
-                                                Encoding.ASCII.GetBytes(
+                                                Encoding.UTF8.GetBytes(
                                                     CanonicalJson.Canonicalizer.Stringify(obj)
                                                     )
                                                 )
                                         );
 
+               
                 IDictionary<string, object> data = new Dictionary<string, object>();
                 data["algo"] = algo;
                 data["hash"] = hash;

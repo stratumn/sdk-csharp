@@ -72,7 +72,7 @@ namespace Stratumn.Sdk
             long nowInSeconds = Helpers.GetTime() / 1000;
             var timeJson = new
             {
-                iat = nowInSeconds,
+                iat = nowInSeconds - 1 * 60,
                 exp = nowInSeconds + 10 * 60
             };
             byte[] message = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(timeJson));

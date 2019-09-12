@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Stratumn.SDK</id> 
+    <version>0.0.14.0</version>
+    <title>Stratumn SDK</title>
+    <authors>Stratumn</authors>
+    <owners>Stratumn</owners>
+    <licenseUrl>https://github.com/stratumn/sdk-csharp/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/stratumn/sdk-csharp</projectUrl>
+    <iconUrl>https://avatars2.githubusercontent.com/u/15095987</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Stratumn services SDK </description>
+    <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
+    <copyright>Copyright 2019</copyright>
+    <tags>Stratumn SDK</tags>
+
+    <dependencies>
+      <dependency id="BCrypt-Official" version="0.1.109"/>
+      <dependency id="BouncyCastle" version="1.8.5"/>
+      <dependency id="Google.Protobuf" version="3.9.1"/>
+      <dependency id="Google.Protobuf.Tools" version="3.9.1"/>
+      <dependency id="GraphQL.Client" version="1.0.3"/>
+      <dependency id="GraphQL.Common" version="1.0.3"/>
+      <dependency id="IKVM" version="7.2.4630.5"/>
+      <dependency id="IKVM.OpenJDK.Core" version="7.2.4630.5"/>
+      <dependency id="IKVM.OpenJDK.Text" version="7.2.4630.5"/>
+      <dependency id="IKVM.Runtime" version="7.2.4630.5"/>
+      <dependency id="JmesPath.Net" version="1.0.125"/>
+      <dependency id="Lucene.Net" version="3.0.3"/>
+      <dependency id="Magnum" version="2.1.3"/>
+      <dependency id="Newtonsoft.Json" version="12.0.2"/>
+      <dependency id="SharpZipLib" version="0.86.0"/>
+      <dependency id="Stratumn.CanonicalJson" version="0.0.6"/>
+      <dependency id="Stratumn.Chainscript" version="0.0.9"/>
+      <dependency id="System.Buffers" version="4.4.0"/>
+      <dependency id="System.Memory" version="4.5.1"/>
+      <dependency id="System.Numerics.Vectors" version="4.4.0"/>
+      <dependency id="System.Runtime.CompilerServices.Unsafe" version="4.5.1"/>
+      <dependency id="System.Text.Encodings.Web" version="4.5.0"/>
+    </dependencies>
+
+  </metadata>
+</package>

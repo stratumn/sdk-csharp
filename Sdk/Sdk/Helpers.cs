@@ -149,18 +149,13 @@ namespace Stratumn.Sdk
                                 //write the object to the field                                
                                 System.Reflection.FieldInfo field = parent.GetType().GetTypeInfo().GetDeclaredField(key);
 
-                                if (field.FieldType.IsAssignableFrom(typeof(System.Collections.IDictionary)))
-                                { //convert the value to map~
-
-                                }
-                                else
+                                
+                                if (!field.FieldType.IsAssignableFrom(propertyElement.Value.GetType()))
                                 {
-                                    if (!propertyElement.Value.GetType().IsAssignableFrom(field.FieldType))
-                                    {
-                                        throw new TraceSdkException("Field " + key + " of type " + field.FieldType + " is not assignable from " + propertyElement.Value.GetType());
-                                    }
-                                    field.SetValue(parent, propertyElement.Value);
+                                    throw new TraceSdkException("Field " + key + " of type " + field.FieldType + " is not assignable from " + propertyElement.Value.GetType());
                                 }
+                                field.SetValue(parent, propertyElement.Value);
+
                             }
                             catch (Exception e)
                             {
@@ -177,6 +172,7 @@ namespace Stratumn.Sdk
 
         private static void ExtractObjectsImpl<  V>(object data, object parent, string path, IDictionary<string, Property<V>> idToObjectMap, System.Predicate<object> predicate, System.Func<object, V> reviver) where V : Identifiable
         {
+            
             if (data == null)
             {
                 return;
@@ -218,7 +214,7 @@ namespace Stratumn.Sdk
                     idx++;
                 }
             }
-            else if (data.GetType().IsAssignableFrom(typeof(System.Collections.ICollection)))
+            else if (typeof(System.Collections.ICollection).IsAssignableFrom(data.GetType()))
             {
                 ICollection col = (ICollection)data;
                 // if it is a collection, iterate through each element extract objects recursively
@@ -241,11 +237,12 @@ namespace Stratumn.Sdk
                 // if it is an object, iterate through each entry
                 // and extract objects recursively
                 Type clazz = data.GetType();
+
                 //if (data is object && !data.GetType().FullName.StartsWith("System.", StringComparison.Ordinal))
                 if (clazz.IsClass && !data.GetType().Namespace.StartsWith("System"))
-                { 
-                    
-                    System.Reflection.FieldInfo[] fields = clazz.GetFields(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
+                {
+
+                    System.Reflection.FieldInfo[] fields = clazz.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
                     foreach (FieldInfo field in fields)
                     {
                         if (field.FieldType.IsPrimitive || field.FieldType.IsValueType || field.FieldType.IsEnum   || field.IsStatic)

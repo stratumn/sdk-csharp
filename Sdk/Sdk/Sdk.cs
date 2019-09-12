@@ -361,8 +361,10 @@
         /// <param name="data"> the link data that contains file wrappers to upload </param>
         private async Task UploadFilesInLinkData<TLinkData>(TLinkData data)
         {
+
             Dictionary<string, Property<FileWrapper>> fileWrapperMap = Helpers.ExtractFileWrappers(data);
             if (fileWrapperMap.Count == 0) return;
+
 
             List<FileWrapper> fileList = new List<FileWrapper>(fileWrapperMap.Count);
             foreach (Property<FileWrapper> fileProperty in fileWrapperMap.Values)
@@ -381,6 +383,7 @@
                 Property<FileRecord> fileRecordProp = fileWrapperProp.Transform((f)=> new FileRecord(mediaRecord, f.Info()));
                 fileRecordList.Add(fileRecordProp);
             }
+
 
             Helpers.AssignObjects(fileRecordList); 
         }

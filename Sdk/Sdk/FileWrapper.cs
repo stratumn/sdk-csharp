@@ -122,6 +122,7 @@ namespace Stratumn.Sdk
 
         public static Boolean isFileWrapper(Object obj)
         {
+            
             bool isFileWrapper = false;
             try
             {
@@ -136,7 +137,9 @@ namespace Stratumn.Sdk
                         json = JsonHelper.ToCanonicalJson(obj);
                     else
                       if (obj is String)//assume json
-                        json = Canonicalizer.Canonicalize((String)obj);
+                        try {
+                            json = Canonicalizer.Canonicalize((String)obj);
+                        } catch (Exception) { }
                     else
                         json = JsonHelper.ToCanonicalJson(obj);
                     if (json != null)
