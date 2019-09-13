@@ -27,7 +27,7 @@ namespace Stratumn.Sdk
 
         public override MemoryStream EncryptedData()
         {
-            return base.EncryptedData(Data());
+            return base.EncryptData(Data());
         }
 
        
@@ -49,23 +49,24 @@ namespace Stratumn.Sdk
         }
 
  
-
         private MemoryStream Data()
         {
             System.IO.FileInfo file = new System.IO.FileInfo(Path);
-
-
+            
             if (!file.Exists)
             {
                 throw new TraceSdkException("File not found " + Path);
             }
 
-            MemoryStream destBuffer = new MemoryStream(); ;
+            MemoryStream destBuffer = new MemoryStream();
 
             using (Stream source = File.OpenRead(Path))
             {
+                Console.Write("The source length is : {0}\n", source.Length);
+
                 byte[] buffer = new byte[2048];
                 int bytesRead;
+
                 while ((bytesRead = source.Read(buffer, 0, buffer.Length)) > 0)
                 {
                     destBuffer.Write(buffer, 0, bytesRead);

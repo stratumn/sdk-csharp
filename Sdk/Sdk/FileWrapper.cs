@@ -97,6 +97,7 @@ namespace Stratumn.Sdk
             {
                 return stream;
             }
+
             return null;
         }
 

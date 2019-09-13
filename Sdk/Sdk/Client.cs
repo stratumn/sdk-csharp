@@ -482,16 +482,20 @@ namespace Stratumn.Sdk
                 {
                     Model.File.FileInfo fileInfo = file.Info();
 
-                    var fileContent = new StreamContent(file.EncryptedData());
+                    var data = file.EncryptedData();
+                    data.Position = 0;
+
+                    var fileContent = new StreamContent(data);
+
                     fileContent.Headers.ContentDisposition = new ContentDispositionHeaderValue("form-data")
                     {
                         Name = "\"" + fileInfo.Name + "\"",
                         FileName = "\"" + fileInfo.Name + "\""
                     };
 
-
                     filesContent.Add(fileContent);
                 }
+
                 response = await client.PostAsync(url, filesContent);
             }
             return JsonHelper.ObjectToObject<T>(response.Content.ReadAsStringAsync().Result);
