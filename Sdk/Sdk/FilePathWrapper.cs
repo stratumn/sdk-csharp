@@ -62,7 +62,6 @@ namespace Stratumn.Sdk
 
             using (Stream source = File.OpenRead(Path))
             {
-                Console.Write("The source length is : {0}\n", source.Length);
 
                 byte[] buffer = new byte[2048];
                 int bytesRead;
