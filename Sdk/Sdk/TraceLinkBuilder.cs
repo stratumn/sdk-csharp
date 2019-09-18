@@ -7,6 +7,7 @@
     using Stratumn.Sdk.Model.Trace;
     using Utils;
     using Stratumn.Chainscript.utils;
+    using System.Diagnostics;
 
     /// <summary>
     /// TraceLinkBuilder makes it easy to create links that are compatible
@@ -91,10 +92,18 @@
             {
                 string algo = "sha256";
 
+                string d = JsonHelper.ToJson(obj);
+                Debug.WriteLine("---------------------- RAW JSON -----------------------------");
+                Debug.WriteLine(d);
+                string can = CanonicalJson.Canonicalizer.Canonicalize(d);
+                Debug.WriteLine("---------------------- CANONICAL JSON -----------------------------");
+                Debug.WriteLine(d);
+
                 string hash = Convert.ToBase64String(
                                         CryptoUtils.Sha256(
                                                 Encoding.UTF8.GetBytes(
-                                                    CanonicalJson.Canonicalizer.Stringify(obj)
+                                                    //CanonicalJson.Canonicalizer.Stringify(obj)
+                                                    can
                                                     )
                                                 )
                                         );
