@@ -21,7 +21,7 @@ namespace Stratumn.Sdk
             this.File = File;
         }
 
-        public override MemoryStream DecrytptedData()
+        public override MemoryStream DecryptedData()
         {
             throw new NotImplementedException();
         }

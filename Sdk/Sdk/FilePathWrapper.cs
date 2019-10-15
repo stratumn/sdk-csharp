@@ -20,7 +20,7 @@ namespace Stratumn.Sdk
             this.Path = path;
         }
 
-        public override MemoryStream DecrytptedData()
+        public override MemoryStream DecryptedData()
         {
             return this.DecryptData(Data());
         }

@@ -83,7 +83,7 @@ namespace Stratumn.Sdk
 
         public abstract MemoryStream EncryptedData();
 
-        public abstract MemoryStream DecrytptedData();
+        public abstract MemoryStream DecryptedData();
 
 
         public static FileWrapper FromBrowserFile(FileInfo file)

@@ -398,7 +398,7 @@ namespace SDKTest
         private void WriteFileToDisk(FileWrapper fWrapper)
         {
 
-            MemoryStream buffer = fWrapper.DecrytptedData();
+            MemoryStream buffer = fWrapper.DecryptedData();
 
             FileInfo file = new FileInfo(Path.GetFullPath("./Resources/out/" + fWrapper.Info().Name));
 
@@ -407,16 +407,6 @@ namespace SDKTest
             {
                 Directory.CreateDirectory(file.DirectoryName);
             }
-            //    if (File.Exists(file.FullName))
-            //        try
-            //        {
-            //            File.Create(file.FullName);
-            //        }
-            //        catch (IOException e1)
-            //        {
-            //            throw new TraceSdkException("Failed to create output file");
-            //        }
-            //}
 
             using (FileStream fs = new FileStream(file.FullName, FileMode.Create, System.IO.FileAccess.Write))
             {

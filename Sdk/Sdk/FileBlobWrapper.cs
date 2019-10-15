@@ -23,7 +23,7 @@ namespace Stratumn.Sdk
 
         }
 
-        public override MemoryStream DecrytptedData()
+        public override MemoryStream DecryptedData()
         {
             return this.DecryptData(Blob); 
         }
