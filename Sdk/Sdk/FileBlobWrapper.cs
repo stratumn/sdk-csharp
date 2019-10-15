@@ -16,26 +16,26 @@ namespace Stratumn.Sdk
         public MemoryStream Blob { get; set; }
         public Model.File.FileInfo FileInfo { get; set; }
 
-        public FileBlobWrapper(MemoryStream blob, Model.File.FileInfo fileInfo)
+        public FileBlobWrapper(MemoryStream blob, Model.File.FileInfo fileInfo) : base(fileInfo.Key == null || fileInfo.Key == "", fileInfo.Key)
         {
             this.Blob = blob;
             this.FileInfo = fileInfo;
+
         }
 
         public override MemoryStream DecrytptedData()
         {
-            return Blob; 
+            return this.DecryptData(Blob); 
         }
 
         public override MemoryStream EncryptedData()
         {
-            MemoryStream data = base.EncryptData(this.Blob);
-            return data;
+            return this.EncryptData(this.Blob);
         }
 
         public override Model.File.FileInfo Info()
         {
-           return  this.FileInfo;
+            return this.AddKeyToFileInfo(this.FileInfo);
         }
     }
 }

@@ -2,5 +2,6 @@
 */bin/*
 */packages/*
 packages
+.vs/*
 
 *.nupkg

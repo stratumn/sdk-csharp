@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Stratumn.SDK</id> 
-    <version>0.0.16.0</version>
+    <version>0.0.18.0</version>
     <title>Stratumn SDK</title>
     <authors>Stratumn</authors>
     <owners>Stratumn</owners>
@@ -31,8 +31,8 @@
       <dependency id="Magnum" version="2.1.3"/>
       <dependency id="Newtonsoft.Json" version="12.0.2"/>
       <dependency id="SharpZipLib" version="0.86.0"/>
-      <dependency id="Stratumn.CanonicalJson" version="0.0.6"/>
-      <dependency id="Stratumn.Chainscript" version="0.0.9"/>
+      <dependency id="Stratumn.CanonicalJson" version="0.0.7"/>
+      <dependency id="Stratumn.Chainscript" version="0.0.10"/>
       <dependency id="System.Buffers" version="4.4.0"/>
       <dependency id="System.Memory" version="4.5.1"/>
       <dependency id="System.Numerics.Vectors" version="4.4.0"/>

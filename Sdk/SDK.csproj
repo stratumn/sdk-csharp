@@ -178,6 +178,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
     <Compile Include="Sdk\TraceLink.cs" />
+    <Compile Include="Sdk\AesKey.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -213,10 +214,10 @@
       <Version>12.0.2</Version>
     </PackageReference>
     <PackageReference Include="Stratumn.CanonicalJson">
-      <Version>0.0.6</Version>
+      <Version>0.0.7</Version>
     </PackageReference>
     <PackageReference Include="Stratumn.Chainscript">
-      <Version>0.0.9</Version>
+      <Version>0.0.10</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

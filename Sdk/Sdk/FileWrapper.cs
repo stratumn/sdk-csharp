@@ -21,24 +21,17 @@ namespace Stratumn.Sdk
         }
 
 
-        private String _key;
-        public string Key
-        {
-            get
-            {
-                return this._key;
-            }
+        private AesKey _key;
+        
 
-        }
-
-        public FileWrapper() : this(true, null)
+        public FileWrapper() : this(false, null)
         {
         }
 
         public FileWrapper(Boolean disableEncryption, String key)
         {
             if (!disableEncryption)
-                this._key = key;
+                this._key = new AesKey(key);
         }
 
         /// <summary>
@@ -50,10 +43,9 @@ namespace Stratumn.Sdk
         {
             if (this._key == null)
                 return data;
-            //AES encryption 
 
-            AesWrapper AESKey = new AesWrapper(this._key);
-            return AESKey.Encrypt(data);
+            //AES encryption 
+            return this._key.Encrypt(data);
 
         }
 
@@ -66,10 +58,9 @@ namespace Stratumn.Sdk
         {
             if (this._key == null)
                 return data;
-            //AES encryption 
 
-            AesWrapper AESKey = new AesWrapper(this._key);
-            return AESKey.Decrypt(data);
+            //AES decryption
+            return this._key.Decrypt(data);
 
         }
 
@@ -78,30 +69,19 @@ namespace Stratumn.Sdk
         /// </summary>
         /// <param name="info"></param>
         /// <returns></returns>        
-        protected Sdk.Model.File.FileInfo AddKeyToFileInfo(Sdk.Model.File.FileInfo info)
+        protected Model.File.FileInfo AddKeyToFileInfo(Model.File.FileInfo info)
         {
             if (this._key == null)
                 return info;
-            info.Key = this._key;
+            info.Key = this._key.Export();
 
             return info;
 
         }
 
-        public abstract Sdk.Model.File.FileInfo Info();
+        public abstract Model.File.FileInfo Info();
+
         public abstract MemoryStream EncryptedData();
-
-        public MemoryStream EncryptedData(MemoryStream stream)
-        {
-            if (Key == null)
-            {
-                return stream;
-            }
-
-            return null;
-        }
-
-
 
         public abstract MemoryStream DecrytptedData();
 
@@ -116,7 +96,7 @@ namespace Stratumn.Sdk
             return new FilePathWrapper(path);
         }
 
-        public static FileWrapper FromFileBlob(MemoryStream blob, Sdk.Model.File.FileInfo fileInfo)
+        public static FileWrapper FromFileBlob(MemoryStream blob, Model.File.FileInfo fileInfo)
         {
             return new FileBlobWrapper(blob, fileInfo);
         }

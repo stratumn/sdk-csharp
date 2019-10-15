@@ -142,7 +142,7 @@ namespace SDKTest
         {
 
             Sdk<object> sdk = GetSdk();
-            string traceId = "a41257f9-2d9d-4d42-ab2a-fd0c83ea31df";
+            string traceId = "191516ec-5f8c-4757-9061-8c7ab06cf0a0";
             GetTraceStateInput input = new GetTraceStateInput(traceId);
             TraceState<object, object> state = await sdk.GetTraceStateAsync<object>(input);
             Assert.AreEqual(state.TraceId, traceId);
@@ -152,7 +152,7 @@ namespace SDKTest
         public async Task GetTraceDetails()
         {
             var sdk = GetSdk();
-            string traceId = "a41257f9-2d9d-4d42-ab2a-fd0c83ea31df";
+            string traceId = "191516ec-5f8c-4757-9061-8c7ab06cf0a0";
 
             GetTraceDetailsInput input = new GetTraceDetailsInput(traceId, 5, null, null, null);
 
@@ -335,7 +335,7 @@ namespace SDKTest
             TransferResponseInput<Object> responseInput = new TransferResponseInput<Object>(someTraceState.TraceId, null, null);
             TraceState<Object, Object> statecancel = await GetSdk().CancelTransferAsync(responseInput);
 
-            Assert.IsNotNull(statecancel.TraceId); ;
+            Assert.IsNotNull(statecancel.TraceId);
 
         }
 
@@ -355,7 +355,7 @@ namespace SDKTest
                 ["operation"] = "my new operation 1"
             };
 
-            data.Add("Certificate1",FileWrapper.FromFilePath(Path.GetFullPath("../../Resources/TestFile1.txt")));
+            data.Add("Certificate1", FileWrapper.FromFilePath(Path.GetFullPath("../../Resources/TestFile1.txt")));
             data.Add("Certificates", new Identifiable[] { FileWrapper.FromFilePath(Path.GetFullPath("../../Resources/TestFile1.txt")) });
 
             NewTraceInput<Object> newTraceInput = new NewTraceInput<Object>(FORM_ID, data);
@@ -374,7 +374,7 @@ namespace SDKTest
             TraceState<Object, Object> state;
             try
             {
-                state = await GetSdk().GetTraceStateAsync<object>(new GetTraceStateInput("dee0dd04-5d58-4c4e-a72d-a759e37ae337"));
+                state = await GetSdk().GetTraceStateAsync<object>(new GetTraceStateInput("b8d98439-8115-4c0c-9b86-0831baa20c17"));
             }
             catch (Exception e)
             {  //trace not found

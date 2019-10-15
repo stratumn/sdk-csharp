@@ -22,12 +22,12 @@ namespace Stratumn.Sdk
 
         public override MemoryStream DecrytptedData()
         {
-            return Data();
+            return this.DecryptData(Data());
         }
 
         public override MemoryStream EncryptedData()
         {
-            return base.EncryptData(Data());
+            return this.EncryptData(Data());
         }
 
        
