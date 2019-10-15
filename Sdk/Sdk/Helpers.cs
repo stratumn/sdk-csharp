@@ -214,6 +214,13 @@ namespace Stratumn.Sdk
                     idx++;
                 }
             }
+            else if (data is System.Collections.IDictionary)
+            {
+                foreach (KeyValuePair<string, object> element in ((IDictionary<string, object>)data).SetOfKeyValuePairs())
+                {
+                    ExtractObjectsImpl(element.Value, data, path.Length == 0 ? element.Key : path + "." + element.Key, idToObjectMap, predicate, reviver);
+                }
+            }
             else if (typeof(System.Collections.ICollection).IsAssignableFrom(data.GetType()))
             {
                 ICollection col = (ICollection)data;
@@ -223,13 +230,6 @@ namespace Stratumn.Sdk
                 {
                     ExtractObjectsImpl(value, data, path + "(" + idx + ")", idToObjectMap, predicate, reviver);
                     idx++;
-                }
-            }
-            else if (data is System.Collections.IDictionary)
-            {
-                foreach (KeyValuePair<string, object> element in ((IDictionary<string, object>)data).SetOfKeyValuePairs())
-                {
-                    ExtractObjectsImpl(element.Value, data, path.Length == 0 ? element.Key : path + "." + element.Key, idToObjectMap, predicate, reviver);
                 }
             }
             else

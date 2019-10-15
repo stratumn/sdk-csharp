@@ -391,7 +391,7 @@
         public async Task<TData> DownloadFilesInObject<TData>(TData data)
         {
             Dictionary<string, Property<FileRecord>> fileRecordMap = Helpers.ExtractFileRecords(data);
-            List<Property<FileWrapper>> fileWrapperList =await this.DownloadFiles(fileRecordMap);
+            List <Property<FileWrapper>> fileWrapperList =await this.DownloadFiles(fileRecordMap);
             Helpers.AssignObjects(fileWrapperList); 
             return data;
         }

@@ -13,7 +13,7 @@ using Stratumn.Sdk.Model.Misc;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 
-namespace Stratumn.SDKTest
+namespace sdkTest
 {
 
     [TestClass]
@@ -61,7 +61,7 @@ namespace Stratumn.SDKTest
         {
 
             Sdk<StateExample> sdk = GetSdk<StateExample>();
-            string traceId = "5ef3faed-9445-434e-acd5-a20cfa0284b1";
+            string traceId = "191516ec-5f8c-4757-9061-8c7ab06cf0a0";
             GetTraceStateInput input = new GetTraceStateInput(traceId);
             TraceState<StateExample, HeadLinkData> state = await sdk.GetTraceStateAsync<HeadLinkData>(input);
             Assert.AreEqual(state.TraceId, traceId);
@@ -71,7 +71,7 @@ namespace Stratumn.SDKTest
         public async Task GetTraceDetailsWithPojo()
         {
             Sdk<StateExample> sdk = GetSdk<StateExample>();
-            string traceId = "5ef3faed-9445-434e-acd5-a20cfa0284b1";
+            string traceId = "191516ec-5f8c-4757-9061-8c7ab06cf0a0";
 
             GetTraceDetailsInput input = new GetTraceDetailsInput(traceId, 5, null, null, null);
 
@@ -349,15 +349,14 @@ namespace Stratumn.SDKTest
         }
 
 
+        //public class Step
+        //{
+
+        //    public StepData data;
+
+        //}
+
         public class Step
-        {
-
-            public StepData data;
-
-
-        }
-
-        public class StepData
         {
           
             public Identifiable[] stp_form_section;
@@ -371,11 +370,10 @@ namespace Stratumn.SDKTest
             Sdk<Object> sdk = GetSdk<Object>();
 
             Step s = new Step();
-            s.data = new StepData();
-            s.data.stp_form_section =new Identifiable[] { FileWrapper.FromFilePath(Path.GetFullPath("../../Resources/TestFile1.txt")) };
+			s.stp_form_section = new Identifiable[] { FileWrapper.FromFilePath(Path.GetFullPath("../../Resources/TestFile1.txt")) };
 
 
-            NewTraceInput<Step> newTraceInput = new NewTraceInput<Step>(FORM_ID, s);
+			NewTraceInput<Step> newTraceInput = new NewTraceInput<Step>(FORM_ID, s);
 
             TraceState<object, Step> state = await sdk.NewTraceAsync<Step>(newTraceInput);
             Assert.IsNotNull(state.TraceId);
