@@ -150,7 +150,19 @@
                     throw new Exception("Cannot get signing private key");
             }
 
+            // Get the action names
             Dictionary<string, string> actionNames = new Dictionary<string, string>();
+            if (workflow.forms != null)
+            {
+                foreach (var f in workflow.forms.nodes)
+                {
+                    String formId = f.formId;
+                    String stageName = f.stageName;
+                    actionNames.Add(formId, stageName);
+                }
+            }
+
+
             this.config = new SdkConfig(workflowId, userId, accountId, groupId, ownerId, actionNames, signingPrivateKey);
 
             // return the new config
