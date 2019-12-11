@@ -14,17 +14,17 @@ namespace Stratumn.Sdk.Model.Trace
     public class NewTraceInput<TLinkData>
     {
 
-        private string formId;
+        private string actionKey;
 
         private TLinkData data;
 
-        public NewTraceInput(string formId, TLinkData data)
+        public NewTraceInput(string actionKey, TLinkData data)
         {
-            if (string.ReferenceEquals(formId, null))
+            if (string.ReferenceEquals(actionKey, null))
             {
-                throw new System.ArgumentException("formId cannot be null in NewTraceInput");
+                throw new System.ArgumentException("actionKey cannot be null in NewTraceInput");
             }
-            this.formId = formId;
+            this.actionKey = actionKey;
             this.data = data;
         }
 
@@ -33,11 +33,24 @@ namespace Stratumn.Sdk.Model.Trace
         {
             get
             {
-                return this.formId;
+                return this.actionKey;
             }
             set
             {
-                this.formId = value;
+                this.actionKey = value;
+            }
+        }
+
+        [JsonProperty(PropertyName = "actionKey")]
+        public string ActionKey
+        {
+            get
+            {
+                return this.actionKey;
+            }
+            set
+            {
+                this.actionKey = value;
             }
         }
 

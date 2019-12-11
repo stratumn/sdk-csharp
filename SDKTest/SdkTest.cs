@@ -19,25 +19,30 @@ namespace SDKTest
     public class SdkTest
     {
 
-        private const string FORM_ID = "8209";
-        private const string WORFKLOW_ID = "591";
+        private const string WORKFLOW_ID = "591";
+        private const string ACTION_KEY = "action1";
 
         private const String MY_GROUP = "1744";
+        private const String PEM_PRIVATEKEY = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRACaNT4cup/ZQAq4IULZCrlPB7eR1QTCN9V3Qzct8S\nYp57BqN4FipIrGpyclvbT1FKQfYLJpeBXeCi2OrrQMTgiw==\n-----END ED25519 PRIVATE KEY-----\n";
 
+        private static String PEM_PRIVATEKEY_2 = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRAWotrb1jJokHr7AVQTS6f6W7dFYnKpVy+DV++sG6x\nlExB4rtrKpCAEPt5q7oT6/lcF4brFSNiCxLPnHqiSjcyVw==\n-----END ED25519 PRIVATE KEY-----\n";
+        private static String OTHER_GROUP = "1785";
+
+        private const string TRACE_URL = "https://trace-api.staging.stratumn.com";
+        private const string ACCOUNT_URL = "https://account-api.staging.stratumn.com";
+        private const string MEDIA_URL = "https://media-api.staging.stratumn.com";
 
 
         public Sdk<T> GetSdk<T>()
         {
-            var pem = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRACaNT4cup/ZQAq4IULZCrlPB7eR1QTCN9V3Qzct8S\nYp57BqN4FipIrGpyclvbT1FKQfYLJpeBXeCi2OrrQMTgiw==\n-----END ED25519 PRIVATE KEY-----\n";
-            var workflowId = "591";
-            Secret s = Secret.NewPrivateKeySecret(pem);
+            Secret s = Secret.NewPrivateKeySecret(PEM_PRIVATEKEY);
 
-            SdkOptions opts = new SdkOptions(workflowId, s);
+            SdkOptions opts = new SdkOptions(WORKFLOW_ID, s);
             opts.Endpoints = new Endpoints
             {
-                Trace = "https://trace-api.staging.stratumn.com",
-                Account = "https://account-api.staging.stratumn.com",
-                Media = "https://media-api.staging.stratumn.com",
+                Trace = TRACE_URL,
+                Account = ACCOUNT_URL,
+                Media = MEDIA_URL,
             };
             opts.EnableDebuging = true;
             Sdk<T> sdk = new Sdk<T>(opts);
@@ -47,21 +52,53 @@ namespace SDKTest
 
         public Sdk<object> GetSdk()
         {
-            var pem = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRACaNT4cup/ZQAq4IULZCrlPB7eR1QTCN9V3Qzct8S\nYp57BqN4FipIrGpyclvbT1FKQfYLJpeBXeCi2OrrQMTgiw==\n-----END ED25519 PRIVATE KEY-----\n";
-            var workflowId = "591";
-            Secret s = Secret.NewPrivateKeySecret(pem);
-            SdkOptions opts = new SdkOptions(workflowId, s);
+            Secret s = Secret.NewPrivateKeySecret(PEM_PRIVATEKEY);
+            SdkOptions opts = new SdkOptions(WORKFLOW_ID, s);
             opts.Endpoints = new Endpoints
             {
-                Trace = "https://trace-api.staging.stratumn.com",
-                Account = "https://account-api.staging.stratumn.com",
-                Media = "https://media-api.staging.stratumn.com",
+                Trace = TRACE_URL,
+                Account = ACCOUNT_URL,
+                Media = MEDIA_URL,
             };
             opts.EnableDebuging = true;
             Sdk<object> sdk = new Sdk<object>(opts);
 
             return sdk;
         }
+
+        public Sdk<T> GetOtherGroupSdk<T>()
+        {
+            Secret s = Secret.NewPrivateKeySecret(PEM_PRIVATEKEY_2);
+
+            SdkOptions opts = new SdkOptions(WORKFLOW_ID, s);
+            opts.Endpoints = new Endpoints
+            {
+                Trace = TRACE_URL,
+                Account = ACCOUNT_URL,
+                Media = MEDIA_URL,
+            };
+            opts.EnableDebuging = true;
+            Sdk<T> sdk = new Sdk<T>(opts);
+
+            return sdk;
+        }
+
+        public Sdk<object> GetOtherGroupSdk()
+        {
+            Secret s = Secret.NewPrivateKeySecret(PEM_PRIVATEKEY_2);
+            SdkOptions opts = new SdkOptions(WORKFLOW_ID, s);
+            opts.Endpoints = new Endpoints
+            {
+                Trace = TRACE_URL,
+                Account = ACCOUNT_URL,
+                Media = MEDIA_URL,
+            };
+            opts.EnableDebuging = true;
+            Sdk<object> sdk = new Sdk<object>(opts);
+
+            return sdk;
+        }
+
         [TestMethod]
         public async Task LoginWtihPrivateKeyDemo()
         {
@@ -74,6 +111,7 @@ namespace SDKTest
 
         //used to pass the trace from one test method to another
         private TraceState<StateExample, SomeClass> someTraceState2;
+
         [TestMethod]
         public async Task NewTraceTestWithGenericType()
         {
@@ -94,7 +132,7 @@ namespace SDKTest
                 f22 = data
             };
 
-            NewTraceInput<SomeClass> input = new NewTraceInput<SomeClass>(FORM_ID, d);
+            NewTraceInput<SomeClass> input = new NewTraceInput<SomeClass>(ACTION_KEY, d);
 
             TraceState<StateExample, SomeClass> state = await sdk.NewTraceAsync<SomeClass>(input);
             someTraceState2 = state;
@@ -186,7 +224,7 @@ namespace SDKTest
 
             Sdk<object> sdk = GetSdk();
             PaginationInfo paginationInfo = new PaginationInfo(10, null, null, null);
-            TracesState<object, object> state = await sdk.GetAttestationTracesAsync<object>(FORM_ID, paginationInfo);
+            TracesState<object, object> state = await sdk.GetAttestationTracesAsync<object>(ACTION_KEY, paginationInfo);
         }
 
         [TestMethod]
@@ -214,7 +252,7 @@ namespace SDKTest
                 ["operators"] = new string[] { "1", "2" },
                 ["operation"] = "my new operation 1"
             };
-            NewTraceInput<object> input = new NewTraceInput<object>(FORM_ID, data);
+            NewTraceInput<object> input = new NewTraceInput<object>(ACTION_KEY, data);
 
             TraceState<object, object> state = await sdk.NewTraceAsync<object>(input);
             someTraceState = state;
@@ -233,7 +271,7 @@ namespace SDKTest
             string json = "{ operation: \"XYZ shipment departed port for ABC\"," + "    destination: \"ABC\", " + "    customsCheck: true, "
                + "    eta: \"2019-07-02T12:00:00.000Z\"" + "  }";
             data = JsonHelper.ObjectToMap(json);
-            AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(FORM_ID, data, someTraceState.TraceId);
+            AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(ACTION_KEY, data, someTraceState.TraceId);
             TraceState<object, object> state = await GetSdk().AppendLinkAsync(appLinkInput);
             Assert.IsNotNull(state.TraceId);
 
@@ -247,42 +285,10 @@ namespace SDKTest
             Assert.IsNotNull(someTraceState);
             IDictionary<string, object> data = new Dictionary<string, object>() { { "why", "because im testing the pushTrace 2" } };
 
-            PushTransferInput<object> push = new PushTransferInput<object>(someTraceState.TraceId, "86", data, null);
+            PushTransferInput<object> push = new PushTransferInput<object>(someTraceState.TraceId, OTHER_GROUP, data, null);
             someTraceState = await GetSdk().PushTraceAsync<object>(push);
 
             Assert.IsNotNull(push.TraceId);
-
-        }
-
-
-        [TestMethod]
-        public async Task PushTraceToMyGroupTest()
-        {
-            await NewTraceTest();
-            Assert.IsNotNull(someTraceState);
-            IDictionary<string, object> data = new Dictionary<string, object>() { { "why", "because im testing the pushTrace 2" } };
-
-            PushTransferInput<object> push = new PushTransferInput<object>(someTraceState.TraceId, MY_GROUP, data, null);
-            someTraceState = await GetSdk().PushTraceAsync<object>(push);
-
-            Assert.IsNotNull(push.TraceId);
-
-        }
-
-
-        [TestMethod]
-        public async Task PullTraceTest()
-        {
-
-            await RejectTransferTest();
-
-            IDictionary<string, string> data = new Dictionary<string, string>() { { "why", "because im testing the pushTrace 2" } };
-
-            PullTransferInput<object> pull = new PullTransferInput<object>(someTraceState.TraceId, data, null);
-            TraceState<object, object> statepul = await GetSdk().PullTraceAsync(pull);
-
-            Assert.IsNotNull(statepul.TraceId);
-
         }
 
 
@@ -290,9 +296,9 @@ namespace SDKTest
         public async Task AcceptTransferTest()
         {
 
-            await PushTraceToMyGroupTest();
+            await PushTraceTest();
             TransferResponseInput<Object> trInput = new TransferResponseInput<Object>(someTraceState.TraceId, null, null);
-            TraceState<Object, Object> stateAccept = await GetSdk().AcceptTransferAsync(trInput);
+            TraceState<Object, Object> stateAccept = await GetOtherGroupSdk().AcceptTransferAsync(trInput);
 
             Assert.IsNotNull(stateAccept.TraceId);
         }
@@ -308,7 +314,7 @@ namespace SDKTest
             string traceId = null;
             if (tracesIn.TotalCount == 0)
             {
-                await PushTraceToMyGroupTest();
+                await PushTraceTest();
                 traceId = someTraceState.TraceId;
             }
             else
@@ -317,7 +323,7 @@ namespace SDKTest
                 traceId = someTraceState.TraceId;
             }
             TransferResponseInput<Object> trInput = new TransferResponseInput<Object>(traceId, null, null);
-            TraceState<Object, Object> stateReject = await GetSdk().RejectTransferAsync(trInput);
+            TraceState<Object, Object> stateReject = await GetOtherGroupSdk().RejectTransferAsync(trInput);
 
             Assert.IsNotNull(stateReject.TraceId);
 
@@ -358,7 +364,7 @@ namespace SDKTest
             data.Add("Certificate1", FileWrapper.FromFilePath(Path.GetFullPath("../../Resources/TestFile1.txt")));
             data.Add("Certificates", new Identifiable[] { FileWrapper.FromFilePath(Path.GetFullPath("../../Resources/TestFile1.txt")) });
 
-            NewTraceInput<Object> newTraceInput = new NewTraceInput<Object>(FORM_ID, data);
+            NewTraceInput<Object> newTraceInput = new NewTraceInput<Object>(ACTION_KEY, data);
 
             TraceState<object, object> state = await sdk.NewTraceAsync<object>(newTraceInput);
             Assert.IsNotNull(state.TraceId);

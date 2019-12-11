@@ -37,16 +37,12 @@ namespace Stratumn.Sdk.Model.Sdk
         /// The private key used for signing links
         /// </summary>
         private Ed25519PrivateKeyParameters signingPrivateKey;
-        /// <summary>
-        /// The actions names associated to each form
-        /// </summary>
-        private IDictionary<string, string> actionNames;
 
         public SdkConfig()
         {
         }
 
-        public SdkConfig(string workflowId, string userId, string accountId, string groupId, string ownerId, IDictionary<string, string> actionNames, Ed25519PrivateKeyParameters signingPrivateKey)
+        public SdkConfig(string workflowId, string userId, string accountId, string groupId, string ownerId, Ed25519PrivateKeyParameters signingPrivateKey)
         {
             this.workflowId = workflowId;
             this.userId = userId;
@@ -54,7 +50,6 @@ namespace Stratumn.Sdk.Model.Sdk
             this.groupId = groupId;
             this.ownerId = ownerId;
             this.signingPrivateKey = signingPrivateKey;
-            this.actionNames = actionNames;
         }
 
 
@@ -134,20 +129,6 @@ namespace Stratumn.Sdk.Model.Sdk
                 this.signingPrivateKey = value;
             }
         }
-
-
-        public virtual IDictionary<string, string> ActionNames
-        {
-            get
-            {
-                return actionNames;
-            }
-            set
-            {
-                this.actionNames = value;
-            }
-        }
-
 
 
     }

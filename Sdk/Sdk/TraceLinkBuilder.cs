@@ -113,23 +113,21 @@
         /// Helper method used to configure a link for an attestation. User must still
         /// set owner, group and createdBy separately.
         /// </summary>
-        /// <param name="formId"> the form id used for the attestation </param>
-        /// <param name="action"> the name of the action associated with this form </param>
+        /// <param name="actionKey"> the form id used for the attestation </param>
         /// <param name="data">   the data of the attestation </param>
         /// <returns>The <see cref="TraceLinkBuilder{TLinkData}"/></returns>
-        public TraceLinkBuilder<TLinkData> ForAttestation(string formId, string action, TLinkData data)
-        {
-            string actionStr = !string.ReferenceEquals(action, null) ? action : "Attestation"; //TraceActionType.ATTESTATION.toString();
+        public TraceLinkBuilder<TLinkData> ForAttestation(string actionKey, TLinkData data)
+        {          
             string typeStr = TraceLinkType.OWNED.ToString();
             this.WithHashedData(data)
-                    .WithAction(actionStr)
+                    .WithAction(actionKey)
                         .WithProcessState(typeStr);
-            this.metadata.FormId = formId;
+            this.metadata.FormId = actionKey;
             return this;
         }
 
         /// <summary>
-        /// Helper method used for transfer of ownership requests (push and pull). Note
+        /// Helper method used for transfer of ownership requests (push). Note
         /// that owner and group are calculated from parent link. Parent link must have
         /// been provided!
         /// </summary>
@@ -161,17 +159,6 @@
         public TraceLinkBuilder<TLinkData> ForPushTransfer(string to, TLinkData data)
         {
             return this.ForTransferRequest(to, TraceActionType.PUSH_OWNERSHIP, TraceLinkType.PUSHING, data);
-        }
-
-        /// <summary>
-        /// Helper method used for pulling ownership from another group.
-        /// </summary>
-        /// <param name="to">   the group to which the trace is pulled to </param>
-        /// <param name="data"> the optional data </param>
-        /// <returns>The <see cref="TraceLinkBuilder{TLinkData}"/></returns>
-        public TraceLinkBuilder<TLinkData> ForPullTransfer(string to, TLinkData data)
-        {
-            return this.ForTransferRequest(to, TraceActionType.PULL_OWNERSHIP, TraceLinkType.PULLING, data);
         }
 
         /// <summary>

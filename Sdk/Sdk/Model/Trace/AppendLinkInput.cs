@@ -32,31 +32,31 @@ namespace Stratumn.Sdk.Model.Trace
     public class AppendLinkInput<TLinkData>
     {
 
-        private string formId;
+        private string actionKey;
         private TLinkData data;
         private string traceId;
         private ITraceLink<TLinkData> prevLink;
 
-        public AppendLinkInput(string formId, TLinkData data, string traceId)
+        public AppendLinkInput(string actionKey, TLinkData data, string traceId)
         {
-            if (string.ReferenceEquals(formId, null))
+            if (string.ReferenceEquals(actionKey, null))
             {
-                throw new System.ArgumentException("formId cannot be null in AppendLinkInput");
+                throw new System.ArgumentException("actionKey cannot be null in AppendLinkInput");
             }
 
-            this.formId = formId;
+            this.actionKey = actionKey;
             this.data = data;
             this.traceId = traceId;
         }
 
 
-        public AppendLinkInput(string formId, TLinkData data, string traceId, ITraceLink<TLinkData> prevLink)
+        public AppendLinkInput(string actionKey, TLinkData data, string traceId, ITraceLink<TLinkData> prevLink)
         {
-            if (string.ReferenceEquals(formId, null))
+            if (string.ReferenceEquals(actionKey, null))
             {
-                throw new System.ArgumentException("formId cannot be null in AppendLinkInput");
+                throw new System.ArgumentException("actionKey cannot be null in AppendLinkInput");
             }
-            this.formId = formId;
+            this.actionKey = actionKey;
             this.data = data;
             this.traceId = traceId;
             this.prevLink = prevLink;
@@ -66,14 +66,25 @@ namespace Stratumn.Sdk.Model.Trace
         {
             get
             {
-                return this.formId;
+                return this.actionKey;
             }
             set
             {
-                this.formId = value;
+                this.actionKey = value;
             }
         }
 
+        public string ActionKey
+        {
+            get
+            {
+                return this.actionKey;
+            }
+            set
+            {
+                this.actionKey = value;
+            }
+        }
 
         public TLinkData Data
         {
