@@ -34,14 +34,6 @@
          Task<TraceState<TState, TLinkData>> PushTraceAsync<TLinkData>(PushTransferInput<TLinkData> input);
 
         /// <summary>
-        /// The PullTrace
-        /// </summary>
-        /// <typeparam name="TLinkData"></typeparam>
-        /// <param name="input">The input<see cref="PullTransferInput{TLinkData}"/></param>
-        /// <returns>The <see cref="TraceState{TState, TLinkData}"/></returns>
-         Task<TraceState<TState, TLinkData>> PullTraceAsync<TLinkData>(PullTransferInput<TLinkData> input);
-
-        /// <summary>
         /// The AcceptTransfer
         /// </summary>
         /// <typeparam name="TLinkData"></typeparam>
@@ -109,9 +101,9 @@
         /// The GetAttestationTraces
         /// </summary>
         /// <typeparam name="TLinkData"></typeparam>
-        /// <param name="formId">The formId<see cref="string"/></param>
+        /// <param name="actionKey">The action key<see cref="string"/></param>
         /// <param name="paginationInfo">The paginationInfo<see cref="PaginationInfo"/></param>
         /// <returns>The <see cref="TracesState{TState, TLinkData}"/></returns>
-        Task<TracesState<TState, TLinkData>> GetAttestationTracesAsync<TLinkData>(string formId, PaginationInfo paginationInfo);
+        Task<TracesState<TState, TLinkData>> GetAttestationTracesAsync<TLinkData>(string actionKey, PaginationInfo paginationInfo);
     }
 }

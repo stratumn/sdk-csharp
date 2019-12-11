@@ -25,6 +25,7 @@ using Stratumn.Chainscript.utils;
 using System.Threading;
 using GraphQL.Client;
 using GraphQL.Common.Request;
+using System.Reflection;
 
 namespace Stratumn.Sdk
 {
@@ -54,6 +55,8 @@ namespace Stratumn.Sdk
 
         private GraphQLOptions defaultGraphQLOptions = new GraphQLOptions(1);
 
+        private String userAgent;
+
         public Client(ClientOptions opts)
         {
             this.endpoints = Helpers.MakeEndpoints(opts.Endpoints);
@@ -61,8 +64,16 @@ namespace Stratumn.Sdk
             this.secret = opts.Secret;
             this.proxy = opts.Proxy;
 
-          
-         
+
+            IList<String> agents = new List<String>();
+
+            OperatingSystem osInfo = System.Environment.OSVersion;
+            agents.Add(String.Format("{0}/{1}", osInfo.Platform, osInfo.Version));
+            agents.Add(String.Format("CSharp/{0}", System.Environment.Version));
+            agents.Add(String.Format("stratumn-sdk-csharp/{0}", Assembly.GetAssembly(typeof(Client)).GetName().Version.ToString()));
+
+            
+            this.userAgent = String.Join(" ", agents.ToArray());
         }
 
 
@@ -229,6 +240,7 @@ namespace Stratumn.Sdk
             {
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
+                client.DefaultRequestHeaders.Add("User-Agent", this.userAgent);
                 client.DefaultRequestHeaders.Add("Authorization", await this.GetAuthorizationHeader(opts));
 
                 HttpRequestMessage requestClient = new HttpRequestMessage(HttpMethod.Post, url)
@@ -252,7 +264,7 @@ namespace Stratumn.Sdk
         /// </summary>
         /// <param name="service"> the service to target (account|trace|media) </param>
         /// <param name="route">   the route on the target service </param>
-        /// <param name="params">  the query parameters </param>
+        /// <param name="parameters">  the query parameters </param>
         /// <param name="opts">    additional fetch options </param>
         /// <exception cref="TraceSdkException"> 
         /// @returns the response body object </exception>
@@ -279,6 +291,7 @@ namespace Stratumn.Sdk
                 client.DefaultRequestHeaders.Accept.Clear();
 
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
+                client.DefaultRequestHeaders.Add("User-Agent", this.userAgent);
                 client.DefaultRequestHeaders.Add("Authorization", await this.GetAuthorizationHeader(opts));
 
                 HttpRequestMessage requestClient = new HttpRequestMessage(HttpMethod.Get, builder.Uri);
@@ -476,6 +489,7 @@ namespace Stratumn.Sdk
             {
                 client.DefaultRequestHeaders.Accept.Clear();
                 client.DefaultRequestHeaders.Add("Accept", "application/json");
+                client.DefaultRequestHeaders.Add("User-Agent", this.userAgent);
                 client.DefaultRequestHeaders.Add("Authorization", await this.GetAuthorizationHeader(null));
                 MultipartFormDataContent filesContent = new MultipartFormDataContent("--------------");
                 foreach (FileWrapper file in fileWrapperList)
@@ -564,7 +578,6 @@ namespace Stratumn.Sdk
             var tokenJson = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject> (jsonResponse);
 
             string downloadURL = tokenJson.GetValue("download_url").ToString();
-            string s;
 
             WebRequest httpConn = WebRequest.Create(downloadURL);
 
@@ -702,6 +715,7 @@ namespace Stratumn.Sdk
 
 
             GraphQLClient graphClient = new GraphQLClient(url, clientOptions);
+            graphClient.DefaultRequestHeaders.Add("User-Agent", this.userAgent);
             graphClient.DefaultRequestHeaders.Add("Authorization", auth);
             var request = new GraphQLRequestCamel(query, variables);
 

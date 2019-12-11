@@ -91,12 +91,6 @@ namespace Stratumn.Sdk
                                                 }
                                               }
                                               workflow: workflowByRowId(rowId: $workflowId) {
-                                                forms {
-                                                  nodes {
-                                                    formId: rowId
-                                                    stageName
-                                                  }
-                                                }
                                                 groups {
                                                   nodes {
                                                     groupId: rowId
@@ -138,14 +132,14 @@ namespace Stratumn.Sdk
         public const string QUERY_GETTRACESINSTAGE = @" query getTracesInStageQuery(
                                                           $groupId: BigInt!
                                                           $stageType: StageType!
-                                                          $formId: BigInt
+                                                          $actionKey: String
                                                           $first: Int
                                                           $last: Int
                                                           $before: Cursor
                                                           $after: Cursor
                                                         ) {
                                                           group: groupByRowId(rowId: $groupId) {
-                                                            stages(condition: { type: $stageType, formId: $formId  }) {
+                                                            stages(condition: { type: $stageType, actionKey: $actionKey }) {
                                                               nodes {
                                                                 traces(first: $first, last: $last, before: $before, after: $after) {
                                                                   nodes {

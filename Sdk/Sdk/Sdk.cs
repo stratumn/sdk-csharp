@@ -50,6 +50,7 @@
             this.opts = opts;
             JsonHelper.RegisterConverter(new IdentifiableConverter());
             this.client = new Client(opts);
+
         }
 
         /// <summary>
@@ -150,20 +151,7 @@
                     throw new Exception("Cannot get signing private key");
             }
 
-            // Get the action names
-            Dictionary<string, string> actionNames = new Dictionary<string, string>();
-            if (workflow.forms != null)
-            {
-                foreach (var f in workflow.forms.nodes)
-                {
-                    String formId = f.formId;
-                    String stageName = f.stageName;
-                    actionNames.Add(formId, stageName);
-                }
-            }
-
-
-            this.config = new SdkConfig(workflowId, userId, accountId, groupId, ownerId, actionNames, signingPrivateKey);
+            this.config = new SdkConfig(workflowId, userId, accountId, groupId, ownerId, signingPrivateKey);
 
             // return the new config
             return this.config;
@@ -270,12 +258,12 @@
         /// <summary>
         /// Get the traces in a given stage (INCOMING, OUTGOING, BACKLOG, ATTESTATION)T
         /// When stageType=ATTESTATION, you must also provide the form id to identify the
-        /// stage. If no stage correspond to the stageType x formId, it will throw. If
+        /// stage. If no stage correspond to the stageType x actionKey, it will throw. If
         /// more than one stage is found it will also throw.
         ///
         /// @param stageType      the stage type
         /// @param paginationInfo the pagination info
-        /// @param formId         (optional) the formId in case of ATTESTATION
+        /// @param actionKey (optional) the action key in case of ATTESTATION
         /// @return the traces in a given stage
         /// @throws Error
         /// @throws Exception
@@ -284,16 +272,16 @@
         /// <typeparam name="TLinkData"></typeparam>
         /// <param name="stageType">The stageType<see cref="TraceStageType"/></param>
         /// <param name="paginationInfo">The paginationInfo<see cref="PaginationInfo"/></param>
-        /// <param name="formId">The formId<see cref="String"/></param>
+        /// <param name="actionKey">The action key<see cref="String"/></param>
         /// <returns>The <see cref="Task{TracesState{TState, TLinkData}}"/></returns>
         public async Task<TracesState<TState, TLinkData>> GetTracesInStageAsync<TLinkData>(TraceStageType stageType, PaginationInfo paginationInfo,
-                String formId)
+                String actionKey)
         {
 
-            // formId can only be set in ATTESTATION case
-            if (stageType == TraceStageType.ATTESTATION && formId == null)
+            // actionKey can only be set in ATTESTATION case
+            if (stageType == TraceStageType.ATTESTATION && actionKey == null)
             {
-                throw new Exception("You must and can only provide formId when stageType is ATTESTATION");
+                throw new Exception("You must and can only provide actionKey when stageType is ATTESTATION");
             }
             // extract info from config
             SdkConfig sdkConfig = await this.GetConfigAsync();
@@ -305,8 +293,12 @@
             {
                 { "groupId", groupId },
                 { "stageType", stageType.ToString() },
-                { "formId", formId }
             };
+            if (actionKey != null)
+            {
+                variables.Add("actionKey", actionKey);
+            }
+
             Dictionary<String, object> variablesPaginationInfo = JsonHelper.ObjectToMap(paginationInfo);
 
             variablesPaginationInfo.ToList().ForEach(x => variables.Add(x.Key, x.Value));
@@ -352,11 +344,8 @@
             }
 
             // comAdde detail for error
-            String stageDetail = stageType.ToString() + formId ?? "";
-            if (formId != null)
-            {
-                stageDetail += formId;
-            }
+            String stageDetail = stageType.ToString() + actionKey ?? "";
+            
             // throw if no stages were found if
             if (stages.size() == 0)
             {
@@ -460,7 +449,7 @@
         public async Task<TraceState<TState, TLinkData>> NewTraceAsync<TLinkData>(NewTraceInput<TLinkData> input)
         {
             //extract info from input
-            string formId = input.FormId;
+            string actionKey = input.ActionKey;
             TLinkData data = input.Data;
 
             SdkConfig sdkConfig = await this.GetConfigAsync();
@@ -469,7 +458,7 @@
             string userId = sdkConfig.UserId;
             string ownerId = sdkConfig.OwnerId;
             string groupId = sdkConfig.GroupId;
-            IDictionary<string, string> actionNames = sdkConfig.ActionNames;
+
             // upload files and transform data
            await this.UploadFilesInLinkData(data);
 
@@ -481,9 +470,8 @@
             // only provide workflowId to initiate a new trace
             TraceLinkBuilder<TLinkData> linkBuilder = new TraceLinkBuilder<TLinkData>(cfg);
 
-            var action = actionNames.ContainsKey(formId) ? actionNames[formId] : null;
             // this is an attestation
-            linkBuilder.ForAttestation(formId, action, data).WithOwner(ownerId).WithGroup(groupId).WithCreatedBy(userId);
+            linkBuilder.ForAttestation(actionKey, data).WithOwner(ownerId).WithGroup(groupId).WithCreatedBy(userId);
             // call createLink helper
             return await this.CreateLinkAsync(linkBuilder);
         }
@@ -502,7 +490,7 @@
             TraceLink<TLinkData> parentLink = await this.GetHeadLinkAsync<TLinkData>(headLinkInput);
 
             //extract info from input
-            string formId = input.FormId;
+            string actionKey = input.ActionKey;
             TLinkData data = input.Data;
 
             SdkConfig sdkConfig = await this.GetConfigAsync();
@@ -511,7 +499,6 @@
             string userId = sdkConfig.UserId;
             string ownerId = sdkConfig.OwnerId;
             string groupId = sdkConfig.GroupId;
-            IDictionary<string, string> actionNames = sdkConfig.ActionNames;
             // upload files and transform data
             await this.UploadFilesInLinkData(data);
 
@@ -527,7 +514,7 @@
             TraceLinkBuilder<TLinkData> linkBuilder = new TraceLinkBuilder<TLinkData>(cfg);
 
             // this is an attestation
-            linkBuilder.ForAttestation(formId, actionNames.ContainsKey(formId)?actionNames[formId]:null, data)
+            linkBuilder.ForAttestation(actionKey, data)
                     .WithOwner(ownerId)
                     .WithGroup(groupId)
                     .WithCreatedBy(userId);
@@ -569,43 +556,6 @@
 
             // this is a push transfer
             linkBuilder.ForPushTransfer(recipient, data).WithCreatedBy(userId);
-            // call createLink helper
-            return await this.CreateLinkAsync(linkBuilder);
-        }
-
-        /// <summary>
-        /// The PullTrace
-        /// </summary>
-        /// <typeparam name="TLinkData"></typeparam>
-        /// <param name="input">The input<see cref="PullTransferInput{TLinkData}"/></param>
-        /// <returns>The <see cref="Task{TraceState{TState, TLinkData}}"/></returns>
-        public async Task<TraceState<TState, TLinkData>> PullTraceAsync<TLinkData>(PullTransferInput<TLinkData> input)
-        {
-            // retrieve parent link
-            TransferResponseInput<TLinkData> headLinkInput = new TransferResponseInput<TLinkData>(input.TraceId, null);
-            TraceLink<TLinkData> parentLink = await this.GetHeadLinkAsync<TLinkData>(headLinkInput);
-
-            TLinkData data = input.Data;
-
-            SdkConfig sdkConfig = await this.GetConfigAsync();
-
-            string workflowId = sdkConfig.WorkflowId;
-            string userId = sdkConfig.UserId;
-            string groupId = sdkConfig.GroupId;
-
-            TraceLinkBuilderConfig<TLinkData> cfg = new TraceLinkBuilderConfig<TLinkData>()
-            {
-                // provide workflow id
-                WorkflowId = workflowId,
-                // and parent link to append to the existing trace
-                ParentLink = parentLink
-            };
-            // use a TraceLinkBuilder to create the first link
-            // only provide workflowId to initiate a new trace
-            TraceLinkBuilder<TLinkData> linkBuilder = new TraceLinkBuilder<TLinkData>(cfg);
-
-            // this is a push transfer
-            linkBuilder.ForPullTransfer(groupId, data).WithCreatedBy(userId);
             // call createLink helper
             return await this.CreateLinkAsync(linkBuilder);
         }
@@ -745,12 +695,12 @@
         /// The GetAttestationTracesAsync
         /// </summary>
         /// <typeparam name="TLinkData"></typeparam>
-        /// <param name="formId">The formId<see cref="string"/></param>
+        /// <param name="actionKey">The action key<see cref="string"/></param>
         /// <param name="paginationInfo">The paginationInfo<see cref="PaginationInfo"/></param>
         /// <returns>The <see cref="Task{TracesState{TState, TLinkData}}"/></returns>
-        public async Task<TracesState<TState, TLinkData>> GetAttestationTracesAsync<TLinkData>(string formId, PaginationInfo paginationInfo)
+        public async Task<TracesState<TState, TLinkData>> GetAttestationTracesAsync<TLinkData>(string actionKey, PaginationInfo paginationInfo)
         {
-            return await this.GetTracesInStageAsync<TLinkData>(TraceStageType.ATTESTATION, paginationInfo, formId);
+            return await this.GetTracesInStageAsync<TLinkData>(TraceStageType.ATTESTATION, paginationInfo, actionKey);
         }
 
         /// <summary>
@@ -816,6 +766,8 @@
 
             String workflowId = sdkConfig.WorkflowId;
             String userId = sdkConfig.UserId;
+            String ownerId = sdkConfig.OwnerId;
+            String groupId = sdkConfig.GroupId;
 
             TraceLinkBuilderConfig<TLinkData> cfg = new TraceLinkBuilderConfig<TLinkData>()
             {
@@ -830,6 +782,10 @@
 
             // this is a push transfer
             linkBuilder.ForRejectTransfer(data)
+               // add owner info
+               .WithOwner(ownerId)
+               // add group info
+               .WithGroup(groupId)
                // add creator info
                .WithCreatedBy(userId);
             // call createLink helper

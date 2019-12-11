@@ -13,31 +13,39 @@ using Stratumn.Sdk.Model.Misc;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
 
-namespace sdkTest
+namespace SDKTest
 {
 
     [TestClass]
     public class SdkTestPojoTest
     {
 
-        private const string FORM_ID = "8209";
-        private const string WORFKLOW_ID = "591";
+        private const string WORKFLOW_ID = "591";
+        private const string ACTION_KEY = "action1";
 
         private const String MY_GROUP = "1744";
+        private const String PEM_PRIVATEKEY = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRACaNT4cup/ZQAq4IULZCrlPB7eR1QTCN9V3Qzct8S\nYp57BqN4FipIrGpyclvbT1FKQfYLJpeBXeCi2OrrQMTgiw==\n-----END ED25519 PRIVATE KEY-----\n";
 
+        private static String PEM_PRIVATEKEY_2 = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRAWotrb1jJokHr7AVQTS6f6W7dFYnKpVy+DV++sG6x\nlExB4rtrKpCAEPt5q7oT6/lcF4brFSNiCxLPnHqiSjcyVw==\n-----END ED25519 PRIVATE KEY-----\n";
+        private static String OTHER_GROUP = "1785";
+
+        private const string TRACE_URL = "https://trace-api.staging.stratumn.com";
+        private const string ACCOUNT_URL = "https://account-api.staging.stratumn.com";
+        private const string MEDIA_URL = "https://media-api.staging.stratumn.com";
+        
         //used to pass the trace from one test method to another
         private TraceState<StateExample, DataClass> someTraceState;
+
         public Sdk<T> GetSdk<T>()
         {
-            var pem = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRACaNT4cup/ZQAq4IULZCrlPB7eR1QTCN9V3Qzct8S\nYp57BqN4FipIrGpyclvbT1FKQfYLJpeBXeCi2OrrQMTgiw==\n-----END ED25519 PRIVATE KEY-----\n";
-            var workflowId = "591";
-            Secret s = Secret.NewPrivateKeySecret(pem);
-            SdkOptions opts = new SdkOptions(workflowId, s);
+            Secret s = Secret.NewPrivateKeySecret(PEM_PRIVATEKEY);
+
+            SdkOptions opts = new SdkOptions(WORKFLOW_ID, s);
             opts.Endpoints = new Endpoints
             {
-                Trace = "https://trace-api.staging.stratumn.com",
-                Account = "https://account-api.staging.stratumn.com",
-                Media = "https://media-api.staging.stratumn.com",
+                Trace = TRACE_URL,
+                Account = ACCOUNT_URL,
+                Media = MEDIA_URL,
             };
             opts.EnableDebuging = true;
             Sdk<T> sdk = new Sdk<T>(opts);
@@ -45,6 +53,22 @@ namespace sdkTest
             return sdk;
         }
 
+        public Sdk<T> GetOtherGroupSdk<T>()
+        {
+            Secret s = Secret.NewPrivateKeySecret(PEM_PRIVATEKEY_2);
+
+            SdkOptions opts = new SdkOptions(WORKFLOW_ID, s);
+            opts.Endpoints = new Endpoints
+            {
+                Trace = TRACE_URL,
+                Account = ACCOUNT_URL,
+                Media = MEDIA_URL,
+            };
+            opts.EnableDebuging = true;
+            Sdk<T> sdk = new Sdk<T>(opts);
+
+            return sdk;
+        }
 
 
         public class HeadLinkData
@@ -105,7 +129,7 @@ namespace sdkTest
 
             Sdk<StateExample> sdk = GetSdk<StateExample>();
             PaginationInfo paginationInfo = new PaginationInfo(10, null, null, null);
-            TracesState<StateExample, HeadLinkData> state = await sdk.GetAttestationTracesAsync<HeadLinkData>(FORM_ID, paginationInfo);
+            TracesState<StateExample, HeadLinkData> state = await sdk.GetAttestationTracesAsync<HeadLinkData>(ACTION_KEY, paginationInfo);
             Console.WriteLine(JsonHelper.ToJson(state));
         }
 
@@ -145,7 +169,7 @@ namespace sdkTest
                 f22 = data
             };
 
-            NewTraceInput<DataClass> input = new NewTraceInput<DataClass>(FORM_ID, d);
+            NewTraceInput<DataClass> input = new NewTraceInput<DataClass>(ACTION_KEY, d);
 
             TraceState<StateExample, DataClass> state = await sdk.NewTraceAsync<DataClass>(input);
             someTraceState = state;
@@ -178,7 +202,7 @@ namespace sdkTest
             };
 
 
-            AppendLinkInput<DataClass> appLinkInput = new AppendLinkInput<DataClass>(FORM_ID, d, someTraceState.TraceId);
+            AppendLinkInput<DataClass> appLinkInput = new AppendLinkInput<DataClass>(ACTION_KEY, d, someTraceState.TraceId);
             TraceState<StateExample, DataClass> state = await sdk.AppendLinkAsync<DataClass>(appLinkInput);
             Assert.IsNotNull(state.TraceId);
 
@@ -201,7 +225,7 @@ namespace sdkTest
             };
 
 
-            PushTransferInput<DataClass> push = new PushTransferInput<DataClass>(someTraceState.TraceId, "86", d, null);
+            PushTransferInput<DataClass> push = new PushTransferInput<DataClass>(someTraceState.TraceId, OTHER_GROUP, d, null);
             someTraceState = await sdk.PushTraceAsync<DataClass>(push);
 
             Assert.IsNotNull(push.TraceId);
@@ -209,54 +233,12 @@ namespace sdkTest
         }
 
 
-        [TestMethod]
-        public async Task PushTraceToMyGroupTestWithPojo()
-        {
-            await NewTraceTestWithPojo();
-            Assert.IsNotNull(someTraceState);
-            Dictionary<string, object> data = new Dictionary<string, object>() { { "why", "because im testing the pushTrace 2" } };
-            DataClass d = new DataClass()
-            {
-                f11 = 1,
-                f22 = data
-            };
-
-
-            PushTransferInput<DataClass> push = new PushTransferInput<DataClass>(someTraceState.TraceId, MY_GROUP, d, null);
-            someTraceState = await GetSdk<StateExample>().PushTraceAsync<DataClass>(push);
-
-            Assert.IsNotNull(push.TraceId);
-
-        }
-
-
-        [TestMethod]
-        public async Task PullTraceTestWithPojo()
-        {
-
-            await RejectTransferTestWithPojo();
-
-            Dictionary<string, object> data = new Dictionary<string, object>() { { "why", "because im testing the pushTrace 2" } };
-            DataClass d = new DataClass()
-            {
-                f11 = 1,
-                f22 = data
-            };
-
-
-            PullTransferInput<DataClass> pull = new PullTransferInput<DataClass>(someTraceState.TraceId, d, null);
-            TraceState<StateExample, DataClass> statepul = await GetSdk<StateExample>().PullTraceAsync(pull);
-
-            Assert.IsNotNull(statepul.TraceId);
-
-        }
-
 
         [TestMethod]
         public async Task AcceptTransferTestWithPojo()
         {
 
-            await PushTraceToMyGroupTestWithPojo();
+            await PushTraceTestWithPojo();
             Dictionary<string, object> data = new Dictionary<string, object>() { { "why", "because im testing the pushTrace 2" } };
 
             DataClass d = new DataClass()
@@ -266,7 +248,7 @@ namespace sdkTest
             };
 
             TransferResponseInput<DataClass> trInput = new TransferResponseInput<DataClass>(someTraceState.TraceId, d, null);
-            TraceState<StateExample, DataClass> stateAccept = await GetSdk<StateExample>().AcceptTransferAsync<DataClass>(trInput);
+            TraceState<StateExample, DataClass> stateAccept = await GetOtherGroupSdk<StateExample>().AcceptTransferAsync<DataClass>(trInput);
 
             Assert.IsNotNull(stateAccept.TraceId);
         }
@@ -286,7 +268,7 @@ namespace sdkTest
             string traceId = null;
             if (tracesIn.TotalCount == 0)
             {
-                await PushTraceToMyGroupTestWithPojo();
+                await PushTraceTestWithPojo();
                 traceId = someTraceState.TraceId;
             }
             else
@@ -295,7 +277,7 @@ namespace sdkTest
                 traceId = someTraceState.TraceId;
             }
             TransferResponseInput<DataClass> trInput = new TransferResponseInput<DataClass>(traceId, null, null);
-            TraceState<StateExample, DataClass> stateReject = await sdk.RejectTransferAsync<DataClass>(trInput);
+            TraceState<StateExample, DataClass> stateReject = await GetOtherGroupSdk<StateExample>().RejectTransferAsync<DataClass>(trInput);
 
             Assert.IsNotNull(stateReject.TraceId);
 
@@ -320,7 +302,7 @@ namespace sdkTest
             TransferResponseInput<DataClass> responseInput = new TransferResponseInput<DataClass>(someTraceState.TraceId, d, null);
             TraceState<StateExample, DataClass> statecancel = await GetSdk<StateExample>().CancelTransferAsync< DataClass>(responseInput);
 
-            Assert.IsNotNull(statecancel.TraceId); ;
+            Assert.IsNotNull(statecancel.TraceId);
 
         }
 
@@ -373,7 +355,7 @@ namespace sdkTest
 			s.stp_form_section = new Identifiable[] { FileWrapper.FromFilePath(Path.GetFullPath("../../Resources/TestFile1.txt")) };
 
 
-			NewTraceInput<Step> newTraceInput = new NewTraceInput<Step>(FORM_ID, s);
+			NewTraceInput<Step> newTraceInput = new NewTraceInput<Step>(ACTION_KEY, s);
 
             TraceState<object, Step> state = await sdk.NewTraceAsync<Step>(newTraceInput);
             Assert.IsNotNull(state.TraceId);
