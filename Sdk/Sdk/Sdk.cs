@@ -360,7 +360,7 @@
         /// </summary>
         /// <typeparam name="TLinkData"></typeparam>
         /// <param name="data"> the link data that contains file wrappers to upload </param>
-        private async Task UploadFilesInLinkData<TLinkData>(TLinkData data)
+        public async Task UploadFilesInLinkData<TLinkData>(TLinkData data)
         {
 
             Dictionary<string, Property<FileWrapper>> fileWrapperMap = Helpers.ExtractFileWrappers(data);

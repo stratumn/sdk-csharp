@@ -105,5 +105,12 @@
         /// <param name="paginationInfo">The paginationInfo<see cref="PaginationInfo"/></param>
         /// <returns>The <see cref="TracesState{TState, TLinkData}"/></returns>
         Task<TracesState<TState, TLinkData>> GetAttestationTracesAsync<TLinkData>(string actionKey, PaginationInfo paginationInfo);
+
+        /// <summary>
+        /// Extract, upload and replace all file wrappers in a link data object.
+        /// </summary>
+        /// <typeparam name="TLinkData"></typeparam>
+        /// <param name="data"> the link data that contains file wrappers to upload </param>
+        Task UploadFilesInLinkData<TLinkData>(TLinkData data);
     }
 }
