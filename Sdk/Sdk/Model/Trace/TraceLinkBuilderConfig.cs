@@ -13,6 +13,7 @@ namespace Stratumn.Sdk.Model.Trace
     {
 
         private string workflowId;
+        private string configId;
         private ITraceLink<TLinkData> parentLink;
 
         public TraceLinkBuilderConfig()
@@ -34,6 +35,17 @@ namespace Stratumn.Sdk.Model.Trace
             set
             {
                 this.workflowId = value;
+            }
+        }
+        public string ConfigId
+        {
+            get
+            {
+                return configId;
+            }
+            set
+            {
+                this.configId = value;
             }
         }
         public ITraceLink<TLinkData> ParentLink

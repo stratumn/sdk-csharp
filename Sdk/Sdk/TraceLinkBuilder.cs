@@ -55,6 +55,7 @@
             // set the created at timestamp 
             this.metadata = new TraceLinkMetaData();
             this.metadata.CreatedAt = DateTime.Now;
+            this.metadata.ConfigId = cfg.ConfigId;
 
             // if parent link was provided set the parent hash and priority
             if (this.parentLink != null)
@@ -255,10 +256,21 @@
         }
 
         /// <summary>
+        /// To set the metadata configId.
+        /// </summary>
+        /// <param name="userId">The userId<see cref="string"/></param>
+        /// <returns>The <see cref="TraceLinkBuilder{TLinkData}"/></returns>
+        public virtual TraceLinkBuilder<TLinkData> WithConfigId(string configId)
+        {
+            this.metadata.ConfigId = configId;
+            return this;
+        }
+
+        /// <summary>
         /// The Build
         /// </summary>
         /// <returns>The <see cref="TraceLink{TLinkData}"/></returns>
-        public virtual TraceLink<TLinkData> Build()
+        public new virtual TraceLink<TLinkData> Build()
         {
             base.WithMetadata(this.metadata);
             Link link = base.Build();
