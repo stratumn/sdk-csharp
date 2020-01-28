@@ -372,6 +372,32 @@ namespace SDKTest
 
         }
 
+        [TestMethod]
+        public async Task UploadFilesInLinkDataTest()
+        {
+
+            Sdk<Object> sdk = GetSdk();
+
+            IDictionary<string, object> data = new Dictionary<string, object>
+            {
+                ["weight"] = "123",
+                ["valid"] = true,
+                ["operators"] = new string[] { "1", "2" },
+                ["operation"] = "my new operation 1"
+            };
+
+            data.Add("Certificate1", FileWrapper.FromFilePath(Path.GetFullPath("../../Resources/TestFile1.txt")));
+            data.Add("Certificates", new Identifiable[] { FileWrapper.FromFilePath(Path.GetFullPath("../../Resources/TestFile1.txt")) });
+
+            await sdk.UploadFilesInLinkData(data);
+
+            Assert.IsTrue(FileRecord.IsFileRecord(data["Certificate1"]));
+            Assert.IsTrue(FileRecord.IsFileRecord(((object[]) data["Certificates"])[0]));
+
+            Console.WriteLine(JsonHelper.ToJson(data));
+
+        }
+
 
         [TestMethod]
         public async Task downloadFilesInObjectTest()
