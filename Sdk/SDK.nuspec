@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>Stratumn.SDK</id> 
-    <version>0.0.23.0</version>
+    <version>0.1.0.0</version>
     <title>Stratumn SDK</title>
     <authors>Stratumn</authors>
     <owners>Stratumn</owners>
