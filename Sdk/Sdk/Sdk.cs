@@ -41,6 +41,8 @@
         /// </summary>
         private Client client;
 
+        private const String ERROR_CONFIG_DEPRECATED = "link config deprecated";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Sdk{TState}"/> class.
         /// </summary>
@@ -59,11 +61,11 @@
         /// and will generate the config.
         /// </summary>
         /// <returns>The <see cref="Task{SdkConfig}"/></returns>
-        public async Task<SdkConfig> GetConfigAsync()
+        public async Task<SdkConfig> GetConfigAsync(bool forceUpdate = false)
         {
 
             // if the config already exists use it!
-            if (this.config != null)
+            if (this.config != null && !forceUpdate)
             {
                 return this.config;
             }
@@ -86,6 +88,7 @@
                 throw new Exception("Cannot find workflow " + workflowId);
             }
             var groups = jsonData.workflow.groups;
+            String configId = jsonData.workflow.config.id;
             var jsonAccount = jsonData.account;
             var memberOf = jsonAccount.memberOf;
 
@@ -150,8 +153,8 @@
                 else
                     throw new Exception("Cannot get signing private key");
             }
-
-            this.config = new SdkConfig(workflowId, userId, accountId, groupId, ownerId, signingPrivateKey);
+            
+            this.config = new SdkConfig(workflowId, configId, userId, accountId, groupId, ownerId, signingPrivateKey);
 
             // return the new config
             return this.config;
@@ -163,8 +166,9 @@
         /// </summary>
         /// <typeparam name="TLinkData"></typeparam>
         /// <param name="linkBuilder">The linkBuilder<see cref="TraceLinkBuilder{TLinkData}"/></param>
+        /// <param name="firstTry">if this is not the first try, do not retry</param>
         /// <returns>The <see cref="Task{TraceState{TState, TLinkData}}"/></returns>
-        private async Task<TraceState<TState, TLinkData>> CreateLinkAsync<TLinkData>(TraceLinkBuilder<TLinkData> linkBuilder)
+        private async Task<TraceState<TState, TLinkData>> CreateLinkAsync<TLinkData>(TraceLinkBuilder<TLinkData> linkBuilder, bool firstTry = true)
         {
             // extract signing key from config
             SdkConfig sdkConfig = await GetConfigAsync();
@@ -191,12 +195,27 @@
                 ["link"] = linkObj,
                 ["data"] = dataObj
             };
-           // Debug.WriteLine("Request : " + JsonHelper.ToJson(dataObj));
-            // execute graphql query 
-            GraphQLResponse jsonResponse = await this.client.GraphqlAsync(GraphQL.MUTATION_CREATELINK, variables, null, null);
-            var trace = jsonResponse.Data.createLink.trace;
 
-            return this.MakeTraceState<TLinkData>(trace);
+            try
+            {
+                // execute graphql query 
+                GraphQLResponse jsonResponse = await this.client.GraphqlAsync(GraphQL.MUTATION_CREATELINK, variables, null, null);
+                var trace = jsonResponse.Data.createLink.trace;
+
+                return this.MakeTraceState<TLinkData>(trace);
+            } catch (TraceSdkException e)
+            {
+                if (firstTry && e.Message == ERROR_CONFIG_DEPRECATED)
+                {
+                    var cfg = await this.GetConfigAsync(true);
+                    linkBuilder.WithConfigId(cfg.ConfigId);
+                    link.GetLink().Signatures.Clear();
+                    return await this.CreateLinkAsync(linkBuilder, false);
+                }
+
+                throw e;
+            }
+            
         }
 
         /// <summary>
@@ -362,12 +381,12 @@
         /// <param name="data"> the link data that contains file wrappers to upload </param>
         public async Task UploadFilesInLinkData<TLinkData>(TLinkData data)
         {
-
             Dictionary<string, Property<FileWrapper>> fileWrapperMap = Helpers.ExtractFileWrappers(data);
             if (fileWrapperMap.Count == 0) return;
 
 
             List<FileWrapper> fileList = new List<FileWrapper>(fileWrapperMap.Count);
+
             foreach (Property<FileWrapper> fileProperty in fileWrapperMap.Values)
                 fileList.Add(fileProperty.Value);
 
@@ -387,6 +406,35 @@
 
 
             Helpers.AssignObjects(fileRecordList); 
+        }
+
+        public async Task UploadFilesInObject(object data)
+        {
+            Dictionary<string, Property<FileWrapper>> fileWrapperMap = Helpers.ExtractFileWrappers(data);
+            if (fileWrapperMap.Count == 0) return;
+
+
+            List<FileWrapper> fileList = new List<FileWrapper>(fileWrapperMap.Count);
+
+            foreach (Property<FileWrapper> fileProperty in fileWrapperMap.Values)
+                fileList.Add(fileProperty.Value);
+
+            MediaRecord[] mediaRecords = await this.client.UploadFiles(fileList);
+
+            List<Property<FileRecord>> fileRecordList = new List<Property<FileRecord>>(fileWrapperMap.Count);
+
+            for (int i = 0; i < mediaRecords.Length; i++)
+            {
+                MediaRecord mediaRecord = mediaRecords[i];
+                //get the fileWrapper property by index of file in the list uploaded.
+                Property<FileWrapper> fileWrapperProp = fileWrapperMap[fileList[i].GetId()];
+                //build FileRecord property
+                Property<FileRecord> fileRecordProp = fileWrapperProp.Transform((f) => new FileRecord(mediaRecord, f.Info()));
+                fileRecordList.Add(fileRecordProp);
+            }
+
+
+            Helpers.AssignObjects(fileRecordList);
         }
 
         public async Task<TData> DownloadFilesInObject<TData>(TData data)
@@ -455,6 +503,7 @@
             SdkConfig sdkConfig = await this.GetConfigAsync();
 
             string workflowId = sdkConfig.WorkflowId;
+            string configId = sdkConfig.ConfigId;
             string userId = sdkConfig.UserId;
             string ownerId = sdkConfig.OwnerId;
             string groupId = sdkConfig.GroupId;
@@ -464,7 +513,9 @@
 
             TraceLinkBuilderConfig<TLinkData> cfg = new TraceLinkBuilderConfig<TLinkData>()
             {
-                WorkflowId = workflowId
+                WorkflowId = workflowId,
+                // and workflow config id
+                ConfigId = configId,
             };
             // use a TraceLinkBuilder to create the first link
             // only provide workflowId to initiate a new trace
@@ -496,6 +547,7 @@
             SdkConfig sdkConfig = await this.GetConfigAsync();
 
             string workflowId = sdkConfig.WorkflowId;
+            string configId = sdkConfig.ConfigId;
             string userId = sdkConfig.UserId;
             string ownerId = sdkConfig.OwnerId;
             string groupId = sdkConfig.GroupId;
@@ -506,6 +558,8 @@
             {
                 // provide workflow id
                 WorkflowId = workflowId,
+                // and workflow config id
+                ConfigId = configId,
                 // and parent link to append to the existing trace
                 ParentLink = parentLink
             };
@@ -541,12 +595,15 @@
             SdkConfig sdkConfig = await this.GetConfigAsync();
 
             string workflowId = sdkConfig.WorkflowId;
+            string configId = sdkConfig.ConfigId; 
             string userId = sdkConfig.UserId;
 
             TraceLinkBuilderConfig<TLinkData> cfg = new TraceLinkBuilderConfig<TLinkData>()
             {
                 // provide workflow id
                 WorkflowId = workflowId,
+                // and workflow config id
+                ConfigId = configId,
                 // and parent link to append to the existing trace
                 ParentLink = parentLink
             };
@@ -577,12 +634,15 @@
             SdkConfig sdkConfig = await this.GetConfigAsync();
 
             String workflowId = sdkConfig.WorkflowId;
+            string configId = sdkConfig.ConfigId;
             String userId = sdkConfig.UserId;
 
             TraceLinkBuilderConfig<TLinkData> cfg = new TraceLinkBuilderConfig<TLinkData>()
             {
                 // provide workflow id
                 WorkflowId = workflowId,
+                // and workflow config id
+                ConfigId = configId,
                 // and parent link to append to the existing trace
                 ParentLink = parentLink
             };
@@ -720,6 +780,7 @@
             SdkConfig sdkConfig = await this.GetConfigAsync();
 
             String workflowId = sdkConfig.WorkflowId;
+            string configId = sdkConfig.ConfigId;
             String userId = sdkConfig.UserId;
             String ownerId = sdkConfig.OwnerId;
             String groupId = sdkConfig.GroupId;
@@ -728,6 +789,8 @@
             {
                 // provide workflow id
                 WorkflowId = workflowId,
+                // and workflow config id
+                ConfigId = configId,
                 // and parent link to append to the existing trace
                 ParentLink = parentLink
             };
@@ -765,6 +828,7 @@
             SdkConfig sdkConfig = await this.GetConfigAsync();
 
             String workflowId = sdkConfig.WorkflowId;
+            string configId = sdkConfig.ConfigId;
             String userId = sdkConfig.UserId;
             String ownerId = sdkConfig.OwnerId;
             String groupId = sdkConfig.GroupId;
@@ -773,6 +837,8 @@
             {
                 // provide workflow id
                 WorkflowId = workflowId,
+                // and workflow config id
+                ConfigId = configId,
                 // and parent link to append to the existing trace
                 ParentLink = parentLink
             };

@@ -91,6 +91,7 @@ namespace Stratumn.Sdk
                                                 }
                                               }
                                               workflow: workflowByRowId(rowId: $workflowId) {
+                                                config { id: rowId }
                                                 groups {
                                                   nodes {
                                                     groupId: rowId
