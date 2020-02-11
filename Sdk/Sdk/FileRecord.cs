@@ -113,6 +113,8 @@ namespace Stratumn.Sdk
                     if (json != null)
                     {
                         //attempt to generate FileRecord from json.
+                        json = removeAdditionalFields(json);
+
                         Object ob = JsonHelper.FromJson<FileRecord>(json);
                         String json2 = JsonHelper.ToCanonicalJson(ob);
                         if (json2.Equals(json))
@@ -125,6 +127,21 @@ namespace Stratumn.Sdk
             return isFileRecord;
         }
 
+        // Since we do a canonicalized JSON string comparison to check if the object is a 
+        // FileRecord above, we need to remove the additional fields that can be added
+        // by the media API.
+        private static String removeAdditionalFields(String json)
+        {
+            var o = JsonHelper.FromJson<JObject>(json);
 
-    }
+            
+            o.Remove("createdAt");
+            o.Remove("id");
+    
+            return JsonHelper.ToJson(o);
+
+   }
+
+
+}
 }

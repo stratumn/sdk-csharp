@@ -18,15 +18,14 @@ namespace Stratumn.Sdk.Model.File
         private string name;
         private string key;
 
-
-        public FileInfo(string name, long size, string mimetype, string key) //: base(name)
+        public FileInfo(string name, long size, string mimetype, string key)
         {
 
 
             if (string.ReferenceEquals(name, null))
             {
                 throw new System.ArgumentException("name cannot be null");
-            } 
+            }
             if (string.ReferenceEquals(mimetype, null))
             {
                 throw new System.ArgumentException("mimetype cannot be null");

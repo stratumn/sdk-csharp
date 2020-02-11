@@ -16,7 +16,14 @@ namespace Stratumn.Sdk
         public MemoryStream Blob { get; set; }
         public Model.File.FileInfo FileInfo { get; set; }
 
-        public FileBlobWrapper(MemoryStream blob, Model.File.FileInfo fileInfo) : base(fileInfo.Key == null || fileInfo.Key == "", fileInfo.Key)
+        public FileBlobWrapper(MemoryStream blob, Model.File.FileInfo fileInfo) : base(false, fileInfo.Key)
+        {
+            this.Blob = blob;
+            this.FileInfo = fileInfo;
+
+        }
+
+        internal FileBlobWrapper(MemoryStream blob, Model.File.FileInfo fileInfo, bool disableEncryption) : base(disableEncryption, fileInfo.Key)
         {
             this.Blob = blob;
             this.FileInfo = fileInfo;
