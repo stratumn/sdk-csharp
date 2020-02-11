@@ -117,6 +117,7 @@ namespace Stratumn.Sdk
 
                         Object ob = JsonHelper.FromJson<FileRecord>(json);
                         String json2 = JsonHelper.ToCanonicalJson(ob);
+
                         if (json2.Equals(json))
                             isFileRecord = true;
                     }
@@ -132,12 +133,17 @@ namespace Stratumn.Sdk
         // by the media API.
         private static String removeAdditionalFields(String json)
         {
+            String[] recordFields = { "id", "key", "digest", "name", "mimetype", "size"};
             var o = JsonHelper.FromJson<JObject>(json);
 
-            
-            o.Remove("createdAt");
-            o.Remove("id");
-    
+            foreach (var p in o.Properties())
+            {
+                if (!Array.Exists(recordFields, p.Name.Equals))
+                {
+                    p.Remove();
+                }
+            }
+
             return JsonHelper.ToJson(o);
 
    }
