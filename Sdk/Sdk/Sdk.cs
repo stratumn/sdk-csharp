@@ -18,7 +18,7 @@
     using Stratumn.Sdk.Model.Misc;
     using Stratumn.Sdk.Model.File;
     using System.IO;
-    using System.Diagnostics;
+    using FileInfo = Model.File.FileInfo;
 
     /// <summary>
     /// Defines the <see cref="Sdk{TState}" />
@@ -455,8 +455,11 @@
             {
                 FileRecord fileRecord = fileRecordProp.Value.Value;
                 MemoryStream file = await client.DownloadFile(fileRecord);
-                fileWrapperList.Add(
-                    fileRecordProp.Value.Transform((T) => FileWrapper.FromFileBlob(file,fileRecord.GetFileInfo())));
+                FileInfo info = fileRecord.GetFileInfo();
+                // When downloading a file, set disableEncrpytion to true if no key is passed so that the
+                // FileWrapper doesn't generate a new key and try to decrypt the file data.
+                FileWrapper fileWrapper = new FileBlobWrapper(file, info, info.Key == null || info.Key == "");
+                fileWrapperList.Add(fileRecordProp.Value.Transform((T) => fileWrapper));
             }
             return fileWrapperList;
         }
