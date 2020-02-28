@@ -127,13 +127,10 @@
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="GraphQL.Common">
       <HintPath>..\packages\GraphQL.Common.1.0.3\lib\netstandard2.0\GraphQL.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="GraphQL.Client">
-      <HintPath>..\packages\GraphQL.Client.1.0.3\lib\netstandard2.0\GraphQL.Client.dll</HintPath>
     </Reference>
     <Reference Include="JmesPath.Net">
       <HintPath>..\packages\JmesPath.Net.1.0.125\lib\net45\JmesPath.Net.dll</HintPath>
@@ -157,7 +154,7 @@
     <Reference Include="mscorlib" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Runtime.CompilerServices.Unsafe">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.1\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.5.2\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Memory">
       <HintPath>..\packages\System.Memory.4.5.1\lib\netstandard2.0\System.Memory.dll</HintPath>
@@ -165,19 +162,44 @@
     <Reference Include="System.Text.Encodings.Web">
       <HintPath>..\packages\System.Text.Encodings.Web.4.5.0\lib\netstandard2.0\System.Text.Encodings.Web.dll</HintPath>
     </Reference>
+    <Reference Include="GraphQL.Primitives">
+      <HintPath>..\packages\GraphQL.Primitives.2.1.0\lib\netstandard2.0\GraphQL.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Net.WebSockets.Client.Managed">
+      <HintPath>..\packages\System.Net.WebSockets.Client.Managed.1.0.22\lib\net45\System.Net.WebSockets.Client.Managed.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.3\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive">
+      <HintPath>..\packages\System.Reactive.4.3.2\lib\net46\System.Reactive.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="GraphQL.Client.Abstractions">
+      <HintPath>..\packages\GraphQL.Client.Abstractions.2.1.0\lib\netstandard2.0\GraphQL.Client.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="GraphQL.Client.Abstractions.Websocket">
+      <HintPath>..\packages\GraphQL.Client.Abstractions.Websocket.2.1.0\lib\netstandard2.0\GraphQL.Client.Abstractions.Websocket.dll</HintPath>
+    </Reference>
+    <Reference Include="GraphQL.Client.Serializer.Newtonsoft">
+      <HintPath>..\packages\GraphQL.Client.Serializer.Newtonsoft.2.1.0\lib\netstandard2.0\GraphQL.Client.Serializer.Newtonsoft.dll</HintPath>
+    </Reference>
+    <Reference Include="Stratumn.Chainscript">
+      <HintPath>..\..\..\stratumn\backend\csharp-chainscript\ChainScript\bin\Debug\Stratumn.Chainscript.dll</HintPath>
+    </Reference>
+    <Reference Include="Stratumn.CanonicalJson">
+      <HintPath>..\..\..\stratumn\backend\canonicaljson-csharp\CanonicalJson\bin\Debug\Stratumn.CanonicalJson.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\canonicaljson-csharp\CanonicalJson\CanonicalJson.csproj">
-      <Project>{F2EC8A3F-A4EF-4675-985D-8DA3EF0D141B}</Project>
-      <Name>CanonicalJson</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Sdk\SDK.csproj">
       <Project>{13E24245-9B1B-4997-B5C9-F63689218645}</Project>
       <Name>SDK</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\csharp-chainscript\ChainScript\Chainscript.csproj">
-      <Project>{37F464E3-81A2-47B1-803D-2A47A6C3AB48}</Project>
-      <Name>Chainscript</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

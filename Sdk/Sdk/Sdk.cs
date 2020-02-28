@@ -1,10 +1,11 @@
-﻿namespace Stratumn.Sdk
+﻿using GraphQL;
+
+namespace Stratumn.Sdk
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
-    using global::GraphQL.Common.Response;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using Org.BouncyCastle.Crypto.Parameters;
@@ -77,7 +78,7 @@
 
 
             
-            GraphQLResponse jsonResponse = await this.client.GraphqlAsync(query, variables, null, null);
+            GraphQLResponse<dynamic> jsonResponse = await this.client.GraphqlAsync(query, variables, null, null);
 
             var jsonData = jsonResponse.Data;
 
@@ -199,7 +200,7 @@
             try
             {
                 // execute graphql query 
-                GraphQLResponse jsonResponse = await this.client.GraphqlAsync(GraphQL.MUTATION_CREATELINK, variables, null, null);
+                GraphQLResponse<dynamic> jsonResponse = await this.client.GraphqlAsync(GraphQL.MUTATION_CREATELINK, variables, null, null);
                 var trace = jsonResponse.Data.createLink.trace;
 
                 return this.MakeTraceState<TLinkData>(trace);
@@ -236,7 +237,7 @@
                 };
                 string query = GraphQL.QUERY_GETHEADLINK;
                 // execute graphql query
-                GraphQLResponse jsonResponse = await this.client.GraphqlAsync(query, variables, null, null);
+                GraphQLResponse<dynamic> jsonResponse = await this.client.GraphqlAsync(query, variables, null, null);
                 var trace = jsonResponse.Data.trace;
 
                 string raw = trace.head.raw.ToString();
@@ -325,7 +326,7 @@
 
             // execute the graphql query
             string query = GraphQL.QUERY_GETTRACESINSTAGE;
-            GraphQLResponse jsonResponse = await this.client.GraphqlAsync(query, variables, null, null);
+            GraphQLResponse<dynamic> jsonResponse = await this.client.GraphqlAsync(query, variables, null, null);
             var jsonData = jsonResponse.Data;
 
 
@@ -674,7 +675,7 @@
                 { "traceId", input.TraceId }
             };
             // create variables
-            GraphQLResponse jsonResponse = await this.client.GraphqlAsync(GraphQL.QUERY_GETTRACESTATE, var, null, null);
+            GraphQLResponse<dynamic> jsonResponse = await this.client.GraphqlAsync(GraphQL.QUERY_GETTRACESTATE, var, null, null);
 
             var trace = jsonResponse.Data.trace;
 
@@ -695,7 +696,7 @@
             // delegate the graphql request execution 
 
             // execute graphql query
-            GraphQLResponse jsonResponse = await this.client.GraphqlAsync(GraphQL.QUERY_GETTRACEDETAILS, getTraceDetailsInput, null, null);
+            GraphQLResponse<dynamic> jsonResponse = await this.client.GraphqlAsync(GraphQL.QUERY_GETTRACEDETAILS, getTraceDetailsInput, null, null);
 
 
             var trace = jsonResponse.Data.trace;
