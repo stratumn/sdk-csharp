@@ -627,7 +627,7 @@ namespace Stratumn.Sdk
         /// <param name="opts">      the graphql options </param>
         /// <exception cref="TraceSdkException"> 
         ///  </exception>
-        public async Task<GraphQLResponse<dynamic>> GraphqlAsync(String query, IDictionary<string, object> variables, GraphQLOptions opts, Type tclass, int i = 0)
+        public async Task<GraphQLResponse<dynamic>> GraphqlAsync(String query, IDictionary<string, object> variables, GraphQLOptions opts, Type tclass)
         {
 
             String gqlUrl = this.endpoints.Trace + "/graphql";
@@ -655,7 +655,7 @@ namespace Stratumn.Sdk
                     // clear token and retry
                     this.ClearToken();
                     opts.Retry = opts.Retry - 1;
-                    return await this.GraphqlAsync(query, variables, opts, tclass, 1);
+                    return await this.GraphqlAsync(query, variables, opts, tclass);
                 }
                 // otherwise rethrow
                 throw new TraceSdkException(e.HttpResponseMessage.ReasonPhrase);
