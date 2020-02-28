@@ -17,15 +17,15 @@ using Utils;
 using Org.BouncyCastle.Crypto;
 using Stratumn.Chainscript;
 using Stratumn.Sdk.Model.Client;
-using GraphQL.Common.Response;
 using Lucene.Net.Support;
 using Stratumn.Sdk.Model.File;
 using System.Net.Http.Headers;
 using Stratumn.Chainscript.utils;
 using System.Threading;
-using GraphQL.Client;
-using GraphQL.Common.Request;
+using GraphQL.Client.Http;
 using System.Reflection;
+using GraphQL;
+using GraphQLNewtonsoft = GraphQL.Client.Serializer.Newtonsoft;
 
 namespace Stratumn.Sdk
 {
@@ -627,17 +627,40 @@ namespace Stratumn.Sdk
         /// <param name="opts">      the graphql options </param>
         /// <exception cref="TraceSdkException"> 
         ///  </exception>
-        public async Task<GraphQLResponse> GraphqlAsync(String query, IDictionary<string, object> variables, GraphQLOptions opts, Type tclass)
+        public async Task<GraphQLResponse<dynamic>> GraphqlAsync(String query, IDictionary<string, object> variables, GraphQLOptions opts, Type tclass)
         {
 
             String gqlUrl = this.endpoints.Trace + "/graphql";
 
-            // delegate the graphql request execution 
-            GraphQLResponse response = await GraphqlExecute(gqlUrl, await this.GetAuthorizationHeader(null), query, variables, tclass);
             if (opts == null)
             {
                 opts = defaultGraphQLOptions;
             }
+
+            // delegate the graphql request execution 
+            GraphQLResponse<dynamic> response;
+            try
+            {
+                response = await GraphqlExecute(gqlUrl, query, variables, opts);
+                
+            } catch (GraphQLHttpException e)
+            {
+                int retry = opts.Retry;
+                // handle errors explicitly 
+                // extract the status from the error response 
+                // if 401 and retry > 0 then we can retry
+                if (e.HttpResponseMessage.StatusCode == HttpStatusCode.Unauthorized && retry > 0)
+                {
+                    // unauthenticated request might be because token expired
+                    // clear token and retry
+                    this.ClearToken();
+                    opts.Retry = opts.Retry - 1;
+                    return await this.GraphqlAsync(query, variables, opts, tclass);
+                }
+                // otherwise rethrow
+                throw new TraceSdkException(e.HttpResponseMessage.ReasonPhrase);
+            }
+
 
             if (response.Errors == null)
             {
@@ -649,21 +672,6 @@ namespace Stratumn.Sdk
             }
             else
             {
-                var statusCode = response.Errors.LastOrDefault()?.AdditonalEntries?.Values.ToArray()[0];
-
-                int retry = opts.Retry;
-                // handle errors explicitly 
-                // extract the status from the error response 
-                // if 401 and retry > 0 then we can retry
-                if (statusCode != null && statusCode.ToString() == "401" && retry > 0)
-                {
-                    // unauthenticated request might be because token expired
-                    // clear token and retry
-                    this.ClearToken();
-                    opts.Retry = opts.Retry - 1;
-                    return await this.GraphqlAsync(query, variables, opts, tclass);
-                }
-                // otherwise rethrow
                 throw new TraceSdkException(response.Errors[0].Message);
             }
             return response;
@@ -700,27 +708,51 @@ namespace Stratumn.Sdk
         /// <param name="Variables"> </param>
         /// <param name="tClass">
         /// @return </param>
-        public async Task<GraphQLResponse> GraphqlExecute(string url, string auth, string query, IDictionary<string, object> variables, Type tClass)
+        public async Task<GraphQLResponse<dynamic>> GraphqlExecute(string url, string query, IDictionary<string, object> variables, GraphQLOptions opts)
         {
 
-            GraphQLClientOptions clientOptions = new GraphQLClientOptions();
+            GraphQLHttpClientOptions clientOptions = new GraphQLHttpClientOptions();
             HttpMessageHandler handler = CreateHttpMessageHandler();
             if (handler!=null)
-             clientOptions.HttpMessageHandler = handler;
-            clientOptions.JsonSerializerSettings = new JsonSerializerSettings()
+            clientOptions.HttpMessageHandler = handler;
+            JsonSerializerSettings settings = new JsonSerializerSettings()
             {
 
                 ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver()
             };
+            clientOptions.JsonSerializer = new GraphQLNewtonsoft.NewtonsoftJsonSerializer(settings);
+            clientOptions.EndPoint = new Uri(url);
 
+            GraphQLHttpClient graphClient = new GraphQLHttpClient(clientOptions);
+            graphClient.HttpClient.DefaultRequestHeaders.Add("User-Agent", this.userAgent);
+            graphClient.HttpClient.DefaultRequestHeaders.Add("Authorization", await this.GetAuthorizationHeader(null));
+            GraphQLRequestCamel request = new GraphQLRequestCamel(query, variables);
 
-            GraphQLClient graphClient = new GraphQLClient(url, clientOptions);
-            graphClient.DefaultRequestHeaders.Add("User-Agent", this.userAgent);
-            graphClient.DefaultRequestHeaders.Add("Authorization", auth);
-            var request = new GraphQLRequestCamel(query, variables);
+            try
+            {
+                return await graphClient.SendQueryAsync<dynamic>(request);
+            } catch (GraphQLHttpException e)
+            {
+                if (opts == null)
+                {
+                    opts = defaultGraphQLOptions;
+                }
+                int retry = opts.Retry;
+                // handle errors explicitly 
+                // extract the status from the error response 
+                // if 401 and retry > 0 then we can retry
+                if (e.HttpResponseMessage.StatusCode == HttpStatusCode.Unauthorized && retry > 0)
+                {
+                    // unauthenticated request might be because token expired
+                    // clear token and retry
+                    this.ClearToken();
+                    opts.Retry -= 1;
+                    return await this.GraphqlExecute(url, query, variables, opts);
+                }
 
-            return await graphClient.PostAsync(request);
-
+                // otherwise rethrow
+                throw new TraceSdkException(e.HttpResponseMessage.ReasonPhrase);
+            }
 
         }
     }
