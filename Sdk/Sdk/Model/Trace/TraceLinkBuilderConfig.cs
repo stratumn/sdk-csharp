@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Stratumn.Sdk.Model.Trace
+﻿namespace Stratumn.Sdk.Model.Trace
 {
     /// <summary>
     /// The configuration interface for a new TraceLinkBuilder.
     /// </summary>
     public class TraceLinkBuilderConfig<TLinkData>
     {
-
         private string workflowId;
         private string configId;
         private ITraceLink<TLinkData> parentLink;
@@ -37,6 +30,7 @@ namespace Stratumn.Sdk.Model.Trace
                 this.workflowId = value;
             }
         }
+
         public string ConfigId
         {
             get
@@ -59,7 +53,5 @@ namespace Stratumn.Sdk.Model.Trace
                 this.parentLink = value;
             }
         }
-
     }
-
 }

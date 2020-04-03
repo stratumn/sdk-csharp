@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Stratumn.Sdk.Model.Client
+﻿namespace Stratumn.Sdk.Model.Client
 {
     /// <summary>
     /// The fetch options
@@ -29,20 +23,17 @@ namespace Stratumn.Sdk.Model.Client
 
         public FetchOptions()
         {
-
             this.skipAuth = false;
             this.retry = 1;
         }
 
-
-        public FetchOptions(string authToken, bool? skipAuth, int retry)
+        public FetchOptions(string authToken, bool? skipAuth, int? retry)
         {
-
             this.authToken = authToken;
             this.skipAuth = skipAuth;
             if (retry != null)
             {
-                this.retry = retry;
+                this.retry = (int) retry;
             }
         }
 
@@ -71,7 +62,6 @@ namespace Stratumn.Sdk.Model.Client
             }
         }
 
-
         public int Retry
         {
             get
@@ -83,7 +73,5 @@ namespace Stratumn.Sdk.Model.Client
                 this.retry = value;
             }
         }
-
-
     }
 }

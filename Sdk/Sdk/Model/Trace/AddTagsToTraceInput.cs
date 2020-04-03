@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Stratumn.Sdk.Model.Trace
+﻿namespace Stratumn.Sdk.Model.Trace
 {
     /// <summary>
     /// Interface used as argument to add tags to an existing trace.
@@ -44,8 +38,5 @@ namespace Stratumn.Sdk.Model.Trace
                 this.tags = value;
             }
         }
-
-
     }
-
 }

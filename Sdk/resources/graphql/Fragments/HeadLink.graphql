@@ -1,6 +1,0 @@
-fragment HeadLinkFragment on Trace {
-        head {
-          raw
-          data
-        }
-      }

@@ -1,4 +1,3 @@
-﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -6,33 +5,29 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Security.Cryptography;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web.Helpers;
-using System.Web.Script.Serialization;
-using BCrypt.Net;
+using System.Net.Http.Headers;
+using System.Threading;
+using System.Reflection;
+
+using Newtonsoft.Json;
+using Org.BouncyCastle.Crypto.Generators;
+using Org.BouncyCastle.Utilities.Encoders;
+using GraphQL;
+using GraphQL.Client.Serializer.Newtonsoft;
+using GraphQL.Client.Http;
+
 using Utils;
-using Org.BouncyCastle.Crypto;
 using Stratumn.Chainscript;
 using Stratumn.Sdk.Model.Client;
-using Lucene.Net.Support;
 using Stratumn.Sdk.Model.File;
-using System.Net.Http.Headers;
 using Stratumn.Chainscript.utils;
-using System.Threading;
-using GraphQL.Client.Http;
-using System.Reflection;
-using GraphQL;
-using GraphQLNewtonsoft = GraphQL.Client.Serializer.Newtonsoft;
 
 namespace Stratumn.Sdk
 {
-
     public class Client
     {
-
         //
         // The endpoint urls for all the services
         ///
@@ -528,9 +523,7 @@ namespace Stratumn.Sdk
             IDictionary<string, string> parameters = new Dictionary<string, string>() { { "email", email } };
             var salt = await this.GetSalt(parameters);
             // hash the password with the salt
-            string passwordHash = BCrypt.Net.BCrypt.HashPassword(password, salt);
-
-
+            string passwordHash = Hex.ToHexString(BCrypt.Generate(Encoding.UTF8.GetBytes(password), Encoding.UTF8.GetBytes(salt), 10));
 
             Uri loginAccountUri = new Uri(endpoints.Account + "/login");
             var payload = new Dictionary<string, string>
@@ -710,20 +703,7 @@ namespace Stratumn.Sdk
         /// @return </param>
         public async Task<GraphQLResponse<dynamic>> GraphqlExecute(string url, string query, IDictionary<string, object> variables, GraphQLOptions opts)
         {
-
-            GraphQLHttpClientOptions clientOptions = new GraphQLHttpClientOptions();
-            HttpMessageHandler handler = CreateHttpMessageHandler();
-            if (handler!=null)
-            clientOptions.HttpMessageHandler = handler;
-            JsonSerializerSettings settings = new JsonSerializerSettings()
-            {
-
-                ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver()
-            };
-            clientOptions.JsonSerializer = new GraphQLNewtonsoft.NewtonsoftJsonSerializer(settings);
-            clientOptions.EndPoint = new Uri(url);
-
-            GraphQLHttpClient graphClient = new GraphQLHttpClient(clientOptions);
+            GraphQLHttpClient graphClient = new GraphQLHttpClient(url, new NewtonsoftJsonSerializer());
             graphClient.HttpClient.DefaultRequestHeaders.Add("User-Agent", this.userAgent);
             graphClient.HttpClient.DefaultRequestHeaders.Add("Authorization", await this.GetAuthorizationHeader(null));
             GraphQLRequestCamel request = new GraphQLRequestCamel(query, variables);
@@ -731,7 +711,8 @@ namespace Stratumn.Sdk
             try
             {
                 return await graphClient.SendQueryAsync<dynamic>(request);
-            } catch (GraphQLHttpException e)
+            }
+            catch (GraphQLHttpException e)
             {
                 if (opts == null)
                 {
@@ -753,18 +734,14 @@ namespace Stratumn.Sdk
                 // otherwise rethrow
                 throw new TraceSdkException(e.HttpResponseMessage.ReasonPhrase);
             }
-
         }
     }
 
 
     public class GraphQLRequestCamel : GraphQLRequest
     {
-
-
         public GraphQLRequestCamel(string query, dynamic Variables)
         {
-
             base.Query = query;
             base.Variables = Variables;
         }
@@ -774,22 +751,16 @@ namespace Stratumn.Sdk
             get
             {
                 return base.Query;
-
-
             }
-
         }
-
 
         [JsonProperty(PropertyName = "variables")]
         public dynamic CamelCaseVariables
         {
             get
             {
-
                 return base.Variables;
             }
-
         }
     }
 
@@ -810,7 +781,6 @@ namespace Stratumn.Sdk
                 Debug.WriteLine("Request body: " + await request.Content.ReadAsStringAsync());
             Debug.WriteLine("==========================request end================================================");
 
-
             HttpResponseMessage response = await base.SendAsync(request, cancellationToken);
 
             Debug.WriteLine("============================response begin==========================================");
@@ -824,6 +794,5 @@ namespace Stratumn.Sdk
             return response;
         }
     }
-
 }
 

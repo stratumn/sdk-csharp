@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Stratumn.Sdk.Model.Trace
 {
     public class TracesState<TState, TlinkData> : PaginationResults
     {
-
         private IList<TraceState<TState, TlinkData>> traces;
 
         public TracesState()
@@ -32,7 +27,5 @@ namespace Stratumn.Sdk.Model.Trace
                 this.traces = value;
             }
         }
-
     }
-
 }

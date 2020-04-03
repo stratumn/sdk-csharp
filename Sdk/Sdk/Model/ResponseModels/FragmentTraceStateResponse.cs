@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Stratumn.Sdk.Model.ResponseModels
+﻿namespace Stratumn.Sdk.Model.ResponseModels
 {
     public class FragmentTraceStateResponse
     {
-
         public string UpdatedAt
         {
             get
@@ -20,7 +13,6 @@ namespace Stratumn.Sdk.Model.ResponseModels
                 this.updatedAt = value;
             }
         }
-
 
         public object State
         {
@@ -34,7 +26,6 @@ namespace Stratumn.Sdk.Model.ResponseModels
             }
         }
 
-
         public HeadResponse Head
         {
             get
@@ -47,17 +38,13 @@ namespace Stratumn.Sdk.Model.ResponseModels
             }
         }
 
-
         private string updatedAt;
         private object state;
         private HeadResponse head;
     }
 
-
-
     public class HeadResponse
     {
-
         public object Raw
         {
             get
@@ -69,7 +56,6 @@ namespace Stratumn.Sdk.Model.ResponseModels
                 this.raw = value;
             }
         }
-
 
         public object Data
         {
@@ -83,9 +69,7 @@ namespace Stratumn.Sdk.Model.ResponseModels
             }
         }
 
-
         private object raw;
         private object data;
     }
-
 }

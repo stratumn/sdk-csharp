@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Stratumn.Sdk.Model.Trace
+﻿namespace Stratumn.Sdk.Model.Trace
 {
     /// <summary>
     /// A Stratumn Account object
@@ -27,7 +21,5 @@ namespace Stratumn.Sdk.Model.Trace
         {
             this.account = account;
         }
-
     }
-
 }

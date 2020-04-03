@@ -1,10 +1,7 @@
-﻿using Newtonsoft.Json;
-
-namespace Stratumn.Sdk.Model.Trace
+﻿namespace Stratumn.Sdk.Model.Trace
 {
     public class Info
     {
-
         public bool HasNext { get; set; }
         public bool HasPrevious { get; set; }
         public string StartCursor { get; set; }
@@ -28,7 +25,5 @@ namespace Stratumn.Sdk.Model.Trace
             this.StartCursor = startCursor;
             this.EndCursor = endCursor;
         }
-
     }
-
 }

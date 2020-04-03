@@ -1,20 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Stratumn.Sdk.Model.Trace
+﻿namespace Stratumn.Sdk.Model.Trace
 {
     public class TransferResponseInput<TLinkData> : ParentLink<TLinkData>
     {
-
         private TLinkData data;
 
         public TransferResponseInput(string traceId, TraceLink<TLinkData> prevLink) : base(traceId, prevLink)
-        {
-
-          
+        { 
         }
 
         public TransferResponseInput(string traceId, TLinkData data, TraceLink<TLinkData> prevLink) : base(traceId, prevLink)
@@ -34,8 +25,5 @@ namespace Stratumn.Sdk.Model.Trace
                 this.data = value;
             }
         }
-
-
     }
-
 }

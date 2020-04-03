@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Stratumn.Sdk.Model.Client
+﻿namespace Stratumn.Sdk.Model.Client
 {
     /// <summary>
     /// The response format for a salt request
@@ -36,7 +30,5 @@ namespace Stratumn.Sdk.Model.Client
                 this.salt = value;
             }
         }
-
-
     }
 }

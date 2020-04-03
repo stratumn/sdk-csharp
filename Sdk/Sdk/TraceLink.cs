@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System;
+using Stratumn.Chainscript;
+using Stratumn.Sdk.Model.Trace;
+using Stratumn.Chainscript.utils;
 
 namespace Stratumn.Sdk
 {
-    using System;
-    using Stratumn.Chainscript;
-    using Stratumn.Sdk.Model.Trace;
-    using Stratumn.Chainscript.utils;
-
     /// <summary>
     /// A TraceLink is an extension of a Chainscript Link
     /// that provides useful methods
@@ -24,10 +18,8 @@ namespace Stratumn.Sdk
             this.formData = formData;
         }
 
-
         public TLinkData FormData()
         {
-
             return formData != null ? formData : JsonHelper.ObjectToObject<TLinkData>(base.Data());
         }
 
@@ -51,9 +43,8 @@ namespace Stratumn.Sdk
         /// Get the metadata as TraceLinkMetaData
         /// </summary>
         /// <returns></returns>
-        public TraceLinkMetaData Metadata()
+        new public TraceLinkMetaData Metadata()
         {
-
             TraceLinkMetaData traceLinkMd = JsonHelper.ObjectToObject< TraceLinkMetaData>(base.Metadata());
             return traceLinkMd;
         }
@@ -68,7 +59,7 @@ namespace Stratumn.Sdk
             return this.Metadata().CreatedAt;
         }
 
-        public  Account Owner()
+        public Account Owner()
         {
             return new Account(this.Metadata().OwnerId);
         }
@@ -79,7 +70,7 @@ namespace Stratumn.Sdk
         /// <exception cref="Exception"> 
         /// 
         /// @returns the group id </exception>
-        public  string Group()
+        public string Group()
         {
             return this.Metadata().GroupId;
         }
@@ -114,15 +105,12 @@ namespace Stratumn.Sdk
             return this.Metadata().Inputs;
         }
 
-
         /// <summary>
         /// Convert a plain object to a TraceLink. </summary>
         /// <param name="rawLink"> plain object. </param>
-        public static TraceLink<TLinkData> FromObject<TLinkData>(string rawLink, TLinkData formData)
+        public static TraceLink<T> FromObject<T>(string rawLink, T formData)
         {
-            return new TraceLink<TLinkData>(Chainscript.Link.FromObject(rawLink), formData);
+            return new TraceLink<T>(Chainscript.Link.FromObject(rawLink), formData);
         }
-
     }
-
 }

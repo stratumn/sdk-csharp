@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Stratumn.Sdk.Model.File
+﻿namespace Stratumn.Sdk.Model.File
 {
     /// <summary>
     /// A record of a file in the Media service.
@@ -53,5 +47,4 @@ namespace Stratumn.Sdk.Model.File
             }
         }
     }
-
 }

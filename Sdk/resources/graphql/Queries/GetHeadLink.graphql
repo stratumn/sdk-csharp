@@ -1,6 +1,0 @@
-query getHeadLinkQuery($traceId: UUID!) {
-      trace: traceById(id: $traceId) {
-        ...HeadLinkFragment
-      }
-    }
-    ${HeadLinkFragment}

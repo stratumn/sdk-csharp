@@ -1,9 +1,0 @@
-fragment PaginationInfoOnLinksConnectionFragment on LinksConnection {
-          totalCount
-          info: pageInfo {
-            hasNext: hasNextPage
-            hasPrevious: hasPreviousPage
-            startCursor
-            endCursor
-          }
-        }

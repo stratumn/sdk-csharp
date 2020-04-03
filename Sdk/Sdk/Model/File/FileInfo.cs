@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Lucene.Net.Support;
-
-namespace Stratumn.Sdk.Model.File
+﻿namespace Stratumn.Sdk.Model.File
 {
     /// <summary>
     /// A file information interface.
     /// </summary>
     public class FileInfo 
     {
-         
         private string mimetype;
         private long size;
         private string name;
@@ -20,8 +12,6 @@ namespace Stratumn.Sdk.Model.File
 
         public FileInfo(string name, long size, string mimetype, string key)
         {
-
-
             if (string.ReferenceEquals(name, null))
             {
                 throw new System.ArgumentException("name cannot be null");
@@ -49,7 +39,6 @@ namespace Stratumn.Sdk.Model.File
             }
         }
 
-
         public virtual long Size
         {
             get
@@ -61,7 +50,6 @@ namespace Stratumn.Sdk.Model.File
                 this.size = value;
             }
         }
-
 
         public virtual string Name
         {
@@ -75,7 +63,6 @@ namespace Stratumn.Sdk.Model.File
             }
         }
 
-
         public virtual string Key
         {
             get
@@ -87,8 +74,5 @@ namespace Stratumn.Sdk.Model.File
                 this.key = value;
             }
         }
-
-
     }
-
 }

@@ -1,9 +1,0 @@
-fragment PaginationInfoOnTracesConnectionFragment on TracesConnection {
-          totalCount
-          info: pageInfo {
-            hasNext: hasNextPage
-            hasPrevious: hasPreviousPage
-            startCursor
-            endCursor
-          }
-        }

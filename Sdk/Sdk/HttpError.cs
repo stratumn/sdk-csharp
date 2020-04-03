@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System;
 
 namespace Stratumn.Sdk
 {
-    using System;
-    using Lucene.Net.Support;
-
     public class HttpError : Exception
     {
         /// 
@@ -27,7 +20,7 @@ namespace Stratumn.Sdk
             return "Http error [ Status : " + this.status + " Message : " + message + " ]";
         }
 
-        public int Satus
+        public int Status
         {
             set
             {
@@ -39,18 +32,12 @@ namespace Stratumn.Sdk
             }
         }
 
-        public string Message
+        public override string Message
         {
-            set
-            {
-                this.message = value;
-            }
             get
             {
                 return this.message;
             }
         }
-
     }
-
 }

@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Stratumn.Sdk.Model.Client;
+﻿using Stratumn.Sdk.Model.Client;
 
 namespace Stratumn.Sdk.Model.Sdk
 {
@@ -15,6 +10,5 @@ namespace Stratumn.Sdk.Model.Sdk
         }
 
         public string WorkflowId { get; set; }
-
     }
 }

@@ -1,19 +1,13 @@
 ﻿using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Stratumn.Sdk.Model.Trace
 {
-
     /// <summary>
     /// The link metadata
     /// </summary>
     public class TraceLinkMetaData
     {
-
         [JsonProperty(PropertyName = "ownerId")]
         public string OwnerId { get; set; }
 
@@ -89,13 +83,5 @@ namespace Stratumn.Sdk.Model.Trace
             this.CreatedById = createdById;
             this.Inputs = inputs;
         }
-
-
-
-
-
-
-
     }
-
 }

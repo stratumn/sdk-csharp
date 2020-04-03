@@ -1,13 +1,13 @@
-﻿namespace Stratumn.Sdk
-{
-    using System;
-    using System.Collections.Generic;
-    using System.Text;
-    using Stratumn.Chainscript;
-    using Stratumn.Sdk.Model.Trace;
-    using Utils;
-    using Stratumn.Chainscript.utils;
+using System;
+using System.Collections.Generic;
+using System.Text;
+using Stratumn.Chainscript;
+using Stratumn.Sdk.Model.Trace;
+using Utils;
+using Stratumn.Chainscript.utils;
 
+namespace Stratumn.Sdk
+{
     /// <summary>
     /// TraceLinkBuilder makes it easy to create links that are compatible
     /// with Trace.
@@ -37,9 +37,10 @@
         /// </summary>
         /// <param name="cfg"> the config to instantiate the builder </param>
         public TraceLinkBuilder(TraceLinkBuilderConfig<TLinkData> cfg) : base(
-                          cfg.WorkflowId, (cfg.ParentLink != null ? cfg.ParentLink.TraceId() : Guid.NewGuid().ToString()))
+            cfg.WorkflowId,
+            cfg.ParentLink != null ? cfg.ParentLink.TraceId() : Guid.NewGuid().ToString()
+        )
         {
-
             // trace id is either retrieved from parent link when it is provided
             // or set to a new uuid.
 
@@ -93,13 +94,12 @@
                 string algo = "sha256";
 
                 string hash = Convert.ToBase64String(
-                                        CryptoUtils.Sha256(
-                                                Encoding.UTF8.GetBytes(
-                                                    CanonicalJson.Canonicalizer.Stringify(obj)
-                                                    )
-                                                )
-                                        );
-
+                    CryptoUtils.Sha256(
+                        Encoding.UTF8.GetBytes(
+                            CanonicalJson.Canonicalizer.Stringify(obj)
+                        )
+                    )
+                );
                
                 IDictionary<string, object> data = new Dictionary<string, object>();
                 data["algo"] = algo;

@@ -1,18 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Stratumn.Sdk.Model.Client
+﻿namespace Stratumn.Sdk.Model.Client
 {
     public class CredentialSecret :Secret
     {
-
         public string Email { get; set; }
 
         public string Password { get; set; }
-
 
         public CredentialSecret(string email, string password)
         {

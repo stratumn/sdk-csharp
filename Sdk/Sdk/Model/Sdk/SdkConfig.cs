@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Org.BouncyCastle.Crypto.Parameters;
+﻿using Org.BouncyCastle.Crypto.Parameters;
 
 namespace Stratumn.Sdk.Model.Sdk
 {
-   
-
     public class SdkConfig
     {
-
         /// <summary>
         /// The workflow id
         /// </summary>
@@ -57,7 +49,6 @@ namespace Stratumn.Sdk.Model.Sdk
             this.signingPrivateKey = signingPrivateKey;
         }
 
-
         public virtual string WorkflowId
         {
             get
@@ -82,7 +73,6 @@ namespace Stratumn.Sdk.Model.Sdk
             }
         }
 
-
         public virtual string UserId
         {
             get
@@ -94,7 +84,6 @@ namespace Stratumn.Sdk.Model.Sdk
                 this.userId = value;
             }
         }
-
 
         public virtual string AccountId
         {
@@ -108,7 +97,6 @@ namespace Stratumn.Sdk.Model.Sdk
             }
         }
 
-
         public virtual string GroupId
         {
             get
@@ -120,7 +108,6 @@ namespace Stratumn.Sdk.Model.Sdk
                 this.groupId = value;
             }
         }
-
 
         public virtual string OwnerId
         {
@@ -134,7 +121,6 @@ namespace Stratumn.Sdk.Model.Sdk
             }
         }
 
-
         public virtual Ed25519PrivateKeyParameters SigningPrivateKey
         {
             get
@@ -146,8 +132,5 @@ namespace Stratumn.Sdk.Model.Sdk
                 this.signingPrivateKey = value;
             }
         }
-
-
     }
-
 }

@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Stratumn.Sdk.Model.Trace
+﻿namespace Stratumn.Sdk.Model.Trace
 {
     public class PushTransferInput<TLinkData> : ParentLink<TLinkData>
     {
-
         private string recipient;
         private TLinkData data;
 
@@ -18,8 +11,6 @@ namespace Stratumn.Sdk.Model.Trace
             {
                 throw new System.ArgumentException("recipient cannot be null in PushTransferInput");
             }
-
-
             this.data = data;
             this.recipient = recipient;
         }
@@ -36,7 +27,6 @@ namespace Stratumn.Sdk.Model.Trace
             }
         }
 
-
         public string Recipient
         {
             get
@@ -48,9 +38,5 @@ namespace Stratumn.Sdk.Model.Trace
                 this.recipient = value;
             }
         }
-
-
-
     }
-
 }
