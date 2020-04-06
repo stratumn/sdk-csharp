@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Stratumn.Sdk.Model.Trace
+﻿namespace Stratumn.Sdk.Model.Trace
 {
     /// <summary>
     ///*
@@ -12,7 +6,6 @@ namespace Stratumn.Sdk.Model.Trace
     /// @param <TLinkData> </param>
     public class ParentLink<TLinkData>
     {
-
         private string traceId;
         private TraceLink<TLinkData> prevLink;
 
@@ -38,7 +31,6 @@ namespace Stratumn.Sdk.Model.Trace
             }
         }
 
-
         public TraceLink<TLinkData> PrevLink
         {
             get
@@ -50,7 +42,5 @@ namespace Stratumn.Sdk.Model.Trace
                 this.prevLink = value;
             }
         }
-
-
     }
 }

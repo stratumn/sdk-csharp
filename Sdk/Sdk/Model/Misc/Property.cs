@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Stratumn.Sdk.Model.Misc
 {
     public class Property<V > where V : Identifiable
     {
-
         public Property(String id, V value, String path, Object parent) :
                 base()
         { 
@@ -25,7 +20,6 @@ namespace Stratumn.Sdk.Model.Misc
         private String _path;
 
         private Object _parent;
- 
 
         public String Id
         {

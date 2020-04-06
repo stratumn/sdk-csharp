@@ -1,20 +1,15 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using Org.BouncyCastle.Security;
-using Stratumn.Sdk.Model.Client;
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text;
-using System.Threading.Tasks;
-using Stratumn.Sdk.Model.Misc;
-using Newtonsoft.Json.Linq;
 using System.Collections;
-using Stratumn.CanonicalJson.Helpers;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Text.RegularExpressions;
+
+using Org.BouncyCastle.Security;
+using Newtonsoft.Json.Linq;
+
+using Stratumn.Sdk.Model.Client;
+using Stratumn.Sdk.Model.Misc;
+using Stratumn.CanonicalJson.Helpers;
 using Stratumn.Chainscript.utils;
 
 namespace Stratumn.Sdk
@@ -35,7 +30,7 @@ namespace Stratumn.Sdk
             {   
                 string ACCOUNT_RELEASE_URL = "https://account.stratumn.com";
                 string TRACE_RELEASE_URL = "https://trace.stratumn.com";
-                string  MEDIA_RELEASE_URL = "https://media.stratumn.com";
+                string MEDIA_RELEASE_URL = "https://media.stratumn.com";
                 return new Endpoints(ACCOUNT_RELEASE_URL, TRACE_RELEASE_URL, MEDIA_RELEASE_URL);
             }
             if (endpoints.Account == null || endpoints.Trace == null || endpoints.Media == null)
@@ -54,10 +49,13 @@ namespace Stratumn.Sdk
 
         public static Dictionary<string, Property<FileWrapper>> ExtractFileWrappers(object data)
         {
-            return ExtractObjects<  FileWrapper>(data, (X) => FileWrapper.isFileWrapper(X), (Y) =>
-            {
-                return FileWrapper.FromObject((object)Y);
-            });
+            return ExtractObjects<FileWrapper>(
+                data,
+                (X) => FileWrapper.isFileWrapper(X), (Y) =>
+                {
+                    return FileWrapper.FromObject((object)Y);
+                }
+            );
         }
 
         /// <summary>
@@ -68,16 +66,15 @@ namespace Stratumn.Sdk
         /// <returns></returns>
         public static Dictionary<string, Property<FileRecord>> ExtractFileRecords(object data)
         {
-
-            return ExtractObjects<  FileRecord>(data, (X) => FileRecord.IsFileRecord(X), (Y) =>
-            {
-                return FileRecord.FromObject((object)Y);
-            });
+            return ExtractObjects<FileRecord>(
+                data,
+                (X) => FileRecord.IsFileRecord(X), (Y) =>
+                {
+                    return FileRecord.FromObject((object)Y);
+                }
+            );
         }
-
-
         private static Regex KeyIndex = new Regex("\\[(\\d+)\\]|\\((\\d+)\\)$");
-      
         private static int extractIndexFromKey(string key)
         {
             //get the index of the value in the array or collection
@@ -149,13 +146,11 @@ namespace Stratumn.Sdk
                                 //write the object to the field                                
                                 System.Reflection.FieldInfo field = parent.GetType().GetTypeInfo().GetDeclaredField(key);
 
-                                
                                 if (!field.FieldType.IsAssignableFrom(propertyElement.Value.GetType()))
                                 {
                                     throw new TraceSdkException("Field " + key + " of type " + field.FieldType + " is not assignable from " + propertyElement.Value.GetType());
                                 }
                                 field.SetValue(parent, propertyElement.Value);
-
                             }
                             catch (Exception e)
                             {
@@ -165,14 +160,10 @@ namespace Stratumn.Sdk
                     }
                 }
             }
-
         }
-
-
 
         private static void ExtractObjectsImpl<  V>(object data, object parent, string path, IDictionary<string, Property<V>> idToObjectMap, System.Predicate<object> predicate, System.Func<object, V> reviver) where V : Identifiable
         {
-            
             if (data == null)
             {
                 return;
@@ -245,22 +236,20 @@ namespace Stratumn.Sdk
                     System.Reflection.FieldInfo[] fields = clazz.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.Instance);
                     foreach (FieldInfo field in fields)
                     {
-                        if (field.FieldType.IsPrimitive || field.FieldType.IsValueType || field.FieldType.IsEnum   || field.IsStatic)
+                        if (field.FieldType.IsPrimitive || field.FieldType.IsValueType || field.FieldType.IsEnum || field.IsStatic)
                         {
                             continue;
                         }
-                        object value =  field.GetValue(data);
+                        object value = field.GetValue(data);
                    
                         ExtractObjectsImpl(value, data, path.Length == 0 ? field.Name : path + "." + field.Name, idToObjectMap, predicate, reviver);
                     }
-
                 }
             }
-
         }
 
 
-        private static Dictionary<String, Property<V>> ExtractObjects<  V>(object data, Predicate<object> predicate, Func<object, V> reviver) where V : Identifiable
+        private static Dictionary<String, Property<V>> ExtractObjects<V>(object data, Predicate<object> predicate, Func<object, V> reviver) where V : Identifiable
         {
             // create a new idToObject map
             Dictionary<String, Property<V>> idToObjectMap = new Dictionary<String, Property<V>>();
@@ -273,14 +262,48 @@ namespace Stratumn.Sdk
 
         public static string GetMimeType(string fileName)
         {
-            string mimeType = "application/unknown";
             string ext = System.IO.Path.GetExtension(fileName).ToLower();
-            Microsoft.Win32.RegistryKey regKey = Microsoft.Win32.Registry.ClassesRoot.OpenSubKey(ext);
-            if (regKey != null && regKey.GetValue("Content Type") != null)
-                mimeType = regKey.GetValue("Content Type").ToString();
-            return mimeType;
+            switch (ext)
+            {
+                case "bmp": return "image/bmp";
+                case "csv": return "text/csv";
+                case "doc": return "application/msword";
+                case "docm": return "application/vnd.ms-word.document.macroEnabled.12";
+                case "docx": return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+                case "dot": return "application/msword";
+                case "eml": return "message/rfc822";
+                case "gif": return "image/gif";
+                case "gz": return "application/x-gzip";
+                case "ico": return "image/x-icon";
+                case "jpeg": return "image/jpeg";
+                case "jpg": return "image/jpeg";
+                case "json": return "application/json";
+                case "msg": return "application/vnd.ms-outlook";
+                case "odt": return "application/vnd.oasis.opendocument.text";
+                case "one": return "application/onenote";
+                case "pages": return "application/octet-stream";
+                case "pdf": return "application/pdf";
+                case "png": return "image/png";
+                case "pps": return "application/vnd.ms-powerpoint";
+                case "ppsx": return "application/vnd.openxmlformats-officedocument.presentationml.slideshow";
+                case "ppt": return "application/vnd.ms-powerpoint";
+                case "pptx": return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
+                case "rar": return "application/x-rar-compressed";
+                case "rtf": return "application/rtf";
+                case "tar": return "application/x-tar";
+                case "tgz": return "application/x-compressed";
+                case "tif": return "image/tiff";
+                case "tiff": return "image/tiff";
+                case "txt": return "text/plain";
+                case "xls": return "application/vnd.ms-excel";
+                case "xlsm": return "application/vnd.ms-excel.sheet.macroEnabled.12";
+                case "xlsx": return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+                case "xml": return "text/xml";
+                case "xps": return "application/vnd.ms-xpsdocument";
+                case "zip": return "application/zip";
+                case "zipx": return "application/zip";
+            }
+            return "application/unknown";
         }
-
-
     }
 }

@@ -1,11 +1,8 @@
-﻿using Stratumn.Sdk;
+using Stratumn.Sdk;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Stratumn.Sdk
 {
@@ -16,7 +13,7 @@ namespace Stratumn.Sdk
         private byte[] IV = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 };
         private int BlockSize = 128;
 
-        public AesWrapper(string secret , int length)
+        public AesWrapper(string secret, int length)
         {
             //Encrypt
             SecretKey = Aes.Create();
@@ -37,8 +34,6 @@ namespace Stratumn.Sdk
                 using (CryptoStream cryptoStream =
                    new CryptoStream(memoryStream, SecretKey.CreateEncryptor(), CryptoStreamMode.Write))
                 {
-
-
                     byte[] buffer = new byte[1048576];
                     int read; 
                     try
@@ -60,7 +55,6 @@ namespace Stratumn.Sdk
                         data.Close();
                     }
                 }
-
                 return memoryStream;
             }
         }
@@ -69,6 +63,5 @@ namespace Stratumn.Sdk
         {
             return data;
         }
-
     }
 }

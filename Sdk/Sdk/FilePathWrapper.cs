@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+using System;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Stratumn.Sdk.Model.File;
 
 namespace Stratumn.Sdk
 {
     /// <summary>
-    /// The   implementation of a FileWrapper using a file path to point to the actual file.
+    /// The implementation of a FileWrapper using a file path to point to the actual file.
     /// </summary>
     public class FilePathWrapper : FileWrapper
     {
@@ -30,12 +25,13 @@ namespace Stratumn.Sdk
             return this.EncryptData(Data());
         }
 
-       
         public override Model.File.FileInfo Info()
         {
             System.IO.FileInfo fl = new System.IO.FileInfo(Path);
             if (!fl.Exists)
+            {
                 throw new TraceSdkException("Error while loading file " + fl.FullName);
+            }
 
             long size = fl.Length;
             string mimetype = Helpers.GetMimeType(Path);
@@ -44,11 +40,8 @@ namespace Stratumn.Sdk
             Stratumn.Sdk.Model.File.FileInfo fileInfo = new Stratumn.Sdk.Model.File.FileInfo(name, size, mimetype, null);
 
             return AddKeyToFileInfo(fileInfo);
-
-
         }
 
- 
         private MemoryStream Data()
         {
             System.IO.FileInfo file = new System.IO.FileInfo(Path);
@@ -62,7 +55,6 @@ namespace Stratumn.Sdk
 
             using (Stream source = File.OpenRead(Path))
             {
-
                 byte[] buffer = new byte[2048];
                 int bytesRead;
 
@@ -73,6 +65,5 @@ namespace Stratumn.Sdk
             }
             return destBuffer;
         }
-
     }
 }

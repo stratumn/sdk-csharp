@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Stratumn.Sdk.Model.Client
+﻿namespace Stratumn.Sdk.Model.Client
 {
     public class Secret
-    {
- 
+    { 
         public static Secret NewCredentialSecret(string email, string password)
         {
             return new CredentialSecret(email, password);
@@ -23,7 +16,6 @@ namespace Stratumn.Sdk.Model.Client
         {
             return new ProtectedKeySecret(publicKey, password);
         }
-
 
         /// <summary>
         /// Helper method to test that an object is of type CredentialSecret </summary>
@@ -53,9 +45,5 @@ namespace Stratumn.Sdk.Model.Client
         {
             return secret is ProtectedKeySecret;
         }
-
-
-
-
     }
 }

@@ -16,7 +16,6 @@ namespace Stratumn.Sdk.Model.Client
         /// </summary>
         public Endpoints Endpoints { get; set; }
 
-
         public Secret Secret { get; set; }
 
         public bool EnableDebuging { get; set; }
@@ -26,7 +25,6 @@ namespace Stratumn.Sdk.Model.Client
             this.Endpoints = endpoints;
             this.Secret = secret;
         }
-
 
         public void setProxy(string host, int port)
         {
@@ -42,7 +40,5 @@ namespace Stratumn.Sdk.Model.Client
         {
             get; set;
         }
-
     }
-
 }

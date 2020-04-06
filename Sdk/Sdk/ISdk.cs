@@ -1,7 +1,8 @@
-﻿namespace Stratumn.Sdk
+using System.Threading.Tasks;
+using Stratumn.Sdk.Model.Trace;
+
+namespace Stratumn.Sdk
 {
-    using System.Threading.Tasks;
-    using Stratumn.Sdk.Model.Trace;
 
     /// <summary>
     /// Defines the <see cref="ISdk{TState}" />

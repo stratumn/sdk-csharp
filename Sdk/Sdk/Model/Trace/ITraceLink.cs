@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Stratumn.Chainscript;
 
 namespace Stratumn.Sdk.Model.Trace
 {
-
     /// <summary>
     /// Interface extending a Chainscript Link
     /// with common trace methods.
@@ -25,7 +20,6 @@ namespace Stratumn.Sdk.Model.Trace
         string Form();
         string LastForm();
         string[] Inputs();
-        TraceLinkMetaData Metadata();
+        new TraceLinkMetaData Metadata();
     }
-
 }

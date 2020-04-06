@@ -1,37 +1,48 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
+using System;
+using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.IO;
+
+using Stratumn.Chainscript.utils;
 using Stratumn.Sdk;
 using Stratumn.Sdk.Model.Client;
 using Stratumn.Sdk.Model.Sdk;
 using Stratumn.Sdk.Model.Trace;
-using System.Diagnostics;
-using System.Collections.Generic;
-using Stratumn.Chainscript.utils;
-using System.IO;
 using Stratumn.Sdk.Model.Misc;
-using Newtonsoft.Json.Linq;
 
 namespace SDKTest
 {
-
-    [TestClass]
     public class SdkTest
     {
-
         private const string WORKFLOW_ID = "591";
         private const string ACTION_KEY = "action1";
 
-        private const String MY_GROUP = "1744";
-        private const String PEM_PRIVATEKEY = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRACaNT4cup/ZQAq4IULZCrlPB7eR1QTCN9V3Qzct8S\nYp57BqN4FipIrGpyclvbT1FKQfYLJpeBXeCi2OrrQMTgiw==\n-----END ED25519 PRIVATE KEY-----\n";
+        private const string MY_GROUP = "1744";
+        private const string PEM_PRIVATEKEY = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRACaNT4cup/ZQAq4IULZCrlPB7eR1QTCN9V3Qzct8S\nYp57BqN4FipIrGpyclvbT1FKQfYLJpeBXeCi2OrrQMTgiw==\n-----END ED25519 PRIVATE KEY-----\n";
 
-        private static String PEM_PRIVATEKEY_2 = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRAWotrb1jJokHr7AVQTS6f6W7dFYnKpVy+DV++sG6x\nlExB4rtrKpCAEPt5q7oT6/lcF4brFSNiCxLPnHqiSjcyVw==\n-----END ED25519 PRIVATE KEY-----\n";
-        private static String OTHER_GROUP = "1785";
+        private static string PEM_PRIVATEKEY_2 = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRAWotrb1jJokHr7AVQTS6f6W7dFYnKpVy+DV++sG6x\nlExB4rtrKpCAEPt5q7oT6/lcF4brFSNiCxLPnHqiSjcyVw==\n-----END ED25519 PRIVATE KEY-----\n";
+        private static string OTHER_GROUP = "1785";
 
         private const string TRACE_URL = "https://trace-api.staging.stratumn.com";
         private const string ACCOUNT_URL = "https://account-api.staging.stratumn.com";
         private const string MEDIA_URL = "https://media-api.staging.stratumn.com";
 
+        private string GetTestFilePath(
+            // This is a weird hack to get the location of this source file
+            // https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.callerfilepathattribute?view=netstandard-2.0
+            [CallerFilePath] string callerFilePath = ""
+        )
+        {
+            return Path.Combine(
+                Directory.GetParent(callerFilePath).FullName,
+                "Resources",
+                "TestFile1.txt"
+            );
+        }
 
         public Sdk<T> GetSdk<T>()
         {
@@ -99,24 +110,22 @@ namespace SDKTest
             return sdk;
         }
 
-        [TestMethod]
+        [Fact]
         public async Task LoginWtihPrivateKeyDemo()
         {
             var sdk = GetSdk();
             string token = await sdk.LoginAsync();
-            Debug.WriteLine(token); // write to output window
-            Console.WriteLine(token); // write to console window
+            Debug.WriteLine(token);
+            Assert.NotNull(token);
         }
 
-
-        //used to pass the trace from one test method to another
+        // used to pass the trace from one test method to another
         private TraceState<StateExample, SomeClass> someTraceState2;
 
-        [TestMethod]
+        [Fact]
         public async Task NewTraceTestWithGenericType()
         {
             var sdk = GetSdk<StateExample>();
-
 
             Dictionary<string, object> data = new Dictionary<string, object>
             {
@@ -137,45 +146,39 @@ namespace SDKTest
             TraceState<StateExample, SomeClass> state = await sdk.NewTraceAsync<SomeClass>(input);
             someTraceState2 = state;
 
-
-
-            Assert.IsNotNull(state.TraceId);
+            Assert.NotNull(state.TraceId);
         }
-
 
         public class SomeClass
         {
-
             public int f11;
             public Dictionary<string, object> f22;
         }
 
         public class StateExample
         {
-
             public string f1;
             public SomeClass f2;
         }
 
-        [TestMethod]
+        [Fact]
         public async Task LoginWithCredentialsDemo()
         {
             var sdk = GetSdk();
             string token = await sdk.LoginAsync();
-            Debug.WriteLine(token); // write to output window
-            Console.WriteLine(token); // write to console window
+            Debug.WriteLine(token);
+            Assert.NotNull(token);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task TestGetConfigAsync()
         {
             var sdk = GetSdk();
-
             SdkConfig config = await sdk.GetConfigAsync();
-
+            Assert.NotNull(config);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task GetTraceStateTest()
         {
 
@@ -183,10 +186,10 @@ namespace SDKTest
             string traceId = "191516ec-5f8c-4757-9061-8c7ab06cf0a0";
             GetTraceStateInput input = new GetTraceStateInput(traceId);
             TraceState<object, object> state = await sdk.GetTraceStateAsync<object>(input);
-            Assert.AreEqual(state.TraceId, traceId);
+            Assert.Equal(state.TraceId, traceId);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task GetTraceDetails()
         {
             var sdk = GetSdk();
@@ -195,53 +198,49 @@ namespace SDKTest
             GetTraceDetailsInput input = new GetTraceDetailsInput(traceId, 5, null, null, null);
 
             TraceDetails<object> details = await sdk.GetTraceDetailsAsync<object>(input);
-            Console.WriteLine(JsonHelper.ToJson(details));
-
-
+            Debug.WriteLine(JsonHelper.ToJson(details));
+            Assert.NotNull(details);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task GetIncomingTracesTest()
         {
-
             Sdk<object> sdk = GetSdk();
             PaginationInfo paginationInfo = new PaginationInfo(10, null, null, null);
             TracesState<object, object> state = await sdk.GetIncomingTracesAsync<object>(paginationInfo);
+            Assert.NotNull(state);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task GetOutgoingTracesTest()
         {
-
             Sdk<object> sdk = GetSdk();
             PaginationInfo paginationInfo = new PaginationInfo(10, null, null, null);
             TracesState<object, object> state = await sdk.GetOutgoingTracesAsync<object>(paginationInfo);
+            Assert.NotNull(state);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task GetAttestationTracesTest()
         {
-
             Sdk<object> sdk = GetSdk();
             PaginationInfo paginationInfo = new PaginationInfo(10, null, null, null);
             TracesState<object, object> state = await sdk.GetAttestationTracesAsync<object>(ACTION_KEY, paginationInfo);
+            Assert.NotNull(state);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task GetBackLogTraceTest()
         {
-
             var sdk = GetSdk();
-
             PaginationInfo info = new PaginationInfo(2, null, null, null);
-
-            await sdk.GetBacklogTracesAsync<object>(info);
+            var state = await sdk.GetBacklogTracesAsync<object>(info);
+            Assert.NotNull(state);
         }
-
 
         //used to pass the trace from one test method to another
         private TraceState<object, object> someTraceState;
-        [TestMethod]
+        [Fact]
         public async Task NewTraceTest()
         {
             var sdk = GetSdk();
@@ -257,55 +256,53 @@ namespace SDKTest
             TraceState<object, object> state = await sdk.NewTraceAsync<object>(input);
             someTraceState = state;
 
-            Assert.IsNotNull(state.TraceId);
+            Assert.NotNull(state.TraceId);
         }
 
 
-        [TestMethod]
+        [Fact]
         public async Task AppendLinkTest()
         {
-
             await NewTraceTest();
-            Assert.IsNotNull(someTraceState);
+            Assert.NotNull(someTraceState);
             Dictionary<string, object> data;
             string json = "{ operation: \"XYZ shipment departed port for ABC\"," + "    destination: \"ABC\", " + "    customsCheck: true, "
                + "    eta: \"2019-07-02T12:00:00.000Z\"" + "  }";
             data = JsonHelper.ObjectToMap(json);
             AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(ACTION_KEY, data, someTraceState.TraceId);
             TraceState<object, object> state = await GetSdk().AppendLinkAsync(appLinkInput);
-            Assert.IsNotNull(state.TraceId);
+            Assert.NotNull(state.TraceId);
 
         }
 
 
-        [TestMethod]
+        [Fact]
         public async Task PushTraceTest()
         {
             await NewTraceTest();
-            Assert.IsNotNull(someTraceState);
+            Assert.NotNull(someTraceState);
             IDictionary<string, object> data = new Dictionary<string, object>() { { "why", "because im testing the pushTrace 2" } };
 
             PushTransferInput<object> push = new PushTransferInput<object>(someTraceState.TraceId, OTHER_GROUP, data, null);
             someTraceState = await GetSdk().PushTraceAsync<object>(push);
 
-            Assert.IsNotNull(push.TraceId);
+            Assert.NotNull(push.TraceId);
         }
 
 
-        [TestMethod]
+        [Fact]
         public async Task AcceptTransferTest()
         {
-
             await PushTraceTest();
             TransferResponseInput<Object> trInput = new TransferResponseInput<Object>(someTraceState.TraceId, null, null);
             TraceState<Object, Object> stateAccept = await GetOtherGroupSdk().AcceptTransferAsync(trInput);
 
-            Assert.IsNotNull(stateAccept.TraceId);
+            Assert.NotNull(stateAccept.TraceId);
         }
 
 
 
-        [TestMethod]
+        [Fact]
         public async Task RejectTransferTest()
         {
             PaginationInfo paginationInfo = new PaginationInfo(10, null, null, null);
@@ -325,32 +322,23 @@ namespace SDKTest
             TransferResponseInput<Object> trInput = new TransferResponseInput<Object>(traceId, null, null);
             TraceState<Object, Object> stateReject = await GetOtherGroupSdk().RejectTransferAsync(trInput);
 
-            Assert.IsNotNull(stateReject.TraceId);
-
-
+            Assert.NotNull(stateReject.TraceId);
         }
 
-
-
-        [TestMethod]
+        [Fact]
         public async Task CancelTransferTest()
         {
-
             await PushTraceTest();
 
             TransferResponseInput<Object> responseInput = new TransferResponseInput<Object>(someTraceState.TraceId, null, null);
             TraceState<Object, Object> statecancel = await GetSdk().CancelTransferAsync(responseInput);
 
-            Assert.IsNotNull(statecancel.TraceId);
-
+            Assert.NotNull(statecancel.TraceId);
         }
 
-
-
-        [TestMethod]
+        [Fact]
         public async Task NewTraceUploadTest()
         {
-
             Sdk<Object> sdk = GetSdk();
 
             IDictionary<string, object> data = new Dictionary<string, object>
@@ -361,23 +349,20 @@ namespace SDKTest
                 ["operation"] = "my new operation 1"
             };
 
-            data.Add("Certificate1", FileWrapper.FromFilePath(Path.GetFullPath("../../Resources/TestFile1.txt")));
-            data.Add("Certificates", new Identifiable[] { FileWrapper.FromFilePath(Path.GetFullPath("../../Resources/TestFile1.txt")) });
+            data.Add("Certificate1", FileWrapper.FromFilePath(GetTestFilePath()));
+            data.Add("Certificates", new Identifiable[] { FileWrapper.FromFilePath(GetTestFilePath()) });
 
             NewTraceInput<Object> newTraceInput = new NewTraceInput<Object>(ACTION_KEY, data);
 
             TraceState<object, object> state = await sdk.NewTraceAsync<object>(newTraceInput);
-            Assert.IsNotNull(state.TraceId);
+            Assert.NotNull(state.TraceId);
             someTraceState = state;
-
         }
 
-        [TestMethod]
+        [Fact]
         public async Task UploadFilesInLinkDataTest()
         {
-
             Sdk<Object> sdk = GetSdk();
-
             IDictionary<string, object> data = new Dictionary<string, object>
             {
                 ["weight"] = "123",
@@ -386,33 +371,27 @@ namespace SDKTest
                 ["operation"] = "my new operation 1"
             };
 
-            data.Add("Certificate1", FileWrapper.FromFilePath(Path.GetFullPath("../../Resources/TestFile1.txt")));
-            data.Add("Certificates", new Identifiable[] { FileWrapper.FromFilePath(Path.GetFullPath("../../Resources/TestFile1.txt")) });
+            data.Add("Certificate1", FileWrapper.FromFilePath(GetTestFilePath()));
+            data.Add("Certificates", new Identifiable[] { FileWrapper.FromFilePath(GetTestFilePath()) });
 
             await sdk.UploadFilesInLinkData(data);
 
-            Assert.IsTrue(FileRecord.IsFileRecord(data["Certificate1"]));
-            Assert.IsTrue(FileRecord.IsFileRecord(((object[]) data["Certificates"])[0]));
+            Assert.True(FileRecord.IsFileRecord(data["Certificate1"]));
+            Assert.True(FileRecord.IsFileRecord(((object[]) data["Certificates"])[0]));
 
-            Console.WriteLine(JsonHelper.ToJson(data));
-
+            Debug.WriteLine(JsonHelper.ToJson(data));
         }
 
 
-        [TestMethod]
+        [Fact]
         public async Task downloadFilesInObjectTest()
         {
-
             TraceState<Object, Object> state;
-            try
+            if (someTraceState == null)
             {
-                state = await GetSdk().GetTraceStateAsync<object>(new GetTraceStateInput("b8d98439-8115-4c0c-9b86-0831baa20c17"));
-            }
-            catch (Exception e)
-            {  //trace not found
                 await NewTraceUploadTest();
-                state = someTraceState;
             }
+            state = someTraceState;
 
             Object dataWithRecords = state.HeadLink.FormData();
 
@@ -421,33 +400,11 @@ namespace SDKTest
 
             foreach (Property<FileWrapper> fileWrapperProp in fileWrappers.Values)
             {
-                WriteFileToDisk(fileWrapperProp.Value);
-                //assert files are equal
+                // Verify the contents of the file
+                byte[] decrypted = fileWrapperProp.Value.DecryptedData().ToArray();
+                byte[] expected = Encoding.UTF8.GetBytes("\nThis is a test file");
+                Assert.Equal(decrypted, expected);
             }
-
-
-        }
-        private void WriteFileToDisk(FileWrapper fWrapper)
-        {
-
-            MemoryStream buffer = fWrapper.DecryptedData();
-
-            FileInfo file = new FileInfo(Path.GetFullPath("./Resources/out/" + fWrapper.Info().Name));
-
-
-            if (!Directory.Exists(file.DirectoryName))
-            {
-                Directory.CreateDirectory(file.DirectoryName);
-            }
-
-            using (FileStream fs = new FileStream(file.FullName, FileMode.Create, System.IO.FileAccess.Write))
-            {
-                byte[] bytes = new byte[buffer.Length];
-                buffer.Read(bytes, 0, (int)buffer.Length);
-                fs.Write(bytes, 0, bytes.Length);
-                buffer.Close();
-            }
-
         }
     }
 }

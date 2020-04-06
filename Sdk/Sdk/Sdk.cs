@@ -1,26 +1,27 @@
-﻿using GraphQL;
+using GraphQL;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using System.IO;
+
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+using Org.BouncyCastle.Crypto.Parameters;
+
+using Stratumn.Chainscript.Proto;
+using Stratumn.Chainscript.utils;
+using Stratumn.Sdk.Model.Client;
+using Stratumn.Sdk.Model.Sdk;
+using Stratumn.Sdk.Model.Trace;
+using Stratumn.Sdk.Model.Misc;
+using Stratumn.Sdk.Model.File;
+using FileInfo = Stratumn.Sdk.Model.File.FileInfo;
+using static Stratumn.Sdk.Client;
+using Utils;
 
 namespace Stratumn.Sdk
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Threading.Tasks;
-    using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
-    using Org.BouncyCastle.Crypto.Parameters;
-    using Stratumn.Chainscript.Proto;
-    using Stratumn.Chainscript.utils;
-    using Stratumn.Sdk.Model.Client;
-    using Stratumn.Sdk.Model.Sdk;
-    using Stratumn.Sdk.Model.Trace;
-    using Utils;
-    using static Stratumn.Sdk.Client;
-    using Stratumn.Sdk.Model.Misc;
-    using Stratumn.Sdk.Model.File;
-    using System.IO;
-    using FileInfo = Model.File.FileInfo;
-
     /// <summary>
     /// Defines the <see cref="Sdk{TState}" />
     /// </summary>
@@ -861,7 +862,5 @@ namespace Stratumn.Sdk
             // call createLink helper
             return await this.CreateLinkAsync(linkBuilder);
         }
-
-
     }
 }

@@ -1,29 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Stratumn.Sdk.Model.Trace
+﻿namespace Stratumn.Sdk.Model.Trace
 {
     public class PaginationResults
     {
-
         private int totalCount;
         private Info info;
 
         public PaginationResults()
         {
-
         }
+
         public PaginationResults(int totalCount, Info info)
         {
-
             if (info == null)
             {
                 throw new System.ArgumentException("info cannot be null in PaginationResults");
             }
-
             this.totalCount = totalCount;
         }
 
@@ -39,7 +30,6 @@ namespace Stratumn.Sdk.Model.Trace
             }
         }
 
-
         public Info Info
         {
             get
@@ -51,8 +41,5 @@ namespace Stratumn.Sdk.Model.Trace
                 this.info = value;
             }
         }
-
-
     }
-
 }

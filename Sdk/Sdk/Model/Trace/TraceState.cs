@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Stratumn.Sdk.Model.Trace
 {
-    using System;
-
     /// <summary>
     /// The state of trace is composed of:
     /// - the trace id
@@ -19,7 +13,6 @@ namespace Stratumn.Sdk.Model.Trace
     /// </summary>
     public class TraceState<TState, TLinkData>
     {
-
         private string traceId;
         private ITraceLink<TLinkData> headLink;
         private DateTime updatedAt;
@@ -55,7 +48,6 @@ namespace Stratumn.Sdk.Model.Trace
             }
         }
 
-
         public virtual ITraceLink<TLinkData> HeadLink
         {
             get
@@ -67,7 +59,6 @@ namespace Stratumn.Sdk.Model.Trace
                 this.headLink = value;
             }
         }
-
 
         public virtual DateTime UpdatedAt
         {
@@ -81,7 +72,6 @@ namespace Stratumn.Sdk.Model.Trace
             }
         }
 
-
         public virtual Account UpdatedBy
         {
             get
@@ -93,7 +83,6 @@ namespace Stratumn.Sdk.Model.Trace
                 this.updatedBy = value;
             }
         }
-
 
         public virtual TState Data
         {
@@ -107,7 +96,6 @@ namespace Stratumn.Sdk.Model.Trace
             }
         }
 
-
         public virtual string[] Tags
         {
             get
@@ -120,13 +108,9 @@ namespace Stratumn.Sdk.Model.Trace
             }
         }
 
-
         public override string ToString()
         {
             return "TraceState [traceId=" + traceId + ", headLink=" + headLink + ", updatedAt=" + updatedAt + ", updatedBy=" + updatedBy + ", data=" + data + ", tags=" + tags.ToString() + "]";
         }
-
-
     }
-
 }

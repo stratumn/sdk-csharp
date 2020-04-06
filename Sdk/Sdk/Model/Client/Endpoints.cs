@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Stratumn.Sdk.Model.Client
+﻿namespace Stratumn.Sdk.Model.Client
 {
     public class Endpoints
     {
@@ -34,7 +28,6 @@ namespace Stratumn.Sdk.Model.Client
 
                 case Service.MEDIA:
                     return Media;
-
             }
             return null;
         }

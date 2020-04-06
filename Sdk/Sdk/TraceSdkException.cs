@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System;
 
 namespace Stratumn.Sdk
 {
     /// <summary>
-    ///*
     ///  Exception to wrap Sdk exceptiosn
     /// </summary>
     public class TraceSdkException : Exception
     {
-
         /// 
         private const long serialVersionUID = 1L;
 
@@ -31,6 +25,5 @@ namespace Stratumn.Sdk
         public TraceSdkException(Exception cause) : base(cause.ToString())
         {
         }
-
     }
 }

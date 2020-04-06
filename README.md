@@ -1,14 +1,16 @@
-# Stratumn SDK for .Net
+# Stratumn SDK for .NET
 
-The official Stratumn SDK for .Net to interact with [Trace](https://trace.stratumn.com).
+[![NuGet](https://img.shields.io/nuget/v/Stratumn.SDK)](https://www.nuget.org/packages/Stratumn.SDK/)
+
+The official Stratumn SDK for .NET to interact with [Trace](https://trace.stratumn.com).
 
 ## :satellite: Installing
 
-### Using Nuget console manager
+### Using NuGet console manager
 
 The preferred way to install the Stratumn SDK is to use the
-[nuget](https://www.nuget.org) package manager. Simply type the following
-into a nuget console window :
+[NuGet](https://www.nuget.org) package manager. Simply type the following
+into a NuGet console window :
 
 ```sh
 Install-Package Stratumn.SDK
@@ -47,32 +49,31 @@ Notes:
 - When a `PrivateKeySecret` is provided, a unique message is generated, signed and sent to [Account](https://account.stratumn.com) for validation. We check that the signature and the message are valid and return an authentication token in that case.
 - By default the `Sdk` is configured to point to the production environment of Trace. During a development phase, you can configure the `Sdk` to point to the staging environment:
 
-```
+```cs
 Secret s = Secret.NewPrivateKeySecret(YOUR_SECRETS.privateKey);
 SdkOptions opts = new SdkOptions(YOUR_CONFIG.workflowId, s);
-opts.Endpoints =new Endpoints
-            {
-                Trace = "https://trace-api.staging.stratumn.com",
-                Account = "https://account-api.staging.stratumn.com",
-                Media = "https://media-api.staging.stratumn.com",
-            } ;
+opts.Endpoints = new Endpoints {
+  Trace = "https://trace-api.staging.stratumn.com",
+  Account = "https://account-api.staging.stratumn.com",
+  Media = "https://media-api.staging.stratumn.com",
+};
 ```
-    
+
 - To enable low level http debuging set the enableDebugging option to true;
 
-```
+```cs
 opts.setEnableDebuging(true);
 ```
 
 - To connect through a proxy server: 
 
-```
+```cs
 opts.setProxy("MyProxyHost", 1234);
 ```
 
 Finally to create the sdk instance:
 
-```
+```cs
 Sdk<MyStateType> sdk = new Sdk<MyStateType>(opts, MyStateType.class);
 ```
 
@@ -80,14 +81,13 @@ Sdk<MyStateType> sdk = new Sdk<MyStateType>(opts, MyStateType.class);
 
 You can create a new trace this way:
 
-```
- IDictionary<string, object> data = new Dictionary<string, object>
- {
-      ["weight"] = "123",
-      ["valid"] = true,
-      ["operators"] = new string[] { "1", "2" },
-      ["operation"] = "my new operation 1"
-};           
+```cs
+IDictionary<string, object> data = new Dictionary<string, object> {
+  ["weight"] = "123",
+  ["valid"] = true,
+  ["operators"] = new string[] { "1", "2" },
+  ["operation"] = "my new operation 1"
+};
 NewTraceInput<object> input = new NewTraceInput<object>(YOUR_CONFIG.formId, data);
 TraceState<object, object> myFirstTrace = await sdk.NewTraceAsync<object>(input);
 ```
@@ -115,16 +115,16 @@ Notes:
 ### Appending a link to an existing trace
 
 
-```
+```cs
 AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(YOUR_CONFIG.formId, data, prevLink);
 TraceState<object, object> state = await GetSdk().AppendLinkAsync(appLinkInput);
+```
 
-```
 If you don't have access to the head link, you can also provide the trace id:
-```
+
+```cs
 AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(YOUR_CONFIG.formId, data, traceId);
 TraceState<object, object> state = await GetSdk().AppendLinkAsync(appLinkInput);
-
 ```
 
 
@@ -146,12 +146,11 @@ Notes:
 
 You can "push" the trace to another group in the workflow this way:
 
-```
+```cs
 IDictionary<string, object> data = new Dictionary<string, object>() { { "why", "because im testing the pushTrace 2" } };
 
 PushTransferInput<object> push = new PushTransferInput<object>(TraceId, recipient, data, prevLink);
 someTraceState = await GetSdk().PushTraceAsync<object>(push);
-
 ```
 
 
@@ -163,13 +162,11 @@ The arguments are:
 
 You can also "pull" an existing trace from another group:
 
-```
-
+```cs
 IDictionary<string, string> data = new Dictionary<string, string>() { { "why", "because im testing the pushTrace 2" } };
 
 PullTransferInput<object> pull = new PullTransferInput<object>(TraceId, data, prevLink);
 TraceState<object, object> statepul = await GetSdk().PullTraceAsync(pull);
-
 ```
 
 And in this case, the arguments are:
@@ -189,25 +186,23 @@ Notes:
 
 When someone pushed a trace to your group, you can either accept or reject the transfer:
 
-```
+```cs
 TransferResponseInput<Object> trInput = new TransferResponseInput<Object>(TraceId, null, null);
 TraceState<Object, Object> stateAccept = await GetSdk().AcceptTransferAsync(trInput);
 ```
 
 Or:
 
-```
+```cs
 TransferResponseInput<Object> trInput = new TransferResponseInput<Object>(traceId, null, null);
 TraceState<Object, Object> stateReject = await GetSdk().RejectTransferAsync(trInput);
-
 ```
 
 Alternatively, if you have initiated the transfer (push or pull), you can  also cancel before it has been accepted:
 
-```
+```cs
 TransferResponseInput<Object> responseInput = new TransferResponseInput<Object>(TraceId, null, null);
 TraceState<Object, Object> statecancel = await GetSdk().CancelTransferAsync(responseInput);
-
 ```
 
 In all cases, the arguments are:
@@ -241,7 +236,7 @@ Notes:
 
 When all you have is the id of a trace, you can get its state by calling:
 
-```
+```cs
 GetTraceStateInput input = new GetTraceStateInput(traceId);
 TraceState<object, object> state = await sdk.GetTraceStateAsync<object>(input);
 ```
@@ -252,7 +247,7 @@ The argument:
 
 You can also retrieve the links of a given trace this way:
 
-```
+```cs
 GetTraceDetailsInput input = new GetTraceDetailsInput(traceId, first, after, last, before);
 TraceDetails<object> details = await sdk.GetTraceDetailsAsync<object>(input);
 ```
@@ -277,7 +272,7 @@ The Sdk will return an object with the details about the trace you asked for. Th
 
 To retrieve all the traces of a given stage, you can:
 
-```js
+```cs
 Sdk<object> sdk = GetSdk();
 PaginationInfo paginationInfo = new PaginationInfo(first, after, last, before);
 TracesState<object, object> state = await sdk.GetIncomingTracesAsync<object>(paginationInfo);
@@ -285,15 +280,15 @@ TracesState<object, object> state = await sdk.GetIncomingTracesAsync<object>(pag
 
 Or:
 
-```js
- Sdk<object> sdk = GetSdk();
+```cs
+Sdk<object> sdk = GetSdk();
 PaginationInfo paginationInfo = new PaginationInfo(first, after, last, before);
 TracesState<object, object> state = await sdk.GetOutgoingTracesAsync<object>(paginationInfo);
 ```
 
 Or:
 
-```js
+```cs
 var sdk = GetSdk();
 PaginationInfo info = new PaginationInfo(first, after, last, before);
 await sdk.GetBacklogTracesAsync<object>(info);
@@ -335,7 +330,7 @@ In the result object, you will have the `totalCount` and an `info` object that h
 Let's look at a pagination example. We start by retrieving (and consuming) the first 10 incoming traces:
 
 
-```
+```cs
 Sdk<object> sdk = GetSdk();
 PaginationInfo paginationInfo = new PaginationInfo(10, null, null, null);
 TracesState<object, object> results = await sdk.GetIncomingTracesAsync<object>(paginationInfo);
@@ -343,12 +338,12 @@ TracesState<object, object> results = await sdk.GetIncomingTracesAsync<object>(p
 
 
 Next, we look at the pagination info results to know if there are more traces to retrieve:
-```
-if (results.Info.HasNext) {
-PaginationInfo paginationInfo = new PaginationInfo(10, results.Info.EndCursor, null, null);
-TracesState<object, object> results = await sdk.GetIncomingTracesAsync<object>(paginationInfo);
+```cs
+if (results.Info.HasNext)
+{
+  PaginationInfo paginationInfo = new PaginationInfo(10, results.Info.EndCursor, null, null);
+  TracesState<object, object> results = await sdk.GetIncomingTracesAsync<object>(paginationInfo);
 }
-
 ```
 
 
@@ -360,34 +355,31 @@ When providing a `data` object in an action (via `newTrace`, `appendLink` etc.),
 
 
 
-```
+```cs
 AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(YOUR_CONFIG.formId, data, TraceId);
 TraceState<object, object> state = await GetSdk().AppendLinkAsync(appLinkInput);
 ```
 In the browser, assuming you are working with File objects, you can use:
 
-```
-IDictionary<string, object> data = new Dictionary<string, object>
-{
-    ["weight"] = "123",
-    ["valid"] = true,
-    ["operators"] = new string[] { "1", "2" },
-    ["operation"] = "my new operation 1"
+```cs
+IDictionary<string, object> data = new Dictionary<string, object> {
+  ["weight"] = "123",
+  ["valid"] = true,
+  ["operators"] = new string[] { "1", "2" },
+  ["operation"] = "my new operation 1"
 };  
-data.Add("Certificate1",FileWrapper.FromFilePath(Path.GetFullPath(filePath)));
+data.Add("Certificate1", FileWrapper.FromFilePath(Path.GetFullPath(filePath)));
 data.Add("Certificates", new Identifiable[] { FileWrapper.FromFilePath(filePath});
 
 AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(YOUR_CONFIG.formId, data, TraceId);
 TraceState<object, object> state = await GetSdk().AppendLinkAsync(appLinkInput);
 ```
 
-
 This record uniquely identifies the corresponding file in our service and is easily serializable. If you look in the `headLink` of the returned state, you will see that the `FileWrapper` have been converted to `FileRecord` types:
-
 
 When you retrieve traces with the Sdk, it will not automatically download the files for you. You have to explicitely call a method on the Sdk for that purpose:
 
-```
+```cs
 state = await GetSdk().GetTraceStateAsync<object>(new GetTraceStateInput(traceId));
 Object dataWithRecords = state.HeadLink.FormData();
 
@@ -397,4 +389,43 @@ foreach (Property<FileWrapper> fileWrapperProp in fileWrappers.Values)
 {
    WriteFileToDisk(fileWrapperProp.Value);
 }
+```
+
+## Development
+
+Download the [.NET Core SDK](https://dotnet.microsoft.com/download) if you don't already have it.
+
+```sh
+# Install .NET dependencies
+dotnet restore
+
+# Start testing
+dotnet test SdkTest/SdkTest.csproj
+```
+
+## Using local Stratumn.* dependencies
+
+You may want to test the SDK with local debug versions of `Stratumn.Chainscript` and `Stratumn.CanonicalJson`.
+To do so, you can feed your local filesystem as custom NuGet sources by feeding the following to the `.csproj` where
+you may need it:
+```xml
+<PropertyGroup>
+  <RestoreSources>
+    $(RestoreSources);../relative-path-to-chainscript/bin/Debug;../relative-path-to-canonicaljson/bin/Debug;https://api.nuget.org/v3/index.json
+  </RestoreSources>
+  [...other properties]
+</PropertyGroup>
+```
+
+Afterwards, run `dotnet pack` on the Chainscript/CanonicalJson project(s), and `dotnet restore` on the SDK project,
+it should use your local debug `.nupkg` files.
+
+## Publishing to NuGet
+
+From [this source](https://docs.microsoft.com/en-us/nuget/quickstart/create-and-publish-a-package-using-the-dotnet-cli):
+```sh
+# Create the .nupkg package
+dotnet pack --configuration release
+# Publish it
+dotnet nuget push Sdk/bin/Release/Stratumn.Sdk.<version>.nupkg -k <nuget_api_key> -s https://api.nuget.org/v3/index.json
 ```

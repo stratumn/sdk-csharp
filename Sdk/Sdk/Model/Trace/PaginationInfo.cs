@@ -1,16 +1,9 @@
 ﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Stratumn.Sdk.Model.Trace
 {
     public class PaginationInfo
     {
-     
-
         [JsonProperty(PropertyName = "first")]
         public int? First { get; set; }
 
@@ -26,6 +19,7 @@ namespace Stratumn.Sdk.Model.Trace
         public PaginationInfo()
         {
         }
+
         public PaginationInfo(int? first, string after, int? last, string before)
         {
             if (first != null)
@@ -44,9 +38,7 @@ namespace Stratumn.Sdk.Model.Trace
             {
                 this.Before = before;
             }
-
         }
-
 
         public void SetForward(int first, string after)
         {
@@ -59,11 +51,5 @@ namespace Stratumn.Sdk.Model.Trace
             this.Last = last;
             this.Before = before;
         }
-
-
-        
-      
-
     }
-
 }

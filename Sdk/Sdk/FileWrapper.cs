@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Linq;
 using Stratumn.CanonicalJson;
 using Stratumn.Chainscript.utils;
 using Stratumn.Sdk.Model.Misc;
@@ -17,12 +17,9 @@ namespace Stratumn.Sdk
         public string GetId()
         {
             return this.id;
-
         }
 
-
         private AesKey _key;
-        
 
         public FileWrapper() : this(false, null)
         {
@@ -31,7 +28,9 @@ namespace Stratumn.Sdk
         public FileWrapper(Boolean disableEncryption, String key)
         {
             if (!disableEncryption)
+            {
                 this._key = new AesKey(key);
+            }
         }
 
         /// <summary>
@@ -42,11 +41,12 @@ namespace Stratumn.Sdk
         protected MemoryStream EncryptData(MemoryStream data)
         {
             if (this._key == null)
+            {
                 return data;
+            }
 
-            //AES encryption 
+            // AES encryption 
             return this._key.Encrypt(data);
-
         }
 
         /// <summary>
@@ -57,11 +57,12 @@ namespace Stratumn.Sdk
         protected MemoryStream DecryptData(MemoryStream data)
         {
             if (this._key == null)
+            {
                 return data;
+            }
 
-            //AES decryption
+            // AES decryption
             return this._key.Decrypt(data);
-
         }
 
         /// <summary>
@@ -72,11 +73,12 @@ namespace Stratumn.Sdk
         protected Model.File.FileInfo AddKeyToFileInfo(Model.File.FileInfo info)
         {
             if (this._key == null)
+            {
                 return info;
+            }
+
             info.Key = this._key.Export();
-
             return info;
-
         }
 
         public abstract Model.File.FileInfo Info();
@@ -84,7 +86,6 @@ namespace Stratumn.Sdk
         public abstract MemoryStream EncryptedData();
 
         public abstract MemoryStream DecryptedData();
-
 
         public static FileWrapper FromBrowserFile(FileInfo file)
         {
@@ -103,31 +104,36 @@ namespace Stratumn.Sdk
 
         public static Boolean isFileWrapper(Object obj)
         {
-            
             bool isFileWrapper = false;
             try
             {
                 string json = null;
 
-                if ( typeof(FileWrapper).IsInstanceOfType(obj) )
+                if (typeof(FileWrapper).IsInstanceOfType(obj))
+                {
                     isFileWrapper = true;
-                else
-                if (obj != null)
+                }
+                else if (obj != null)
                 {
                     if (obj is JObject)
+                    {
                         json = JsonHelper.ToCanonicalJson(obj);
-                    else
-                      if (obj is String)//assume json
+                    }
+                    else if (obj is String) //assume json
+                    {
                         try {
                             json = Canonicalizer.Canonicalize((String)obj);
-                        } catch (Exception) { }
+                        } catch (Exception) {}
+                    }
                     else
+                    {
                         json = JsonHelper.ToCanonicalJson(obj);
+                    }
+
                     if (json != null)
                     {
-
                         Object ob = null;
-                        //attempt to generate FileWrapper from json.
+                        // attempt to generate FileWrapper from json.
                         try
                         {
                             if (json.ToUpper().Contains("PATH"))
@@ -143,19 +149,19 @@ namespace Stratumn.Sdk
                                 ob = JsonHelper.FromJson<BrowserFileWrapper>(json);
                             }
                         }
-                        catch (Exception e)
-                        { //obj can not be converted
+                        catch (Exception)
+                        { // obj can not be converted
                         }
                         if (ob != null)
                         {
                             String json2 = JsonHelper.ToCanonicalJson(ob);
                             if (json2.Equals(json))
-
+                            {
                                 isFileWrapper = true;
+                            }
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -164,12 +170,14 @@ namespace Stratumn.Sdk
             return isFileWrapper;
         }
 
-
         public static FileWrapper FromObject(Object obj)
         {
             if (obj is FileWrapper)
-                return (FileWrapper)obj ;
-            String json = JsonHelper.ToJson(obj);
+            {
+                return (FileWrapper)obj;
+            }
+
+            string json = JsonHelper.ToJson(obj);
             if (json.ToUpper().Contains("FILEINFO"))
             {
                 return JsonHelper.ObjectToObject<FileBlobWrapper>(obj);
@@ -179,15 +187,10 @@ namespace Stratumn.Sdk
                 return JsonHelper.ObjectToObject<FilePathWrapper>(obj);
             }
             else if (json.ToUpper().Contains("FILE"))
-
             {
                 return JsonHelper.ObjectToObject<BrowserFileWrapper>(obj);
             }
-            else throw new TraceSdkException($"cannot convert {obj}  to FileWrapper");
-
+            else throw new TraceSdkException($"cannot convert {obj} to FileWrapper");
         }
     }
 }
-
-
-
