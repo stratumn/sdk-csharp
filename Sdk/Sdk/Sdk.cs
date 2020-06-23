@@ -78,7 +78,7 @@ namespace Stratumn.Sdk
             Dictionary<string, object> variables = new Dictionary<string, object>() { { "workflowId", workflowId } };
 
 
-            
+
             GraphQLResponse<dynamic> jsonResponse = await this.client.GraphqlAsync(query, variables, null, null);
 
             var jsonData = jsonResponse.Data;
@@ -155,7 +155,7 @@ namespace Stratumn.Sdk
                 else
                     throw new Exception("Cannot get signing private key");
             }
-            
+
             this.config = new SdkConfig(workflowId, configId, userId, accountId, groupId, ownerId, signingPrivateKey);
 
             // return the new config
@@ -190,7 +190,7 @@ namespace Stratumn.Sdk
             Dictionary<string, object> linkObj = JsonHelper.ObjectToMap(link.GetLink());
 
 
-            Dictionary <string, object> dataObj = JsonHelper.ObjectToMap(((TraceLink<TLinkData>)link).FormData());
+            Dictionary<string, object> dataObj = JsonHelper.ObjectToMap(((TraceLink<TLinkData>)link).FormData());
 
             Dictionary<string, object> variables = new Dictionary<string, object>
             {
@@ -205,7 +205,8 @@ namespace Stratumn.Sdk
                 var trace = jsonResponse.Data.createLink.trace;
 
                 return this.MakeTraceState<TLinkData>(trace);
-            } catch (TraceSdkException e)
+            }
+            catch (TraceSdkException e)
             {
                 if (firstTry && e.Message == ERROR_CONFIG_DEPRECATED)
                 {
@@ -217,7 +218,7 @@ namespace Stratumn.Sdk
 
                 throw e;
             }
-            
+
         }
 
         /// <summary>
@@ -359,14 +360,14 @@ namespace Stratumn.Sdk
 
 
                     TotalCount = totalCount,
-                    Info = nodes.Count>=1? info.ToObject<Info>():null
+                    Info = nodes.Count >= 1 ? info.ToObject<Info>() : null
                 };
                 return tracesList;
             }
 
             // comAdde detail for error
             String stageDetail = stageType.ToString() + actionKey ?? "";
-            
+
             // throw if no stages were found if
             if (stages.size() == 0)
             {
@@ -402,12 +403,12 @@ namespace Stratumn.Sdk
                 //get the fileWrapper property by index of file in the list uploaded.
                 Property<FileWrapper> fileWrapperProp = fileWrapperMap[fileList[i].GetId()];
                 //build FileRecord property
-                Property<FileRecord> fileRecordProp = fileWrapperProp.Transform((f)=> new FileRecord(mediaRecord, f.Info()));
+                Property<FileRecord> fileRecordProp = fileWrapperProp.Transform((f) => new FileRecord(mediaRecord, f.Info()));
                 fileRecordList.Add(fileRecordProp);
             }
 
 
-            Helpers.AssignObjects(fileRecordList); 
+            Helpers.AssignObjects(fileRecordList);
         }
 
         public async Task UploadFilesInObject(object data)
@@ -442,8 +443,8 @@ namespace Stratumn.Sdk
         public async Task<TData> DownloadFilesInObject<TData>(TData data)
         {
             Dictionary<string, Property<FileRecord>> fileRecordMap = Helpers.ExtractFileRecords(data);
-            List <Property<FileWrapper>> fileWrapperList =await this.DownloadFiles(fileRecordMap);
-            Helpers.AssignObjects(fileWrapperList); 
+            List<Property<FileWrapper>> fileWrapperList = await this.DownloadFiles(fileRecordMap);
+            Helpers.AssignObjects(fileWrapperList);
             return data;
         }
 
@@ -465,7 +466,7 @@ namespace Stratumn.Sdk
             }
             return fileWrapperList;
         }
-        
+
 
         /// <summary>
         /// The MakeTraceState
@@ -514,7 +515,7 @@ namespace Stratumn.Sdk
             string groupId = sdkConfig.GroupId;
 
             // upload files and transform data
-           await this.UploadFilesInLinkData(data);
+            await this.UploadFilesInLinkData(data);
 
             TraceLinkBuilderConfig<TLinkData> cfg = new TraceLinkBuilderConfig<TLinkData>()
             {
@@ -600,7 +601,7 @@ namespace Stratumn.Sdk
             SdkConfig sdkConfig = await this.GetConfigAsync();
 
             string workflowId = sdkConfig.WorkflowId;
-            string configId = sdkConfig.ConfigId; 
+            string configId = sdkConfig.ConfigId;
             string userId = sdkConfig.UserId;
 
             TraceLinkBuilderConfig<TLinkData> cfg = new TraceLinkBuilderConfig<TLinkData>()
