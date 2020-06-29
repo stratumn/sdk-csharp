@@ -67,7 +67,7 @@ namespace Stratumn.Sdk
             agents.Add(String.Format("CSharp/{0}", System.Environment.Version));
             agents.Add(String.Format("stratumn-sdk-csharp/{0}", Assembly.GetAssembly(typeof(Client)).GetName().Version.ToString()));
 
-            
+
             this.userAgent = String.Join(" ", agents.ToArray());
         }
 
@@ -223,11 +223,11 @@ namespace Stratumn.Sdk
             {
                 opts = new FetchOptions();
             }
-           
+
             string path = this.endpoints.GetEndpoint(service) + '/' + route;
 
             Uri url = new Uri(path);
-           
+
             HttpContent httpContent = new StringContent(body, Encoding.UTF8, "application/json");
 
 
@@ -568,7 +568,7 @@ namespace Stratumn.Sdk
             HttpResponseMessage clientResponse = await this.GetAsync<String>(Service.MEDIA, "files/" + fileRecord.Digest + "/info", null, null);
 
             string jsonResponse = await clientResponse.Content.ReadAsStringAsync();
-            var tokenJson = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject> (jsonResponse);
+            var tokenJson = JsonConvert.DeserializeObject<Newtonsoft.Json.Linq.JObject>(jsonResponse);
 
             string downloadURL = tokenJson.GetValue("download_url").ToString();
 
@@ -583,7 +583,7 @@ namespace Stratumn.Sdk
 
             // Get the response.  
             HttpWebResponse response = (HttpWebResponse)httpConn.GetResponse();
-            
+
 
             HttpStatusCode status = response.StatusCode;
             if (status != HttpStatusCode.OK)
@@ -604,8 +604,8 @@ namespace Stratumn.Sdk
                 {
                     baos.Write(buffer, 0, bytesRead);
                 }
-            
-            
+
+
             }
 
 
@@ -635,8 +635,9 @@ namespace Stratumn.Sdk
             try
             {
                 response = await GraphqlExecute(gqlUrl, query, variables, opts);
-                
-            } catch (GraphQLHttpException e)
+
+            }
+            catch (GraphQLHttpException e)
             {
                 int retry = opts.Retry;
                 // handle errors explicitly 

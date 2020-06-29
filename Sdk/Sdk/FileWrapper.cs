@@ -104,70 +104,47 @@ namespace Stratumn.Sdk
 
         public static Boolean isFileWrapper(Object obj)
         {
-            bool isFileWrapper = false;
+            // If the object is already of type FileWrapper return true
+            if (obj.ToString() == "Stratumn.Sdk.FilePathWrapper") return true;
+            if (obj.ToString() == "Stratumn.Sdk.FileBlobWrapper") return true;
+            if (obj.ToString() == "Stratumn.Sdk.BrowserFileWrapper") return true;
+            if (obj == null) return false;
+            // For strings, assume it's a JSON string
+            if (obj is String)
+            {
+                string json = (string) obj;
+                Object fileWrapper = null;
+                // attempt to generate FileWrapper from json.
+                try
+                {
+                    if (json.ToUpper().Contains("PATH"))
+                    {
+                        fileWrapper = JsonHelper.FromJson<FilePathWrapper>(json);
+                    }
+                    else if (json.ToUpper().Contains("FILEINFO"))
+                    {
+                        fileWrapper = JsonHelper.FromJson<FileBlobWrapper>(json);
+                    }
+                    else if (json.ToUpper().Contains("FILE"))
+                    {
+                        fileWrapper = JsonHelper.FromJson<BrowserFileWrapper>(json);
+                    }
+                }
+                catch (Exception)
+                { // obj can not be converted
+                }
+                return fileWrapper != null;
+            }
+            // Otherwise, try to coerce from json
             try
             {
-                string json = null;
-
-                if (typeof(FileWrapper).IsInstanceOfType(obj))
-                {
-                    isFileWrapper = true;
-                }
-                else if (obj != null)
-                {
-                    if (obj is JObject)
-                    {
-                        json = JsonHelper.ToCanonicalJson(obj);
-                    }
-                    else if (obj is String) //assume json
-                    {
-                        try {
-                            json = Canonicalizer.Canonicalize((String)obj);
-                        } catch (Exception) {}
-                    }
-                    else
-                    {
-                        json = JsonHelper.ToCanonicalJson(obj);
-                    }
-
-                    if (json != null)
-                    {
-                        Object ob = null;
-                        // attempt to generate FileWrapper from json.
-                        try
-                        {
-                            if (json.ToUpper().Contains("PATH"))
-                            {
-                                ob = JsonHelper.FromJson<FilePathWrapper>(json);
-                            }
-                            else if (json.ToUpper().Contains("FILEINFO"))
-                            {
-                                ob = JsonHelper.FromJson<FileBlobWrapper>(json);
-                            }
-                            else if (json.ToUpper().Contains("FILE"))
-                            {
-                                ob = JsonHelper.FromJson<BrowserFileWrapper>(json);
-                            }
-                        }
-                        catch (Exception)
-                        { // obj can not be converted
-                        }
-                        if (ob != null)
-                        {
-                            String json2 = JsonHelper.ToCanonicalJson(ob);
-                            if (json2.Equals(json))
-                            {
-                                isFileWrapper = true;
-                            }
-                        }
-                    }
-                }
+                FileWrapper fileWrapper = FromObject(obj);
+                return fileWrapper.Info() != null;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine(ex.Message);
+                return false;
             }
-            return isFileWrapper;
         }
 
         public static FileWrapper FromObject(Object obj)

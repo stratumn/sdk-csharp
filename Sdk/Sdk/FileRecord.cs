@@ -73,26 +73,41 @@ namespace Stratumn.Sdk
                 string json = null;
 
                 if (typeof(FileRecord).IsInstanceOfType(obj))
+                {
                     isFileRecord = true;
+                }
                 else if (obj != null)
                 {
                     if (obj is JObject)
+                    {
                         json = JsonHelper.ToCanonicalJson(obj);
+                    }
                     else if (
                         obj is String //assume json
                     )
+                    {
                         json = Canonicalizer.Canonicalize((String)obj);
+                    }
                     else
+                    {
                         json = JsonHelper.ToCanonicalJson(obj);
+                    }
                     if (json != null)
                     {
-                        //attempt to generate FileRecord from json.
-                        json = removeAdditionalFields(json);
 
-                        Object ob = JsonHelper.FromJson<FileRecord>(json);
-                        String json2 = JsonHelper.ToCanonicalJson(ob);
-
-                        if (json2.Equals(json)) isFileRecord = true;
+                        // Attempt to generate FileRecord from json.
+                        FileRecord ob = JsonHelper.FromJson<FileRecord>(json);
+                        // Validate that all of the required fields are not null
+                        // Key can be undefined if the file is unencrypted.
+                        if (
+                            ob.Digest != null &&
+                            ob.Name != null &&
+                            ob.Size != 0 &&
+                            ob.Mimetype != null
+                        )
+                        {
+                            isFileRecord = true;
+                        }
                     }
                 }
             }
@@ -100,26 +115,6 @@ namespace Stratumn.Sdk
             {
             }
             return isFileRecord;
-        }
-
-        // Since we do a canonicalized JSON string comparison to check if the object is a
-
-        // FileRecord above, we need to remove the additional fields that can be added
-        // by the media API.
-        private static String removeAdditionalFields(String json)
-        {
-            String[] recordFields =
-            { "id", "key", "digest", "name", "mimetype", "size" };
-            var o = JsonHelper.FromJson<JObject>(json);
-
-            foreach (var p in o.Properties())
-            {
-                if (!Array.Exists(recordFields, p.Name.Equals))
-                {
-                    p.Remove();
-                }
-            }
-            return JsonHelper.ToJson(o);
         }
     }
 }
