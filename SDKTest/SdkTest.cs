@@ -281,9 +281,8 @@ namespace SDKTest
         {
             await NewTraceTest();
             Assert.NotNull(someTraceState);
-            IDictionary<string, object> data = new Dictionary<string, object>() { { "why", "because im testing the pushTrace 2" } };
 
-            PushTransferInput<object> push = new PushTransferInput<object>(someTraceState.TraceId, OTHER_GROUP, data, null);
+            PushTransferInput<object> push = new PushTransferInput<object>(someTraceState.TraceId, OTHER_GROUP, new object(), null);
             someTraceState = await GetSdk().PushTraceAsync<object>(push);
 
             Assert.NotNull(push.TraceId);
@@ -349,8 +348,8 @@ namespace SDKTest
                 ["operation"] = "my new operation 1"
             };
 
-            data.Add("Certificate1", FileWrapper.FromFilePath(GetTestFilePath()));
-            data.Add("Certificates", new Identifiable[] { FileWrapper.FromFilePath(GetTestFilePath()) });
+            data.Add("certificate1", FileWrapper.FromFilePath(GetTestFilePath()));
+            data.Add("certificates", new Identifiable[] { FileWrapper.FromFilePath(GetTestFilePath()) });
 
             NewTraceInput<Object> newTraceInput = new NewTraceInput<Object>(ACTION_KEY, data);
 
@@ -377,7 +376,7 @@ namespace SDKTest
             await sdk.UploadFilesInLinkData(data);
 
             Assert.True(FileRecord.IsFileRecord(data["Certificate1"]));
-            Assert.True(FileRecord.IsFileRecord(((object[]) data["Certificates"])[0]));
+            Assert.True(FileRecord.IsFileRecord(((object[])data["Certificates"])[0]));
 
             Debug.WriteLine(JsonHelper.ToJson(data));
         }

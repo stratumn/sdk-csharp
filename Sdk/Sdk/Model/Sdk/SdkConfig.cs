@@ -26,10 +26,6 @@ namespace Stratumn.Sdk.Model.Sdk
         private string groupId;
 
         /// <summary>
-        /// The owner id
-        /// </summary>
-        private string ownerId;
-        /// <summary>
         /// The private key used for signing links
         /// </summary>
         private Ed25519PrivateKeyParameters signingPrivateKey;
@@ -38,14 +34,13 @@ namespace Stratumn.Sdk.Model.Sdk
         {
         }
 
-        public SdkConfig(string workflowId, string configId, string userId, string accountId, string groupId, string ownerId, Ed25519PrivateKeyParameters signingPrivateKey)
+        public SdkConfig(string workflowId, string configId, string userId, string accountId, string groupId, Ed25519PrivateKeyParameters signingPrivateKey)
         {
             this.workflowId = workflowId;
             this.configId = configId;
             this.userId = userId;
             this.accountId = accountId;
             this.groupId = groupId;
-            this.ownerId = ownerId;
             this.signingPrivateKey = signingPrivateKey;
         }
 
@@ -106,18 +101,6 @@ namespace Stratumn.Sdk.Model.Sdk
             set
             {
                 this.groupId = value;
-            }
-        }
-
-        public virtual string OwnerId
-        {
-            get
-            {
-                return ownerId;
-            }
-            set
-            {
-                this.ownerId = value;
             }
         }
 

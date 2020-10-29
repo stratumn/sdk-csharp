@@ -2,7 +2,7 @@ namespace Stratumn.Sdk
 {
     public static class GraphQL
     {
-        public const string FRAGMENT_PAGINATIONINFO_ONLINKSCONNECTION = 
+        public const string FRAGMENT_PAGINATIONINFO_ONLINKSCONNECTION =
             @"fragment PaginationInfoOnLinksConnectionFragment on LinksConnection {
                 totalCount
                 info: pageInfo {
@@ -94,7 +94,11 @@ namespace Stratumn.Sdk
                     groups {
                         nodes {
                             groupId: rowId
-                            accountId: ownerId
+                            members {
+                                nodes {
+                                    accountId
+                                }
+                            }
                         }
                     }
                 }

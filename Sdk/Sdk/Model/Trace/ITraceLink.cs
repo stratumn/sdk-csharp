@@ -15,7 +15,6 @@ namespace Stratumn.Sdk.Model.Trace
         TraceLinkType Type();
         Account CreatedBy();
         DateTime CreatedAt();
-        Account Owner();
         string Group();
         string Form();
         string LastForm();
