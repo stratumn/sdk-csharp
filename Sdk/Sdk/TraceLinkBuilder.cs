@@ -100,7 +100,7 @@ namespace Stratumn.Sdk
                         )
                     )
                 );
-               
+
                 IDictionary<string, object> data = new Dictionary<string, object>();
                 data["algo"] = algo;
                 data["hash"] = hash;
@@ -112,13 +112,13 @@ namespace Stratumn.Sdk
 
         /// <summary>
         /// Helper method used to configure a link for an attestation. User must still
-        /// set owner, group and createdBy separately.
+        /// set group and createdBy separately.
         /// </summary>
         /// <param name="actionKey"> the form id used for the attestation </param>
         /// <param name="data">   the data of the attestation </param>
         /// <returns>The <see cref="TraceLinkBuilder{TLinkData}"/></returns>
         public TraceLinkBuilder<TLinkData> ForAttestation(string actionKey, TLinkData data)
-        {          
+        {
             string typeStr = TraceLinkType.OWNED.ToString();
             this.WithHashedData(data)
                     .WithAction(actionKey)
@@ -129,7 +129,7 @@ namespace Stratumn.Sdk
 
         /// <summary>
         /// Helper method used for transfer of ownership requests (push). Note
-        /// that owner and group are calculated from parent link. Parent link must have
+        /// that group is calculated from parent link. Parent link must have
         /// been provided!
         /// </summary>
         /// <param name="to">     the group to which the transfer is made for </param>
@@ -140,11 +140,10 @@ namespace Stratumn.Sdk
         public TraceLinkBuilder<TLinkData> ForTransferRequest(string to, TraceActionType action, TraceLinkType type, TLinkData data)
         {
             TraceLink<TLinkData> parent = this.ParentLink;
-            this.WithOwner(parent.Owner().GetAccount())
-                    .WithGroup(parent.Group())
-                        .WithHashedData(data)
-                            .WithAction(action.ToString())
-                                 .WithProcessState(type.ToString());
+            this.WithGroup(parent.Group())
+                  .WithHashedData(data)
+                  .WithAction(action.ToString())
+                  .WithProcessState(type.ToString());
 
             this.metadata.Inputs = new string[] { to };
             this.metadata.LastFormId = parent.Form() != null ? parent.Form() : parent.LastForm();
@@ -163,8 +162,8 @@ namespace Stratumn.Sdk
         }
 
         /// <summary>
-        /// Helper method used to cancel a transfer request. Note that owner and group
-        /// are calculated from parent link. Parent link must have been provided!
+        /// Helper method used to cancel a transfer request. Note that group
+        /// is calculated from parent link. Parent link must have been provided!
         /// </summary>
         /// <param name="data"> the optional data </param>
         /// <returns>The <see cref="TraceLinkBuilder{TLinkData}"/></returns>
@@ -173,17 +172,16 @@ namespace Stratumn.Sdk
             TraceLink<TLinkData> parent = this.ParentLink;
             string action = TraceActionType.CANCEL_TRANSFER.ToString();
             string type = TraceLinkType.OWNED.ToString();
-            this.WithOwner(parent.Owner().GetAccount())
-                    .WithGroup(parent.Group())
-                        .WithHashedData(data)
-                            .WithAction(action)
-                                .WithProcessState(type);
+            this.WithGroup(parent.Group())
+                  .WithHashedData(data)
+                  .WithAction(action)
+                  .WithProcessState(type);
             return this;
         }
 
         /// <summary>
-        /// Helper method used to reject a transfer request. Note that owner and group
-        /// are calculated from parent link. Parent link must have been provided!
+        /// Helper method used to reject a transfer request. Note that group
+        /// is calculated from parent link. Parent link must have been provided!
         /// </summary>
         /// <param name="data"> the optional data </param>
         /// <returns>The <see cref="TraceLinkBuilder{TLinkData}"/></returns>
@@ -193,17 +191,16 @@ namespace Stratumn.Sdk
             string action = TraceActionType.REJECT_TRANSFER.ToString();
             string type = TraceLinkType.OWNED.ToString();
 
-            this.WithOwner(parent.Owner().GetAccount())
-                    .WithGroup(parent.Group())
-                        .WithHashedData(data)
-                            .WithAction(action)
-                                .WithProcessState(type);
+            this.WithGroup(parent.Group())
+                  .WithHashedData(data)
+                  .WithAction(action)
+                  .WithProcessState(type);
             return this;
         }
 
         /// <summary>
         /// Helper method used to accept a transfer request. Parent link must have been
-        /// provided! User must still set owner, group and createdBy separately.
+        /// provided! User must still set group and createdBy separately.
         /// </summary>
         /// <param name="data"> the optional data </param>
         /// <returns>The <see cref="TraceLinkBuilder{TLinkData}"/></returns>
@@ -219,17 +216,6 @@ namespace Stratumn.Sdk
                 this.WithHashedData(data).WithAction(action).WithProcessState(type);
 
             }
-            return this;
-        }
-
-        /// <summary>
-        /// To set the metadata ownerId.
-        /// </summary>
-        /// <param name="ownerId"> the owner id </param>
-        /// <returns>The <see cref="TraceLinkBuilder{TLinkData}"/></returns>
-        public virtual TraceLinkBuilder<TLinkData> WithOwner(string ownerId)
-        {
-            this.metadata.OwnerId = ownerId;
             return this;
         }
 

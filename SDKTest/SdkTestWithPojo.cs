@@ -29,7 +29,7 @@ namespace SDKTest
         private const string TRACE_URL = "https://trace-api.staging.stratumn.com";
         private const string ACCOUNT_URL = "https://account-api.staging.stratumn.com";
         private const string MEDIA_URL = "https://media-api.staging.stratumn.com";
-        
+
         // used to pass the trace from one test method to another
         private TraceState<StateExample, DataClass> someTraceState;
 
@@ -210,16 +210,9 @@ namespace SDKTest
 
             await NewTraceTestWithPojo();
             Assert.NotNull(someTraceState);
-            Dictionary<string, object> data = new Dictionary<string, object>() { { "why", "because im testing the pushTrace 2" } };
 
-            DataClass d = new DataClass()
-            {
-                f11 = 1,
-                f22 = data
-            };
-
-            PushTransferInput<DataClass> push = new PushTransferInput<DataClass>(someTraceState.TraceId, OTHER_GROUP, d, null);
-            someTraceState = await sdk.PushTraceAsync<DataClass>(push);
+            PushTransferInput<Object> push = new PushTransferInput<Object>(someTraceState.TraceId, OTHER_GROUP, new Object(), null);
+            await sdk.PushTraceAsync<Object>(push);
 
             Assert.NotNull(push.TraceId);
         }
@@ -228,16 +221,9 @@ namespace SDKTest
         public async Task AcceptTransferTestWithPojo()
         {
             await PushTraceTestWithPojo();
-            Dictionary<string, object> data = new Dictionary<string, object>() { { "why", "because im testing the pushTrace 2" } };
 
-            DataClass d = new DataClass()
-            {
-                f11 = 1,
-                f22 = data
-            };
-
-            TransferResponseInput<DataClass> trInput = new TransferResponseInput<DataClass>(someTraceState.TraceId, d, null);
-            TraceState<StateExample, DataClass> stateAccept = await GetOtherGroupSdk<StateExample>().AcceptTransferAsync<DataClass>(trInput);
+            TransferResponseInput<Object> trInput = new TransferResponseInput<Object>(someTraceState.TraceId, new Object(), null);
+            TraceState<StateExample, Object> stateAccept = await GetOtherGroupSdk<StateExample>().AcceptTransferAsync<Object>(trInput);
 
             Assert.NotNull(stateAccept.TraceId);
         }
@@ -271,18 +257,11 @@ namespace SDKTest
         [Fact]
         public async Task CancelTransferTestWithPojo()
         {
-            Dictionary<string, object> data = new Dictionary<string, object>() { { "why", "because im testing the pushTrace 2" } };
-
-            DataClass d = new DataClass()
-            {
-                f11 = 1,
-                f22 = data
-            };
 
             await PushTraceTestWithPojo();
 
-            TransferResponseInput<DataClass> responseInput = new TransferResponseInput<DataClass>(someTraceState.TraceId, d, null);
-            TraceState<StateExample, DataClass> statecancel = await GetSdk<StateExample>().CancelTransferAsync< DataClass>(responseInput);
+            TransferResponseInput<Object> responseInput = new TransferResponseInput<Object>(someTraceState.TraceId, new Object(), null);
+            TraceState<StateExample, Object> statecancel = await GetSdk<StateExample>().CancelTransferAsync<Object>(responseInput);
 
             Assert.NotNull(statecancel.TraceId);
         }
@@ -300,7 +279,7 @@ namespace SDKTest
         }
 
         public class Step
-        { 
+        {
             public Identifiable[] stp_form_section;
         }
 

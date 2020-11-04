@@ -8,8 +8,6 @@ namespace Stratumn.Sdk.Model.Trace
     /// </summary>
     public class TraceLinkMetaData
     {
-        [JsonProperty(PropertyName = "ownerId")]
-        public string OwnerId { get; set; }
 
         [JsonProperty(PropertyName = "configId")]
         public string ConfigId { get; set; }
@@ -39,12 +37,8 @@ namespace Stratumn.Sdk.Model.Trace
         {
         }
 
-        internal TraceLinkMetaData(string ownerId, string configId, string groupId, string formId, string lastFormId, DateTime createdAt, string createdById, string[] inputs)
+        internal TraceLinkMetaData(string configId, string groupId, string formId, string lastFormId, DateTime createdAt, string createdById, string[] inputs)
         {
-            if (string.ReferenceEquals(ownerId, null))
-            {
-                throw new System.ArgumentException("ownerId cannot be null");
-            }
             if (string.ReferenceEquals(configId, null))
             {
                 throw new System.ArgumentException("configId cannot be null");
@@ -74,7 +68,6 @@ namespace Stratumn.Sdk.Model.Trace
                 throw new System.ArgumentException("inputs cannot be null");
             }
 
-            this.OwnerId = ownerId;
             this.ConfigId = configId;
             this.GroupId = groupId;
             this.FormId = formId;

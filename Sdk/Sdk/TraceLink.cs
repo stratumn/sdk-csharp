@@ -45,7 +45,7 @@ namespace Stratumn.Sdk
         /// <returns></returns>
         new public TraceLinkMetaData Metadata()
         {
-            TraceLinkMetaData traceLinkMd = JsonHelper.ObjectToObject< TraceLinkMetaData>(base.Metadata());
+            TraceLinkMetaData traceLinkMd = JsonHelper.ObjectToObject<TraceLinkMetaData>(base.Metadata());
             return traceLinkMd;
         }
 
@@ -57,11 +57,6 @@ namespace Stratumn.Sdk
         public DateTime CreatedAt()
         {
             return this.Metadata().CreatedAt;
-        }
-
-        public Account Owner()
-        {
-            return new Account(this.Metadata().OwnerId);
         }
 
         /// <summary>

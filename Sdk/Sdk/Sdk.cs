@@ -1,4 +1,4 @@
-using GraphQL;
+﻿using GraphQL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,8 +77,6 @@ namespace Stratumn.Sdk
 
             Dictionary<string, object> variables = new Dictionary<string, object>() { { "workflowId", workflowId } };
 
-
-
             GraphQLResponse<dynamic> jsonResponse = await this.client.GraphqlAsync(query, variables, null, null);
 
             var jsonData = jsonResponse.Data;
@@ -110,9 +108,13 @@ namespace Stratumn.Sdk
             // get all the groups that are owned by one of my accounts
             foreach (var _group in groups.nodes)
             {
-                if (myAccounts.Contains((String)_group.accountId))
+                foreach (var member in _group.members.nodes)
                 {
-                    myGroups.Add((Object)_group);
+
+                    if (myAccounts.Contains((String)member.accountId))
+                    {
+                        myGroups.Add((Object)_group);
+                    }
                 }
             }
 
@@ -132,7 +134,6 @@ namespace Stratumn.Sdk
             var group = myGroups.ToArray<Object>()[0];
             var groupObject = JsonConvert.DeserializeObject<GroupResponse>(group.ToString());
             String groupId = groupObject.GroupId;
-            String ownerId = groupObject.AccountId;
 
             Ed25519PrivateKeyParameters signingPrivateKey;
 
@@ -156,7 +157,7 @@ namespace Stratumn.Sdk
                     throw new Exception("Cannot get signing private key");
             }
 
-            this.config = new SdkConfig(workflowId, configId, userId, accountId, groupId, ownerId, signingPrivateKey);
+            this.config = new SdkConfig(workflowId, configId, userId, accountId, groupId, signingPrivateKey);
 
             // return the new config
             return this.config;
@@ -511,7 +512,6 @@ namespace Stratumn.Sdk
             string workflowId = sdkConfig.WorkflowId;
             string configId = sdkConfig.ConfigId;
             string userId = sdkConfig.UserId;
-            string ownerId = sdkConfig.OwnerId;
             string groupId = sdkConfig.GroupId;
 
             // upload files and transform data
@@ -528,7 +528,7 @@ namespace Stratumn.Sdk
             TraceLinkBuilder<TLinkData> linkBuilder = new TraceLinkBuilder<TLinkData>(cfg);
 
             // this is an attestation
-            linkBuilder.ForAttestation(actionKey, data).WithOwner(ownerId).WithGroup(groupId).WithCreatedBy(userId);
+            linkBuilder.ForAttestation(actionKey, data).WithGroup(groupId).WithCreatedBy(userId);
             // call createLink helper
             return await this.CreateLinkAsync(linkBuilder);
         }
@@ -555,7 +555,6 @@ namespace Stratumn.Sdk
             string workflowId = sdkConfig.WorkflowId;
             string configId = sdkConfig.ConfigId;
             string userId = sdkConfig.UserId;
-            string ownerId = sdkConfig.OwnerId;
             string groupId = sdkConfig.GroupId;
             // upload files and transform data
             await this.UploadFilesInLinkData(data);
@@ -575,7 +574,6 @@ namespace Stratumn.Sdk
 
             // this is an attestation
             linkBuilder.ForAttestation(actionKey, data)
-                    .WithOwner(ownerId)
                     .WithGroup(groupId)
                     .WithCreatedBy(userId);
             // call createLink helper
@@ -788,7 +786,6 @@ namespace Stratumn.Sdk
             String workflowId = sdkConfig.WorkflowId;
             string configId = sdkConfig.ConfigId;
             String userId = sdkConfig.UserId;
-            String ownerId = sdkConfig.OwnerId;
             String groupId = sdkConfig.GroupId;
 
             TraceLinkBuilderConfig<TLinkData> cfg = new TraceLinkBuilderConfig<TLinkData>()
@@ -806,8 +803,6 @@ namespace Stratumn.Sdk
 
             // this is an attestation
             linkBuilder.ForAcceptTransfer(data)
-               // add owner info
-               .WithOwner(ownerId)
                // add group info
                .WithGroup(groupId)
                // add creator info
@@ -836,7 +831,6 @@ namespace Stratumn.Sdk
             String workflowId = sdkConfig.WorkflowId;
             string configId = sdkConfig.ConfigId;
             String userId = sdkConfig.UserId;
-            String ownerId = sdkConfig.OwnerId;
             String groupId = sdkConfig.GroupId;
 
             TraceLinkBuilderConfig<TLinkData> cfg = new TraceLinkBuilderConfig<TLinkData>()
@@ -854,8 +848,6 @@ namespace Stratumn.Sdk
 
             // this is a push transfer
             linkBuilder.ForRejectTransfer(data)
-               // add owner info
-               .WithOwner(ownerId)
                // add group info
                .WithGroup(groupId)
                // add creator info
