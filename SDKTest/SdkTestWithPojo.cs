@@ -218,6 +218,7 @@ namespace SDKTest
         }
 
         [Fact]
+        [Obsolete("RejectTransferTestWithPojo is deprecated")]
         public async Task AcceptTransferTestWithPojo()
         {
             await PushTraceTestWithPojo();
@@ -229,6 +230,7 @@ namespace SDKTest
         }
 
         [Fact]
+        [Obsolete("RejectTransferTestWithPojo is deprecated")]
         public async Task RejectTransferTestWithPojo()
         {
             PaginationInfo paginationInfo = new PaginationInfo(10, null, null, null);
@@ -255,6 +257,7 @@ namespace SDKTest
         }
 
         [Fact]
+        [Obsolete("CancelTransferTestWithPojo is deprecated")]
         public async Task CancelTransferTestWithPojo()
         {
 

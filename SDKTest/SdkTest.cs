@@ -21,6 +21,8 @@ namespace SDKTest
         private const string WORKFLOW_ID = "591";
         private const string ACTION_KEY = "action1";
 
+        private const string TRACE_ID = "36adf228-c44c-429c-850f-db1910770d3e";
+
         private const string MY_GROUP = "1744";
         private const string PEM_PRIVATEKEY = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRACaNT4cup/ZQAq4IULZCrlPB7eR1QTCN9V3Qzct8S\nYp57BqN4FipIrGpyclvbT1FKQfYLJpeBXeCi2OrrQMTgiw==\n-----END ED25519 PRIVATE KEY-----\n";
 
@@ -183,7 +185,7 @@ namespace SDKTest
         {
 
             Sdk<object> sdk = GetSdk();
-            string traceId = "191516ec-5f8c-4757-9061-8c7ab06cf0a0";
+            string traceId = TRACE_ID;
             GetTraceStateInput input = new GetTraceStateInput(traceId);
             TraceState<object, object> state = await sdk.GetTraceStateAsync<object>(input);
             Assert.Equal(state.TraceId, traceId);
@@ -193,7 +195,7 @@ namespace SDKTest
         public async Task GetTraceDetails()
         {
             var sdk = GetSdk();
-            string traceId = "191516ec-5f8c-4757-9061-8c7ab06cf0a0";
+            string traceId = TRACE_ID;
 
             GetTraceDetailsInput input = new GetTraceDetailsInput(traceId, 5, null, null, null);
 
@@ -290,6 +292,7 @@ namespace SDKTest
 
 
         [Fact]
+        [Obsolete("AcceptTransferTest is deprecated")]
         public async Task AcceptTransferTest()
         {
             await PushTraceTest();
@@ -299,9 +302,8 @@ namespace SDKTest
             Assert.NotNull(stateAccept.TraceId);
         }
 
-
-
         [Fact]
+        [Obsolete("RejectTransferTest is deprecated")]
         public async Task RejectTransferTest()
         {
             PaginationInfo paginationInfo = new PaginationInfo(10, null, null, null);
@@ -325,6 +327,7 @@ namespace SDKTest
         }
 
         [Fact]
+        [Obsolete("CancelTransferTest is deprecated")]
         public async Task CancelTransferTest()
         {
             await PushTraceTest();
@@ -404,6 +407,32 @@ namespace SDKTest
                 byte[] expected = Encoding.UTF8.GetBytes("\nThis is a test file");
                 Assert.Equal(decrypted, expected);
             }
+        }
+
+
+        [Fact]
+        public async Task traceTagsRWTest()
+        {
+            Sdk<object> sdk = GetSdk();
+
+            // Add a tag to a trace
+            string traceId = TRACE_ID;
+            Guid uuid = System.Guid.NewGuid();
+            string randomUUIDString = uuid.ToString();
+            AddTagsToTraceInput input = new AddTagsToTraceInput(traceId, new string[] { randomUUIDString });
+
+            TraceState<Object, Object> state = await sdk.AddTagsToTraceAsync<Object>(input);
+
+            Assert.Equal(traceId, state.TraceId);
+
+            // search the trace by tags
+            List<String> tags = new List<string>();
+            tags.Add(randomUUIDString);
+            SearchTracesFilter f = new SearchTracesFilter(tags);
+            TracesState<Object, Object> res = await sdk.SearchTracesAsync<Object>(f, new PaginationInfo());
+
+            Assert.Equal(1, res.TotalCount);
+            Assert.Equal(traceId, res.Traces[0].TraceId);
         }
     }
 }

@@ -627,6 +627,7 @@ namespace Stratumn.Sdk
         /// <typeparam name="TLinkData"></typeparam>
         /// <param name="input">The input<see cref="TransferResponseInput{TLinkData}"/></param>
         /// <returns>The <see cref="Task{TraceState{TState, TLinkData}}"/></returns>
+        [Obsolete("CancelTransferAsync is deprecated")]
         public async Task<TraceState<TState, TLinkData>> CancelTransferAsync<TLinkData>(TransferResponseInput<TLinkData> input)
         {
             // retrieve parent link
@@ -773,6 +774,7 @@ namespace Stratumn.Sdk
         /// <typeparam name="TLinkData"></typeparam>
         /// <param name="input">The input<see cref="TransferResponseInput{TLinkData}"/></param>
         /// <returns>The <see cref="Task{TraceState{TState, TLinkData}}"/></returns>
+        [Obsolete("AcceptTransferAsync is deprecated")]
         public async Task<TraceState<TState, TLinkData>> AcceptTransferAsync<TLinkData>(TransferResponseInput<TLinkData> input)
         {
             // retrieve parent link 
@@ -817,6 +819,7 @@ namespace Stratumn.Sdk
         /// <typeparam name="TLinkData"></typeparam>
         /// <param name="input">The input<see cref="TransferResponseInput{TLinkData}"/></param>
         /// <returns>The <see cref="Task{TraceState{TState, TLinkData}}"/></returns>
+        [Obsolete("RejectTransferAsync is deprecated")]
         public async Task<TraceState<TState, TLinkData>> RejectTransferAsync<TLinkData>(TransferResponseInput<TLinkData> input)
         {
 
@@ -855,5 +858,80 @@ namespace Stratumn.Sdk
             // call createLink helper
             return await this.CreateLinkAsync(linkBuilder);
         }
+
+
+        public async Task<TraceState<TState, TLinkData>> AddTagsToTraceAsync<TLinkData>(AddTagsToTraceInput input)
+        {
+            // build variables
+            Dictionary<String, object> variables = new Dictionary<String, object>
+            {
+                { "traceId", input.TraceId },
+                { "tags", input.Tags }
+            };
+
+            // execute graphql query
+            string query = GraphQL.MUTATION_ADDTAGSTOTRACE;
+            GraphQLResponse<dynamic> jsonResponse = await this.client.GraphqlAsync(query, variables, null, null);
+
+            return this.MakeTraceState<TLinkData>((JObject)jsonResponse.Data.addTagsToTrace.trace);
+        }
+
+        /// <summary>
+        /// Search all the traces of the workflow
+        /// </summary>
+        /// <typeparam name="SearchTracesFilter"></typeparam>
+        /// <param name="filter">the filter to use in the search</param>
+        /// <typeparam name="PaginationInfo"></typeparam>
+        /// <param name="paginationInfo">the wanted pagination</param>
+        /// <returns>The <see cref="Task{TraceState{TState, TLinkData}}"/></returns>
+        public async Task<TracesState<TState, TLinkData>> SearchTracesAsync<TLinkData>(SearchTracesFilter filter,
+                 PaginationInfo paginationInfo)
+        {
+
+            Dictionary<String, object> tagFilter = new Dictionary<String, object>
+            {
+                { "overlaps", filter.Tags }
+            };
+            Dictionary<String, object> filters = new Dictionary<String, object>{
+                { "tags", tagFilter }
+            };
+
+            // create variables
+            Dictionary<String, object> variables = new Dictionary<String, object>{
+                { "filter", filters },
+                { "workflowId", this.opts.WorkflowId }
+            };
+            Dictionary<String, object> variablesPaginationInfo = JsonHelper.ObjectToMap(paginationInfo);
+            variablesPaginationInfo.ToList().ForEach(x => variables.Add(x.Key, x.Value));
+
+            // execute graphql query
+            string query = GraphQL.QUERY_SEARCHTRACES;
+            GraphQLResponse<dynamic> jsonResponse = await this.client.GraphqlAsync(query, variables, null, null);
+
+            // get all the traces
+            var traceResponse = jsonResponse.Data.workflow.traces;
+
+            List<TraceState<TState, TLinkData>> traces = new List<TraceState<TState, TLinkData>>();
+            var nodes = traceResponse.nodes;
+
+            foreach (var node in nodes)
+            {
+                traces.Add(this.MakeTraceState<TLinkData>((JObject)node));
+            }
+
+            var info = traceResponse.info;
+            int totalCount = (int)traceResponse.totalCount;
+
+            // construct the traces list object
+            TracesState<TState, TLinkData> tracesList = new TracesState<TState, TLinkData>()
+            {
+                Traces = traces,
+                TotalCount = totalCount,
+                Info = info.ToObject<Info>()
+            };
+
+            return tracesList;
+        }
+
     }
 }
