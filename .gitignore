@@ -6,3 +6,5 @@ packages
 .vs/*
 
 *.nupkg
+.vscode/launch.json
+.vscode/tasks.json
