@@ -233,6 +233,36 @@ The Sdk will return an object with the traces currently in the given stage. This
 - `totalCount`: the total number of traces in the trace,
 - `info`: a pagination object (more on this [here](#pagination)).
 
+### Searching for traces
+
+Traces can be searched by tag. So in order to search you must first add a tag to a trace. Tags are not unique, so multiple traces can have the same tag. Traces can also have multiple tags. The tag trace arguments look like:
+
+- `traceId`: the id of the trace to add tags too
+- `tags`: array of tags to add to the trace
+
+```cs
+String traceId = "191516ec-5f8c-4757-9061-8c7ab06cf0a0"
+
+// Add a tag to a trace
+Guid uuid = System.Guid.NewGuid();
+String randomUUIDString = uuid.ToString();
+AddTagsToTraceInput input = new AddTagsToTraceInput(traceId, new string[] { randomUUIDString });
+
+TraceState<Object, Object> state = await sdk.AddTagsToTraceAsync<Object>(input);
+```
+
+Now that there is a trace with a tag we can search for it.
+
+```cs
+// search the trace by tags
+List<String> tags = new List<string>();
+tags.Add(randomUUIDString);
+SearchTracesFilter f = new SearchTracesFilter(tags);
+TracesState<Object, Object> res = await sdk.SearchTracesAsync<Object>(f, new PaginationInfo());
+```
+
+This method supports [pagination](#pagination) in case there are multiple traces with the provided tags. All traces containing any one of the provided tags will be returned.
+
 ### Pagination
 
 When a method returns an array of elements (traces, links, etc..), it will be paginated. It means that you can provide arguments to specify how many elements to retrieve from which point in the full list. The pagination arguments will always look like:
