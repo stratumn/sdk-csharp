@@ -65,7 +65,7 @@ opts.Endpoints = new Endpoints {
 opts.setEnableDebuging(true);
 ```
 
-- To connect through a proxy server: 
+- To connect through a proxy server:
 
 ```cs
 opts.setProxy("MyProxyHost", 1234);
@@ -114,7 +114,6 @@ Notes:
 
 ### Appending a link to an existing trace
 
-
 ```cs
 AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(YOUR_CONFIG.formId, data, prevLink);
 TraceState<object, object> state = await GetSdk().AppendLinkAsync(appLinkInput);
@@ -126,7 +125,6 @@ If you don't have access to the head link, you can also provide the trace id:
 AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(YOUR_CONFIG.formId, data, traceId);
 TraceState<object, object> state = await GetSdk().AppendLinkAsync(appLinkInput);
 ```
-
 
 You must provide:
 
@@ -141,80 +139,6 @@ Notes:
 - You can view your forms detail from your group's Attestation Forms page (for ex `https://trace.stratumn.com/group/322547/forms`).
 - When viewing a specific form detail, you can retrieve the form id from the url. (`https://trace.stratumn.com/group/322547/form/788547` => `formId=788547`).
 - The `data` object argument must be valid against the JSON schema of the form you are using, otherwise Trace will throw a validation error.
-
-### Requesting the transfer of ownership of a trace
-
-You can "push" the trace to another group in the workflow this way:
-
-```cs
-IDictionary<string, object> data = new Dictionary<string, object>() { { "why", "because im testing the pushTrace 2" } };
-
-PushTransferInput<object> push = new PushTransferInput<object>(TraceId, recipient, data, prevLink);
-someTraceState = await GetSdk().PushTraceAsync<object>(push);
-```
-
-
-The arguments are:
-
-- `recipient`: the id of the group to push the trace to,
-- `data`: (optional) some data related to the push transfer,
-- `prevLink` or `traceId`.
-
-You can also "pull" an existing trace from another group:
-
-```cs
-IDictionary<string, string> data = new Dictionary<string, string>() { { "why", "because im testing the pushTrace 2" } };
-
-PullTransferInput<object> pull = new PullTransferInput<object>(TraceId, data, prevLink);
-TraceState<object, object> statepul = await GetSdk().PullTraceAsync(pull);
-```
-
-And in this case, the arguments are:
-
-- `data`: (optional) some data related to the pull transfer,
-- `prevLink` or `traceId`.
-
-The Sdk will return the new state object of the trace. The shape of this object is the same as explained [previously](#creating-a-new-trace).
-
-Notes:
-
-- In both cases, the trace is not transferred automatically to or from the group. The recipient must respond to your request as we will see in the [next section](#responding-to-a-transfer-of-ownership-of-a-trace).
-- You don't need to provide a `recipient` in the case of a `pullTransfer` since the two parties of the transfer can be inferred (you and the current owner of the trace).
-- The `data` object argument is optional. When it is provided, it is a free form object that will not be validated against a JSON schema.
-
-### Responding to a transfer of ownership of a trace
-
-When someone pushed a trace to your group, you can either accept or reject the transfer:
-
-```cs
-TransferResponseInput<Object> trInput = new TransferResponseInput<Object>(TraceId, null, null);
-TraceState<Object, Object> stateAccept = await GetSdk().AcceptTransferAsync(trInput);
-```
-
-Or:
-
-```cs
-TransferResponseInput<Object> trInput = new TransferResponseInput<Object>(traceId, null, null);
-TraceState<Object, Object> stateReject = await GetSdk().RejectTransferAsync(trInput);
-```
-
-Alternatively, if you have initiated the transfer (push or pull), you can  also cancel before it has been accepted:
-
-```cs
-TransferResponseInput<Object> responseInput = new TransferResponseInput<Object>(TraceId, null, null);
-TraceState<Object, Object> statecancel = await GetSdk().CancelTransferAsync(responseInput);
-```
-
-In all cases, the arguments are:
-
-- `data`: (optional) some data related to the pull transfer,
-- `prevLink` or `traceId`.
-
-The Sdk will return the new state object of the trace. The shape of this object is the same as explained [previously](#creating-a-new-trace).
-
-Notes:
-
-- The `data` object argument is optional. When it is provided, it is a free form object that will not be validated against a JSON schema.
 
 ### Trace stages
 
@@ -329,15 +253,14 @@ In the result object, you will have the `totalCount` and an `info` object that h
 
 Let's look at a pagination example. We start by retrieving (and consuming) the first 10 incoming traces:
 
-
 ```cs
 Sdk<object> sdk = GetSdk();
 PaginationInfo paginationInfo = new PaginationInfo(10, null, null, null);
 TracesState<object, object> results = await sdk.GetIncomingTracesAsync<object>(paginationInfo);
 ```
 
-
 Next, we look at the pagination info results to know if there are more traces to retrieve:
+
 ```cs
 if (results.Info.HasNext)
 {
@@ -346,19 +269,15 @@ if (results.Info.HasNext)
 }
 ```
 
-
-
-
 ### :floppy_disk: Handling files
 
 When providing a `data` object in an action (via `newTrace`, `appendLink` etc.), you can embed files that will automatically be uploaded and encrypted for you. We provide two ways for embedding files, depending on the platform your app is running.
-
-
 
 ```cs
 AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(YOUR_CONFIG.formId, data, TraceId);
 TraceState<object, object> state = await GetSdk().AppendLinkAsync(appLinkInput);
 ```
+
 In the browser, assuming you are working with File objects, you can use:
 
 ```cs
@@ -367,7 +286,7 @@ IDictionary<string, object> data = new Dictionary<string, object> {
   ["valid"] = true,
   ["operators"] = new string[] { "1", "2" },
   ["operation"] = "my new operation 1"
-};  
+};
 data.Add("Certificate1", FileWrapper.FromFilePath(Path.GetFullPath(filePath)));
 data.Add("Certificates", new Identifiable[] { FileWrapper.FromFilePath(filePath});
 
@@ -403,11 +322,12 @@ dotnet restore
 dotnet test SdkTest/SdkTest.csproj
 ```
 
-## Using local Stratumn.* dependencies
+## Using local Stratumn.\* dependencies
 
 You may want to test the SDK with local debug versions of `Stratumn.Chainscript` and `Stratumn.CanonicalJson`.
 To do so, you can feed your local filesystem as custom NuGet sources by feeding the following to the `.csproj` where
 you may need it:
+
 ```xml
 <PropertyGroup>
   <RestoreSources>
@@ -423,9 +343,87 @@ it should use your local debug `.nupkg` files.
 ## Publishing to NuGet
 
 From [this source](https://docs.microsoft.com/en-us/nuget/quickstart/create-and-publish-a-package-using-the-dotnet-cli):
+
 ```sh
 # Create the .nupkg package
 dotnet pack --configuration release
 # Publish it
 dotnet nuget push Sdk/bin/Release/Stratumn.Sdk.<version>.nupkg -k <nuget_api_key> -s https://api.nuget.org/v3/index.json
 ```
+
+## :skull: Deprecated
+
+The following functionality will no longer be supported in future releases.
+
+### Requesting the transfer of ownership of a trace
+
+You can "push" the trace to another group in the workflow this way:
+
+```cs
+IDictionary<string, object> data = new Dictionary<string, object>() { { "why", "because im testing the pushTrace 2" } };
+
+PushTransferInput<object> push = new PushTransferInput<object>(TraceId, recipient, data, prevLink);
+someTraceState = await GetSdk().PushTraceAsync<object>(push);
+```
+
+The arguments are:
+
+- `recipient`: the id of the group to push the trace to,
+- `data`: (optional) some data related to the push transfer,
+- `prevLink` or `traceId`.
+
+You can also "pull" an existing trace from another group:
+
+```cs
+IDictionary<string, string> data = new Dictionary<string, string>() { { "why", "because im testing the pushTrace 2" } };
+
+PullTransferInput<object> pull = new PullTransferInput<object>(TraceId, data, prevLink);
+TraceState<object, object> statepul = await GetSdk().PullTraceAsync(pull);
+```
+
+And in this case, the arguments are:
+
+- `data`: (optional) some data related to the pull transfer,
+- `prevLink` or `traceId`.
+
+The Sdk will return the new state object of the trace. The shape of this object is the same as explained [previously](#creating-a-new-trace).
+
+Notes:
+
+- In both cases, the trace is not transferred automatically to or from the group. The recipient must respond to your request as we will see in the [next section](#responding-to-a-transfer-of-ownership-of-a-trace).
+- You don't need to provide a `recipient` in the case of a `pullTransfer` since the two parties of the transfer can be inferred (you and the current owner of the trace).
+- The `data` object argument is optional. When it is provided, it is a free form object that will not be validated against a JSON schema.
+
+### Responding to a transfer of ownership of a trace
+
+When someone pushed a trace to your group, you can either accept or reject the transfer:
+
+```cs
+TransferResponseInput<Object> trInput = new TransferResponseInput<Object>(TraceId, null, null);
+TraceState<Object, Object> stateAccept = await GetSdk().AcceptTransferAsync(trInput);
+```
+
+Or:
+
+```cs
+TransferResponseInput<Object> trInput = new TransferResponseInput<Object>(traceId, null, null);
+TraceState<Object, Object> stateReject = await GetSdk().RejectTransferAsync(trInput);
+```
+
+Alternatively, if you have initiated the transfer (push or pull), you can also cancel before it has been accepted:
+
+```cs
+TransferResponseInput<Object> responseInput = new TransferResponseInput<Object>(TraceId, null, null);
+TraceState<Object, Object> statecancel = await GetSdk().CancelTransferAsync(responseInput);
+```
+
+In all cases, the arguments are:
+
+- `data`: (optional) some data related to the pull transfer,
+- `prevLink` or `traceId`.
+
+The Sdk will return the new state object of the trace. The shape of this object is the same as explained [previously](#creating-a-new-trace).
+
+Notes:
+
+- The `data` object argument is optional. When it is provided, it is a free form object that will not be validated against a JSON schema.
