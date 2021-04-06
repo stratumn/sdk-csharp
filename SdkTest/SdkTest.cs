@@ -14,7 +14,7 @@ using Stratumn.Sdk.Model.Sdk;
 using Stratumn.Sdk.Model.Trace;
 using Stratumn.Sdk.Model.Misc;
 
-namespace SDKTest
+namespace SdkTest
 {
     public class SdkTest
     {
