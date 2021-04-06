@@ -5,7 +5,6 @@
     <PackageId>Stratumn.SDK</PackageId>
     <Title>Stratumn SDK</Title>
     <Description>Stratumn services SDK</Description>
-    <Version>0.2.0.0</Version>
     <Authors>Stratumn</Authors>
     <Company>Stratumn</Company>
     <PackageIconUrl>https://avatars2.githubusercontent.com/u/15095987</PackageIconUrl>
