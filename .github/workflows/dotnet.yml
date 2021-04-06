@@ -21,4 +21,4 @@ jobs:
       - name: Build
         run: dotnet build --no-restore
       - name: Test
-        run: dotnet test --verbosity normal --no-build SdkTest/SdkTest.csproj
+        run: dotnet test --verbosity normal SdkTest/SdkTest.csproj
