@@ -13,7 +13,7 @@ using Stratumn.Sdk.Model.Trace;
 using Stratumn.Chainscript.utils;
 using Stratumn.Sdk.Model.Misc;
 
-namespace SDKTest
+namespace SdkTest
 {
     public class SdkTestPojoTest
     {
