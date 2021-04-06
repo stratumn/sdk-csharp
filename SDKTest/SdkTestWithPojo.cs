@@ -20,10 +20,11 @@ namespace SDKTest
         private const string WORKFLOW_ID = "591";
         private const string ACTION_KEY = "action1";
 
-        private const String MY_GROUP = "1744";
-        private const String PEM_PRIVATEKEY = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRACaNT4cup/ZQAq4IULZCrlPB7eR1QTCN9V3Qzct8S\nYp57BqN4FipIrGpyclvbT1FKQfYLJpeBXeCi2OrrQMTgiw==\n-----END ED25519 PRIVATE KEY-----\n";
+        private const string TRACE_ID = "191516ec-5f8c-4757-9061-8c7ab06cf0a0";
 
-        private static String PEM_PRIVATEKEY_2 = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRAWotrb1jJokHr7AVQTS6f6W7dFYnKpVy+DV++sG6x\nlExB4rtrKpCAEPt5q7oT6/lcF4brFSNiCxLPnHqiSjcyVw==\n-----END ED25519 PRIVATE KEY-----\n";
+        private static String PEM_PRIVATEKEY = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRAjgtjpc1iOR4zYm+21McRGoWr0WM1NBkm26uZmFAx\n853QZ8CRL/HWGCPpEt18JrHZr9ZwA9UyoEosPR8gPakZFQ==\n-----END ED25519 PRIVATE KEY-----\n";
+
+        private static String PEM_PRIVATEKEY_2 = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRArbo87/1Yd/nOqFwmmcuxm01T9/pqkeARQxK9y4iG\nF3Xe1W+/2UOr/rYuQPFHQC4a/F0r6nVJGgCI1Ghc/luHZw==\n-----END ED25519 PRIVATE KEY-----\n";
         private static String OTHER_GROUP = "1785";
 
         private const string TRACE_URL = "https://trace-api.staging.stratumn.com";
@@ -88,23 +89,31 @@ namespace SDKTest
             public String[] Operators;
         }
 
+
+        [Fact]
+        public async Task LoginWtihPrivateKeyDemo()
+        {
+            Sdk<StateExample> sdk = GetSdk<StateExample>();
+            string token = await sdk.LoginAsync();
+            Debug.WriteLine(token);
+            Assert.NotNull(token);
+        }
+
         [Fact]
         public async Task GetTraceStateTestWithPojo()
         {
             Sdk<StateExample> sdk = GetSdk<StateExample>();
-            string traceId = "191516ec-5f8c-4757-9061-8c7ab06cf0a0";
-            GetTraceStateInput input = new GetTraceStateInput(traceId);
+            GetTraceStateInput input = new GetTraceStateInput(TRACE_ID);
             TraceState<StateExample, HeadLinkData> state = await sdk.GetTraceStateAsync<HeadLinkData>(input);
-            Assert.Equal(state.TraceId, traceId);
+            Assert.Equal(state.TraceId, TRACE_ID);
         }
 
         [Fact]
         public async Task GetTraceDetailsWithPojo()
         {
             Sdk<StateExample> sdk = GetSdk<StateExample>();
-            string traceId = "191516ec-5f8c-4757-9061-8c7ab06cf0a0";
 
-            GetTraceDetailsInput input = new GetTraceDetailsInput(traceId, 5, null, null, null);
+            GetTraceDetailsInput input = new GetTraceDetailsInput(TRACE_ID, 5, null, null, null);
 
             TraceDetails<HeadLinkData> details = await sdk.GetTraceDetailsAsync<HeadLinkData>(input);
             Debug.WriteLine(JsonHelper.ToJson(details));
@@ -299,6 +308,31 @@ namespace SDKTest
             TraceState<object, Step> state = await sdk.NewTraceAsync<Step>(newTraceInput);
             Assert.NotNull(state.TraceId);
             Debug.WriteLine(state.TraceId);
+        }
+
+        [Fact]
+        public async Task traceTagsRWTest()
+        {
+            Sdk<Object> sdk = GetSdk<Object>();
+
+            // Add a tag to a trace
+            string traceId = TRACE_ID;
+            Guid uuid = System.Guid.NewGuid();
+            string randomUUIDString = uuid.ToString();
+            AddTagsToTraceInput input = new AddTagsToTraceInput(traceId, new string[] { randomUUIDString });
+
+            TraceState<object, Step> state = await sdk.AddTagsToTraceAsync<Step>(input);
+
+            Assert.Equal(traceId, state.TraceId);
+
+            // search the trace by tags
+            List<String> tags = new List<string>();
+            tags.Add(randomUUIDString);
+            SearchTracesFilter f = new SearchTracesFilter(tags);
+            TracesState<Object, Object> res = await sdk.SearchTracesAsync<Object>(f, new PaginationInfo());
+
+            Assert.Equal(1, res.TotalCount);
+            Assert.Equal(traceId, res.Traces[0].TraceId);
         }
     }
 }

@@ -90,19 +90,29 @@ namespace Stratumn.Sdk
             var groups = jsonData.workflow.groups;
             String configId = jsonData.workflow.config.id;
             var jsonAccount = jsonData.account;
-            var memberOf = jsonAccount.memberOf;
+
+            var user = jsonAccount.user;
+            var bot = jsonAccount.bot;
 
             String accountId = jsonAccount.accountId;
-            String userId = jsonAccount.userId;
 
             IList<string> myAccounts = new List<string>();
 
             // get all the account ids I am a member of
-            foreach (var mNode in memberOf.nodes)
+            if (user != null)
             {
-                myAccounts.Add((String)mNode.accountId);
+                foreach (var mNode in user?.memberOf?.nodes)
+                {
+                    myAccounts.Add((String)mNode.accountId);
+                }
             }
-
+            else if (bot != null)
+            {
+                foreach (var mNode in bot.teams.nodes)
+                {
+                    myAccounts.Add((String)mNode.accountId);
+                }
+            }
 
             IList<Object> myGroups = new List<Object>();
             // get all the groups that are owned by one of my accounts
@@ -145,7 +155,7 @@ namespace Stratumn.Sdk
             }
             else
             {
-                var signingKey = jsonAccount.account.signingKey;
+                var signingKey = jsonAccount.signingKey;
                 var privateKey = signingKey.privateKey;
                 Boolean passwordProtected = (Boolean)privateKey.passwordProtected;
                 String decrypted = (String)privateKey.decrypted;
@@ -157,7 +167,7 @@ namespace Stratumn.Sdk
                     throw new Exception("Cannot get signing private key");
             }
 
-            this.config = new SdkConfig(workflowId, configId, userId, accountId, groupId, signingPrivateKey);
+            this.config = new SdkConfig(workflowId, configId, accountId, groupId, signingPrivateKey);
 
             // return the new config
             return this.config;
@@ -511,7 +521,7 @@ namespace Stratumn.Sdk
 
             string workflowId = sdkConfig.WorkflowId;
             string configId = sdkConfig.ConfigId;
-            string userId = sdkConfig.UserId;
+            string accountId = sdkConfig.AccountId;
             string groupId = sdkConfig.GroupId;
 
             // upload files and transform data
@@ -528,7 +538,7 @@ namespace Stratumn.Sdk
             TraceLinkBuilder<TLinkData> linkBuilder = new TraceLinkBuilder<TLinkData>(cfg);
 
             // this is an attestation
-            linkBuilder.ForAttestation(actionKey, data).WithGroup(groupId).WithCreatedBy(userId);
+            linkBuilder.ForAttestation(actionKey, data).WithGroup(groupId).WithCreatedBy(accountId);
             // call createLink helper
             return await this.CreateLinkAsync(linkBuilder);
         }
@@ -554,7 +564,7 @@ namespace Stratumn.Sdk
 
             string workflowId = sdkConfig.WorkflowId;
             string configId = sdkConfig.ConfigId;
-            string userId = sdkConfig.UserId;
+            string accountId = sdkConfig.AccountId;
             string groupId = sdkConfig.GroupId;
             // upload files and transform data
             await this.UploadFilesInLinkData(data);
@@ -575,7 +585,7 @@ namespace Stratumn.Sdk
             // this is an attestation
             linkBuilder.ForAttestation(actionKey, data)
                     .WithGroup(groupId)
-                    .WithCreatedBy(userId);
+                    .WithCreatedBy(accountId);
             // call createLink helper
             return await this.CreateLinkAsync(linkBuilder);
         }
@@ -600,7 +610,7 @@ namespace Stratumn.Sdk
 
             string workflowId = sdkConfig.WorkflowId;
             string configId = sdkConfig.ConfigId;
-            string userId = sdkConfig.UserId;
+            string accountId = sdkConfig.AccountId;
 
             TraceLinkBuilderConfig<TLinkData> cfg = new TraceLinkBuilderConfig<TLinkData>()
             {
@@ -616,7 +626,7 @@ namespace Stratumn.Sdk
             TraceLinkBuilder<TLinkData> linkBuilder = new TraceLinkBuilder<TLinkData>(cfg);
 
             // this is a push transfer
-            linkBuilder.ForPushTransfer(recipient, data).WithCreatedBy(userId);
+            linkBuilder.ForPushTransfer(recipient, data).WithCreatedBy(accountId);
             // call createLink helper
             return await this.CreateLinkAsync(linkBuilder);
         }
@@ -639,8 +649,8 @@ namespace Stratumn.Sdk
             SdkConfig sdkConfig = await this.GetConfigAsync();
 
             String workflowId = sdkConfig.WorkflowId;
-            string configId = sdkConfig.ConfigId;
-            String userId = sdkConfig.UserId;
+            String configId = sdkConfig.ConfigId;
+            String accountId = sdkConfig.AccountId;
 
             TraceLinkBuilderConfig<TLinkData> cfg = new TraceLinkBuilderConfig<TLinkData>()
             {
@@ -658,7 +668,7 @@ namespace Stratumn.Sdk
             linkBuilder // this is to cancel the transfer
                .ForCancelTransfer(data)
                // add creator info
-               .WithCreatedBy(userId);
+               .WithCreatedBy(accountId);
             // call createLink helper
             return await this.CreateLinkAsync(linkBuilder);
         }
@@ -787,7 +797,7 @@ namespace Stratumn.Sdk
 
             String workflowId = sdkConfig.WorkflowId;
             string configId = sdkConfig.ConfigId;
-            String userId = sdkConfig.UserId;
+            String accountId = sdkConfig.AccountId;
             String groupId = sdkConfig.GroupId;
 
             TraceLinkBuilderConfig<TLinkData> cfg = new TraceLinkBuilderConfig<TLinkData>()
@@ -808,7 +818,7 @@ namespace Stratumn.Sdk
                // add group info
                .WithGroup(groupId)
                // add creator info
-               .WithCreatedBy(userId);
+               .WithCreatedBy(accountId);
             // call createLink helper
             return await CreateLinkAsync(linkBuilder);
         }
@@ -833,7 +843,7 @@ namespace Stratumn.Sdk
 
             String workflowId = sdkConfig.WorkflowId;
             string configId = sdkConfig.ConfigId;
-            String userId = sdkConfig.UserId;
+            String accountId = sdkConfig.AccountId;
             String groupId = sdkConfig.GroupId;
 
             TraceLinkBuilderConfig<TLinkData> cfg = new TraceLinkBuilderConfig<TLinkData>()
@@ -854,7 +864,7 @@ namespace Stratumn.Sdk
                // add group info
                .WithGroup(groupId)
                // add creator info
-               .WithCreatedBy(userId);
+               .WithCreatedBy(accountId);
             // call createLink helper
             return await this.CreateLinkAsync(linkBuilder);
         }

@@ -72,20 +72,26 @@ namespace Stratumn.Sdk
 
         public const string QUERY_CONFIG =
             @"query ConfigQuery($workflowId: BigInt!) {
-                account: me {
-                    userId: rowId
-                    accountId
-                    account {
-                        signingKey {
-                            privateKey {
-                                passwordProtected
-                                decrypted
+                account: myAccount {
+                    accountId: rowId
+                    signingKey {
+                        privateKey {
+                            passwordProtected
+                            decrypted
+                        }
+                    }
+                    bot {
+                        teams {
+                            nodes {
+                                accountId
                             }
                         }
                     }
-                    memberOf {
-                        nodes {
-                            accountId: rowId
+                    user {
+                        memberOf {
+                            nodes {
+                                accountId: rowId
+                            }
                         }
                     }
                 }

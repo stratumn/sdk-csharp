@@ -233,18 +233,18 @@ namespace Stratumn.Sdk
         /// <summary>
         /// To set the metadata createdById.
         /// </summary>
-        /// <param name="userId">The userId<see cref="string"/></param>
+        /// <param name="accountId">The accountId<see cref="string"/></param>
         /// <returns>The <see cref="TraceLinkBuilder{TLinkData}"/></returns>
-        public virtual TraceLinkBuilder<TLinkData> WithCreatedBy(string userId)
+        public virtual TraceLinkBuilder<TLinkData> WithCreatedBy(string accountId)
         {
-            this.metadata.CreatedById = userId;
+            this.metadata.CreatedByAccountId = accountId;
             return this;
         }
 
         /// <summary>
         /// To set the metadata configId.
         /// </summary>
-        /// <param name="userId">The userId<see cref="string"/></param>
+        /// <param name="configId">The configId<see cref="string"/></param>
         /// <returns>The <see cref="TraceLinkBuilder{TLinkData}"/></returns>
         public virtual TraceLinkBuilder<TLinkData> WithConfigId(string configId)
         {

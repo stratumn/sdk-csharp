@@ -24,8 +24,8 @@ namespace Stratumn.Sdk.Model.Trace
         [JsonProperty(PropertyName = "createdAt")]
         public DateTime CreatedAt { get; set; }
 
-        [JsonProperty(PropertyName = "createdById")]
-        public string CreatedById { get; set; }
+        [JsonProperty(PropertyName = "createdByAccountId")]
+        public string CreatedByAccountId { get; set; }
 
         [JsonProperty(PropertyName = "set")]
         public string Set { get; set; }
@@ -37,7 +37,7 @@ namespace Stratumn.Sdk.Model.Trace
         {
         }
 
-        internal TraceLinkMetaData(string configId, string groupId, string formId, string lastFormId, DateTime createdAt, string createdById, string[] inputs)
+        internal TraceLinkMetaData(string configId, string groupId, string formId, string lastFormId, DateTime createdAt, string createdByAccountId, string[] inputs)
         {
             if (string.ReferenceEquals(configId, null))
             {
@@ -59,9 +59,9 @@ namespace Stratumn.Sdk.Model.Trace
             {
                 throw new System.ArgumentException("createdAt cannot be null");
             }
-            if (string.ReferenceEquals(createdById, null))
+            if (string.ReferenceEquals(createdByAccountId, null))
             {
-                throw new System.ArgumentException("createdById cannot be null");
+                throw new System.ArgumentException("createdByAccountId cannot be null");
             }
             if (inputs == null)
             {
@@ -73,7 +73,7 @@ namespace Stratumn.Sdk.Model.Trace
             this.FormId = formId;
             this.LastFormId = lastFormId;
             this.CreatedAt = createdAt;
-            this.CreatedById = createdById;
+            this.CreatedByAccountId = createdByAccountId;
             this.Inputs = inputs;
         }
     }
