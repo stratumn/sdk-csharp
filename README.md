@@ -337,14 +337,9 @@ it should use your local debug `.nupkg` files.
 
 ## Publishing to NuGet
 
-From [this source](https://docs.microsoft.com/en-us/nuget/quickstart/create-and-publish-a-package-using-the-dotnet-cli):
+Publishing to nuget is done through github actions. It can be triggered by publishing a release in github with a semantically versioned tag on a passing commit.
 
-```sh
-# Create the .nupkg package
-dotnet pack --configuration release
-# Publish it
-dotnet nuget push Sdk/bin/Release/Stratumn.Sdk.<version>.nupkg -k <nuget_api_key> -s https://api.nuget.org/v3/index.json
-```
+For example, `0.3.0` would work, or something with a suffix to denote that it is not an official release like `0.3.0-alpha.1`. Both of these would publish a version on nuget with a verison matching the tag of the release.
 
 ## :skull: Deprecated
 
