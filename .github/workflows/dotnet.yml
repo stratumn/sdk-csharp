@@ -23,6 +23,7 @@ on:
 
 jobs:
   build:
+    name: build and test
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
