@@ -7,11 +7,11 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.IO;
 
-using Stratumn.Chainscript.utils;
 using Stratumn.Sdk;
 using Stratumn.Sdk.Model.Client;
 using Stratumn.Sdk.Model.Sdk;
 using Stratumn.Sdk.Model.Trace;
+using Stratumn.Chainscript.utils;
 using Stratumn.Sdk.Model.Misc;
 
 namespace SDKTest
@@ -21,13 +21,12 @@ namespace SDKTest
         private const string WORKFLOW_ID = "591";
         private const string ACTION_KEY = "action1";
 
-        private const string TRACE_ID = "36adf228-c44c-429c-850f-db1910770d3e";
+        private const string TRACE_ID = "191516ec-5f8c-4757-9061-8c7ab06cf0a0";
 
-        private const string MY_GROUP = "1744";
-        private const string PEM_PRIVATEKEY = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRACaNT4cup/ZQAq4IULZCrlPB7eR1QTCN9V3Qzct8S\nYp57BqN4FipIrGpyclvbT1FKQfYLJpeBXeCi2OrrQMTgiw==\n-----END ED25519 PRIVATE KEY-----\n";
+        private static String PEM_PRIVATEKEY = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRAjgtjpc1iOR4zYm+21McRGoWr0WM1NBkm26uZmFAx\n853QZ8CRL/HWGCPpEt18JrHZr9ZwA9UyoEosPR8gPakZFQ==\n-----END ED25519 PRIVATE KEY-----\n";
 
-        private static string PEM_PRIVATEKEY_2 = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRAWotrb1jJokHr7AVQTS6f6W7dFYnKpVy+DV++sG6x\nlExB4rtrKpCAEPt5q7oT6/lcF4brFSNiCxLPnHqiSjcyVw==\n-----END ED25519 PRIVATE KEY-----\n";
-        private static string OTHER_GROUP = "1785";
+        private static String PEM_PRIVATEKEY_2 = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRArbo87/1Yd/nOqFwmmcuxm01T9/pqkeARQxK9y4iG\nF3Xe1W+/2UOr/rYuQPFHQC4a/F0r6nVJGgCI1Ghc/luHZw==\n-----END ED25519 PRIVATE KEY-----\n";
+        private static String OTHER_GROUP = "1785";
 
         private const string TRACE_URL = "https://trace-api.staging.stratumn.com";
         private const string ACCOUNT_URL = "https://account-api.staging.stratumn.com";
@@ -113,7 +112,7 @@ namespace SDKTest
         }
 
         [Fact]
-        public async Task LoginWtihPrivateKeyDemo()
+        public async Task LoginWithPrivateKeyDemo()
         {
             var sdk = GetSdk();
             string token = await sdk.LoginAsync();

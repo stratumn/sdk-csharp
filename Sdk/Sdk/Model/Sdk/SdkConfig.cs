@@ -13,10 +13,6 @@ namespace Stratumn.Sdk.Model.Sdk
         /// </summary>
         private string configId;
         /// <summary>
-        /// The user id
-        /// </summary>
-        private string userId;
-        /// <summary>
         /// The account id
         /// </summary>
         private string accountId;
@@ -34,11 +30,10 @@ namespace Stratumn.Sdk.Model.Sdk
         {
         }
 
-        public SdkConfig(string workflowId, string configId, string userId, string accountId, string groupId, Ed25519PrivateKeyParameters signingPrivateKey)
+        public SdkConfig(string workflowId, string configId, string accountId, string groupId, Ed25519PrivateKeyParameters signingPrivateKey)
         {
             this.workflowId = workflowId;
             this.configId = configId;
-            this.userId = userId;
             this.accountId = accountId;
             this.groupId = groupId;
             this.signingPrivateKey = signingPrivateKey;
@@ -65,18 +60,6 @@ namespace Stratumn.Sdk.Model.Sdk
             set
             {
                 this.configId = value;
-            }
-        }
-
-        public virtual string UserId
-        {
-            get
-            {
-                return userId;
-            }
-            set
-            {
-                this.userId = value;
             }
         }
 
