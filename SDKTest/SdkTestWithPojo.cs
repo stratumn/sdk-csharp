@@ -91,7 +91,7 @@ namespace SDKTest
 
 
         [Fact]
-        public async Task LoginWtihPrivateKeyDemo()
+        public async Task LoginWithPrivateKeyDemo()
         {
             Sdk<StateExample> sdk = GetSdk<StateExample>();
             string token = await sdk.LoginAsync();

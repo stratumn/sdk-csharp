@@ -101,7 +101,7 @@ namespace Stratumn.Sdk
             // get all the account ids I am a member of
             if (user != null)
             {
-                foreach (var mNode in user?.memberOf?.nodes)
+                foreach (var mNode in user.memberOf?.nodes)
                 {
                     myAccounts.Add((String)mNode.accountId);
                 }
