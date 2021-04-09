@@ -335,6 +335,15 @@ you may need it:
 Afterwards, run `dotnet pack` on the Chainscript/CanonicalJson project(s), and `dotnet restore` on the SDK project,
 it should use your local debug `.nupkg` files.
 
+Make sure the version you build matches the version targeted in the dependency in the `pom.xml` file. If the version was not updated before you run `dotnet pack` again, you will need to run the following command to make sure the last packed version is picked up.
+
+```sh
+dotnet nuget locals all --clear
+dotnet restore
+```
+
+The alternative is to update the version each time so when you run `dotnet restore` it grabs the new version.
+
 ## Publishing to NuGet
 
 Publishing to nuget is done through github actions. It can be triggered by publishing a release in github with a semantically versioned tag on a passing commit.
