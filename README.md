@@ -22,13 +22,13 @@ Install-Package Stratumn.SDK
 
 You must start by importing the `Sdk` class definition:
 
-```sh
+```cs
 using Stratumn.Sdk
 ```
 
 You can then create a new instance of the `Sdk`:
 
-```sh
+```cs
   Secret s = Secret.NewPrivateKeySecret(YOUR_SECRETS.privateKey);
   SdkOptions opts = new SdkOptions(YOUR_CONFIG.workflowId, s);
 ```
@@ -88,13 +88,13 @@ IDictionary<string, object> data = new Dictionary<string, object> {
   ["operators"] = new string[] { "1", "2" },
   ["operation"] = "my new operation 1"
 };
-NewTraceInput<object> input = new NewTraceInput<object>(YOUR_CONFIG.formId, data);
+NewTraceInput<object> input = new NewTraceInput<object>(YOUR_CONFIG.actionKey, data);
 TraceState<object, object> myFirstTrace = await sdk.NewTraceAsync<object>(input);
 ```
 
 You must provide:
 
-- `formId`: a valid form id,
+- `actionKey`: a valid form id,
 - `data`: the data object corresponding to the action being done.
 
 The Sdk will return an object corresponding to the "state" of your new trace. This state exposes the following fields:
@@ -107,28 +107,25 @@ The Sdk will return an object corresponding to the "state" of your new trace. Th
 
 Notes:
 
-- You can view your forms detail from your group's Attestation Forms page (for ex `https://trace.stratumn.com/group/322547/forms`).
-- When viewing a specific form detail, you can retrieve the form id from the url. (`https://trace.stratumn.com/group/322547/form/788547` => `formId=788547`).
 - The `data` object argument must be valid against the JSON schema of the form you are using, otherwise Trace will throw a validation error.
-- Note that the return type of `sdk.newTrace` is `Promise<TraceState>` since this operation is asynchronous. You must `await` for the response in order to effectively use it.
 
 ### Appending a link to an existing trace
 
 ```cs
-AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(YOUR_CONFIG.formId, data, prevLink);
+AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(YOUR_CONFIG.actionKey, data, prevLink);
 TraceState<object, object> state = await GetSdk().AppendLinkAsync(appLinkInput);
 ```
 
 If you don't have access to the head link, you can also provide the trace id:
 
 ```cs
-AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(YOUR_CONFIG.formId, data, traceId);
+AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(YOUR_CONFIG.actionKey, data, traceId);
 TraceState<object, object> state = await GetSdk().AppendLinkAsync(appLinkInput);
 ```
 
 You must provide:
 
-- formId: a valid form id,
+- actionKey: a valid form id,
 - data: the data object corresponding to the action being done,
 - prevLink or traceId.
 
@@ -136,8 +133,6 @@ The Sdk will return the new state object of the trace. The shape of this object 
 
 Notes:
 
-- You can view your forms detail from your group's Attestation Forms page (for ex `https://trace.stratumn.com/group/322547/forms`).
-- When viewing a specific form detail, you can retrieve the form id from the url. (`https://trace.stratumn.com/group/322547/form/788547` => `formId=788547`).
 - The `data` object argument must be valid against the JSON schema of the form you are using, otherwise Trace will throw a validation error.
 
 ### Trace stages
@@ -302,7 +297,7 @@ if (results.Info.HasNext)
 When providing a `data` object in an action (via `newTrace`, `appendLink` etc.), you can embed files that will automatically be uploaded and encrypted for you. We provide two ways for embedding files, depending on the platform your app is running.
 
 ```cs
-AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(YOUR_CONFIG.formId, data, TraceId);
+AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(YOUR_CONFIG.actionKey, data, TraceId);
 TraceState<object, object> state = await GetSdk().AppendLinkAsync(appLinkInput);
 ```
 
@@ -318,7 +313,7 @@ IDictionary<string, object> data = new Dictionary<string, object> {
 data.Add("Certificate1", FileWrapper.FromFilePath(Path.GetFullPath(filePath)));
 data.Add("Certificates", new Identifiable[] { FileWrapper.FromFilePath(filePath});
 
-AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(YOUR_CONFIG.formId, data, TraceId);
+AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(YOUR_CONFIG.actionKey, data, TraceId);
 TraceState<object, object> state = await GetSdk().AppendLinkAsync(appLinkInput);
 ```
 
@@ -368,16 +363,20 @@ you may need it:
 Afterwards, run `dotnet pack` on the Chainscript/CanonicalJson project(s), and `dotnet restore` on the SDK project,
 it should use your local debug `.nupkg` files.
 
-## Publishing to NuGet
-
-From [this source](https://docs.microsoft.com/en-us/nuget/quickstart/create-and-publish-a-package-using-the-dotnet-cli):
+Make sure the version you build matches the version targeted in the dependency in the `pom.xml` file. If the version was not updated before you run `dotnet pack` again, you will need to run the following command to make sure the last packed version is picked up.
 
 ```sh
-# Create the .nupkg package
-dotnet pack --configuration release
-# Publish it
-dotnet nuget push Sdk/bin/Release/Stratumn.Sdk.<version>.nupkg -k <nuget_api_key> -s https://api.nuget.org/v3/index.json
+dotnet nuget locals all --clear
+dotnet restore
 ```
+
+The alternative is to update the version each time so when you run `dotnet restore` it grabs the new version.
+
+## Publishing to NuGet
+
+Publishing to nuget is done through github actions. It can be triggered by publishing a release in github with a semantically versioned tag on a passing commit.
+
+For example, `0.3.0` would work, or something with a suffix to denote that it is not an official release like `0.3.0-alpha.1`. Both of these would publish a version on nuget with a verison matching the tag of the release.
 
 ## :skull: Deprecated
 

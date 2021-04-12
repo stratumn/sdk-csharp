@@ -51,7 +51,7 @@ namespace Stratumn.Sdk
 
         public Account CreatedBy()
         {
-            return new Account(this.Metadata().CreatedById);
+            return new Account(this.Metadata().CreatedByAccountId);
         }
 
         public DateTime CreatedAt()
