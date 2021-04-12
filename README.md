@@ -238,19 +238,25 @@ Traces can be searched by tag. So in order to search you must first add a tag to
 ```cs
 String traceId = "191516ec-5f8c-4757-9061-8c7ab06cf0a0"
 // Add a tag to a trace
-Guid uuid = System.Guid.NewGuid();
-String randomUUIDString = uuid.ToString();
-AddTagsToTraceInput input = new AddTagsToTraceInput(traceId, new string[] { randomUUIDString });
+AddTagsToTraceInput input = new AddTagsToTraceInput(traceId, new string[] { "todo", "other tag" });
 TraceState<Object, Object> state = await sdk.AddTagsToTraceAsync<Object>(input);
 ```
 
 Now that there is a trace with a tag we can search for it.
 
 ```cs
-// search the trace by tags
+// In order to search for any of the tags provided, use the `overlaps` parameter :
 List<String> tags = new List<string>();
-tags.Add(randomUUIDString);
+tags.Add("todo");
+tags.Add("other tag");
 SearchTracesFilter f = new SearchTracesFilter(tags);
+TracesState<Object, Object> res = await sdk.SearchTracesAsync<Object>(f, new PaginationInfo());
+
+// If you want to search for all tags provided, use the `contains` parameter :
+List<String> tags = new List<string>();
+tags.Add("todo");
+tags.Add("other tag");
+SearchTracesFilter f = new SearchTracesFilter(tags, SearchTracesFilter.SEARCH_TYPE.TAGS_CONTAINS);
 TracesState<Object, Object> res = await sdk.SearchTracesAsync<Object>(f, new PaginationInfo());
 ```
 
