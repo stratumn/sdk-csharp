@@ -898,17 +898,9 @@ namespace Stratumn.Sdk
                  PaginationInfo paginationInfo)
         {
 
-            Dictionary<String, object> tagFilter = new Dictionary<String, object>
-            {
-                { "overlaps", filter.Tags }
-            };
-            Dictionary<String, object> filters = new Dictionary<String, object>{
-                { "tags", tagFilter }
-            };
-
             // create variables
             Dictionary<String, object> variables = new Dictionary<String, object>{
-                { "filter", filters },
+                { "filter", filter.Filters },
                 { "workflowId", this.opts.WorkflowId }
             };
             Dictionary<String, object> variablesPaginationInfo = JsonHelper.ObjectToMap(paginationInfo);
