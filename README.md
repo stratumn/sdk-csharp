@@ -252,7 +252,7 @@ tags.Add("other tag");
 SearchTracesFilter f = new SearchTracesFilter(tags);
 TracesState<Object, Object> res = await sdk.SearchTracesAsync<Object>(f, new PaginationInfo());
 
-// If you want to search for all tags provided, use the `contains` parameter :
+// If you want to search for all tags provided, use the `TAGS_CONTAINS` parameter :
 List<String> tags = new List<string>();
 tags.Add("todo");
 tags.Add("other tag");
