@@ -15,40 +15,47 @@
             TAGS_CONTAINS, TAGS_OVERLAPS
         }
 
-        private Dictionary<String, object> filters;
+        private IList<string> tags;
+        private SEARCH_TYPE searchType;
+
+        public SearchTracesFilter() : base() { }
 
         // By default, search for any tags (for non breaking change)
-        public SearchTracesFilter(IList<string> tags) : this(tags, SEARCH_TYPE.TAGS_OVERLAPS) { }
-
-        public SearchTracesFilter(IList<string> tags, SEARCH_TYPE searchType)
+        public SearchTracesFilter(IList<string> tags) : base()
         {
-
-            this.filters = new Dictionary<String, object>();
-            Dictionary<String, object> searchFilter = new Dictionary<String, object>();
-
-            switch (searchType)
-            {
-                case SEARCH_TYPE.TAGS_CONTAINS:
-                    // search for all tags
-                    searchFilter.Add("contains", tags);
-                    this.filters.Add("tags", searchFilter);
-                    break;
-                case SEARCH_TYPE.TAGS_OVERLAPS:
-                    searchFilter.Add("overlaps", tags);
-                    this.filters.Add("tags", searchFilter);
-                    break;
-                default:
-                    // By default, search for any tags (for non breaking change)
-                    searchFilter.Add("overlaps", tags);
-                    this.filters.Add("tags", searchFilter);
-                    break;
-            }
+            this.tags = tags;
         }
 
-        public Dictionary<String, object> Filters
+        public Dictionary<String, object> GetFilters()
         {
-            get => filters;
-            set => filters = value;
+            Dictionary<String, object> filters = new Dictionary<String, object>();
+            Dictionary<String, object> searchFilter = new Dictionary<String, object>();
+
+            if (SEARCH_TYPE.TAGS_CONTAINS == this.searchType)
+            {
+                searchFilter.Add("contains", this.Tags);
+                filters.Add("tags", searchFilter);
+            }
+            else
+            {
+                // By default, search for any tags (for non breaking change)
+                searchFilter.Add("overlaps", this.Tags);
+                filters.Add("tags", searchFilter);
+            }
+
+            return filters;
+        }
+
+        public IList<string> Tags
+        {
+            get => tags;
+            set => tags = value;
+        }
+
+        public SEARCH_TYPE SearchType
+        {
+            get => searchType;
+            set => searchType = value;
         }
     }
 }

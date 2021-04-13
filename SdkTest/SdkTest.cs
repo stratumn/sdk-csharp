@@ -443,7 +443,9 @@ namespace SdkTest
             List<String> tags = new List<string>();
             tags.Add("tag1");
             tags.Add("tag2");
-            SearchTracesFilter f = new SearchTracesFilter(tags, SearchTracesFilter.SEARCH_TYPE.TAGS_CONTAINS);
+            SearchTracesFilter f = new SearchTracesFilter();
+            f.Tags = tags;
+            f.SearchType = SearchTracesFilter.SEARCH_TYPE.TAGS_CONTAINS;
             TracesState<Object, Object> res = await sdk.SearchTracesAsync<Object>(f, new PaginationInfo());
 
             Assert.Equal(1, res.TotalCount);

@@ -249,14 +249,15 @@ Now that there is a trace with a tag we can search for it.
 List<String> tags = new List<string>();
 tags.Add("todo");
 tags.Add("other tag");
-SearchTracesFilter f = new SearchTracesFilter(tags);
-TracesState<Object, Object> res = await sdk.SearchTracesAsync<Object>(f, new PaginationInfo());
 
-// If you want to search for all tags provided, use the `TAGS_CONTAINS` parameter :
-List<String> tags = new List<string>();
-tags.Add("todo");
-tags.Add("other tag");
-SearchTracesFilter f = new SearchTracesFilter(tags, SearchTracesFilter.SEARCH_TYPE.TAGS_CONTAINS);
+SearchTracesFilter f = new SearchTracesFilter();
+f.Tags = tags;
+
+// By default, the filter mode is set to "overlaps", which checks for any matching tag
+f.SearchType = SearchTracesFilter.SEARCH_TYPE.TAGS_OVERLAPS;
+
+// The "contains" filter is available to check for traces that match all provided tags
+f.SearchType = SearchTracesFilter.SEARCH_TYPE.TAGS_CONTAINS;
 TracesState<Object, Object> res = await sdk.SearchTracesAsync<Object>(f, new PaginationInfo());
 ```
 

@@ -900,7 +900,7 @@ namespace Stratumn.Sdk
 
             // create variables
             Dictionary<String, object> variables = new Dictionary<String, object>{
-                { "filter", filter.Filters },
+                { "filter", filter.GetFilters() },
                 { "workflowId", this.opts.WorkflowId }
             };
             Dictionary<String, object> variablesPaginationInfo = JsonHelper.ObjectToMap(paginationInfo);
