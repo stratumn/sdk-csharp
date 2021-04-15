@@ -433,5 +433,23 @@ namespace SdkTest
             Assert.Equal(1, res.TotalCount);
             Assert.Equal(traceId, res.Traces[0].TraceId);
         }
+
+        [Fact]
+        public async Task searchByMultipletagsTest()
+        {
+            Sdk<Object> sdk = GetSdk<Object>();
+
+            // search the trace by tags
+            List<String> tags = new List<string>();
+            tags.Add("tag1");
+            tags.Add("tag2");
+            SearchTracesFilter f = new SearchTracesFilter();
+            f.Tags = tags;
+            f.SearchType = SearchTracesFilter.SEARCH_TYPE.TAGS_CONTAINS;
+            TracesState<Object, Object> res = await sdk.SearchTracesAsync<Object>(f, new PaginationInfo());
+
+            Assert.Equal(1, res.TotalCount);
+            Assert.Equal("5bf6d482-cfdc-4edc-a5ef-c96539da94d8", res.Traces[0].TraceId);
+        }
     }
 }
