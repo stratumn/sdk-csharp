@@ -65,112 +65,114 @@ namespace Stratumn.Sdk
         /// <returns>The <see cref="Task{SdkConfig}"/></returns>
         public async Task<SdkConfig> GetConfigAsync(bool forceUpdate = false)
         {
-
-            // if the config already exists use it!
-            if (this.config != null && !forceUpdate)
+            // update the config if doesn't exist or force
+            if (this.config == null || forceUpdate)
             {
-                return this.config;
-            }
+                string workflowId = this.opts.WorkflowId;
+                String query = GraphQL.QUERY_CONFIG;
 
-            string workflowId = this.opts.WorkflowId;
-            String query = GraphQL.QUERY_CONFIG;
+                Dictionary<string, object> variables = new Dictionary<string, object>() { { "workflowId", workflowId } };
 
-            Dictionary<string, object> variables = new Dictionary<string, object>() { { "workflowId", workflowId } };
+                GraphQLResponse<dynamic> jsonResponse = await this.client.GraphqlAsync(query, variables, null, null);
 
-            GraphQLResponse<dynamic> jsonResponse = await this.client.GraphqlAsync(query, variables, null, null);
+                var jsonData = jsonResponse.Data;
 
-            var jsonData = jsonResponse.Data;
-
-            // extract relevant info from the response
-            var workflow = jsonData.workflow;
-            if (workflow == null || workflow.groups == null)
-            {
-                throw new Exception("Cannot find workflow " + workflowId);
-            }
-            var groups = jsonData.workflow.groups;
-            String configId = jsonData.workflow.config.id;
-            var jsonAccount = jsonData.account;
-
-            var user = jsonAccount.user;
-            var bot = jsonAccount.bot;
-
-            String accountId = jsonAccount.accountId;
-
-            IList<string> myAccounts = new List<string>();
-
-            // get all the account ids I am a member of
-            if (user != null)
-            {
-                foreach (var mNode in user.memberOf?.nodes)
+                // extract relevant info from the response
+                var workflow = jsonData.workflow;
+                if (workflow == null || workflow.groups == null)
                 {
-                    myAccounts.Add((String)mNode.accountId);
+                    throw new Exception("Cannot find workflow " + workflowId);
                 }
-            }
-            else if (bot != null)
-            {
-                foreach (var mNode in bot.teams.nodes)
-                {
-                    myAccounts.Add((String)mNode.accountId);
-                }
-            }
+                var groups = jsonData.workflow.groups;
+                String configId = jsonData.workflow.config.id;
+                var jsonAccount = jsonData.account;
 
-            IList<Object> myGroups = new List<Object>();
-            // get all the groups that are owned by one of my accounts
-            foreach (var _group in groups.nodes)
-            {
-                foreach (var member in _group.members.nodes)
-                {
+                var user = jsonAccount.user;
+                var bot = jsonAccount.bot;
 
-                    if (myAccounts.Contains((String)member.accountId))
+                String accountId = jsonAccount.accountId;
+
+                IList<string> myAccounts = new List<string>();
+
+                // get all the account ids I am a member of
+                if (user != null)
+                {
+                    foreach (var mNode in user.memberOf?.nodes)
                     {
-                        myGroups.Add((Object)_group);
+                        myAccounts.Add((String)mNode.accountId);
                     }
                 }
-            }
+                else if (bot != null)
+                {
+                    foreach (var mNode in bot.teams.nodes)
+                    {
+                        myAccounts.Add((String)mNode.accountId);
+                    }
+                }
 
-            // there must be at most one group!
-            if (myGroups.Count > 1)
-            {
-                throw new Exception("More than one group to choose from.");
-            }
+                IList<Object> myGroups = new List<Object>();
+                Dictionary<string, string> groupLabelToIdMap = new Dictionary<string, string>();
+                // get all the groups that are owned by one of my accounts
+                foreach (var _group in groups.nodes)
+                {
+                    String groupLabel = (String)_group.label;
+                    String groupId = (String)_group.groupId;
+                    foreach (var member in _group.members.nodes)
+                    {
+                        if (myAccounts.Contains((String)member.accountId))
+                        {
+                            myGroups.Add((Object)_group);
+                            groupLabelToIdMap.Add(groupLabel, groupId);
+                        }
+                    }
+                }
 
-            // // there must be at least one group!
-            if (myGroups.Count == 0)
-            {
-                throw new Exception("No group to choose from.");
-            }
+                // // there must be at least one group!
+                if (myGroups.Count == 0)
+                {
+                    throw new Exception("No group to choose from.");
+                }
 
-            // extract info from my only group
-            var group = myGroups.ToArray<Object>()[0];
-            var groupObject = JsonConvert.DeserializeObject<GroupResponse>(group.ToString());
-            String groupId = groupObject.GroupId;
+                Ed25519PrivateKeyParameters signingPrivateKey;
 
-            Ed25519PrivateKeyParameters signingPrivateKey;
-
-            if (Secret.IsPrivateKeySecret(opts.Secret))
-            {
-                // if the secret is a PrivateKeySecret, use it!
-                String privateKey = ((PrivateKeySecret)opts.Secret).PrivateKey;
-                signingPrivateKey = CryptoUtils.DecodeEd25519PrivateKey(privateKey);
-            }
-            else
-            {
-                var signingKey = jsonAccount.signingKey;
-                var privateKey = signingKey.privateKey;
-                Boolean passwordProtected = (Boolean)privateKey.passwordProtected;
-                String decrypted = (String)privateKey.decrypted;
-                if (!passwordProtected)
-                    // otherwise use the key from the response
-                    // if it's not password protected!
-                    signingPrivateKey = CryptoUtils.DecodeEd25519PrivateKey(decrypted);
+                if (Secret.IsPrivateKeySecret(opts.Secret))
+                {
+                    // if the secret is a PrivateKeySecret, use it!
+                    String privateKey = ((PrivateKeySecret)opts.Secret).PrivateKey;
+                    signingPrivateKey = CryptoUtils.DecodeEd25519PrivateKey(privateKey);
+                }
                 else
-                    throw new Exception("Cannot get signing private key");
+                {
+                    var signingKey = jsonAccount.signingKey;
+                    var privateKey = signingKey.privateKey;
+                    Boolean passwordProtected = (Boolean)privateKey.passwordProtected;
+                    String decrypted = (String)privateKey.decrypted;
+                    if (!passwordProtected)
+                        // otherwise use the key from the response
+                        // if it's not password protected!
+                        signingPrivateKey = CryptoUtils.DecodeEd25519PrivateKey(decrypted);
+                    else
+                        throw new Exception("Cannot get signing private key");
+                }
+
+                this.config = new SdkConfig(workflowId, configId, accountId, groupLabelToIdMap, signingPrivateKey);
             }
 
-            this.config = new SdkConfig(workflowId, configId, accountId, groupId, signingPrivateKey);
+            // sets the group id in any case
+            if (null != this.opts.GroupLabel)
+            {
+                this.config.GroupLabel = this.opts.GroupLabel;
+            }
 
             // return the new config
             return this.config;
+        }
+
+
+        public Sdk<TState> withGroupLabel(String groupLabel)
+        {
+            this.opts.GroupLabel = groupLabel;
+            return this;
         }
 
         /// <summary>
@@ -319,7 +321,7 @@ namespace Stratumn.Sdk
             // extract info from config
             SdkConfig sdkConfig = await this.GetConfigAsync();
 
-            String groupId = sdkConfig.GroupId;
+            String groupId = sdkConfig.GetGroupId();
 
             // create variables
             Dictionary<String, object> variables = new Dictionary<String, object>
@@ -368,8 +370,6 @@ namespace Stratumn.Sdk
                 TracesState<TState, TLinkData> tracesList = new TracesState<TState, TLinkData>()
                 {
                     Traces = traces,
-
-
                     TotalCount = totalCount,
                     Info = nodes.Count >= 1 ? info.ToObject<Info>() : null
                 };
@@ -499,7 +499,7 @@ namespace Stratumn.Sdk
 
 
             TraceState<TState, TLinkData> traceState = new TraceState<TState, TLinkData>(headLink.TraceId(), headLink, headLink.CreatedAt(),
-              headLink.CreatedBy(), JsonHelper.ObjectToObject<TState>(trace.state.data), trace.tags ?? new string[0]
+              headLink.CreatedBy(), JsonHelper.ObjectToObject<TState>(trace.state.data), trace.tags ?? new string[0], headLink.Group()
            );
 
             return traceState;
@@ -516,13 +516,14 @@ namespace Stratumn.Sdk
             //extract info from input
             string actionKey = input.ActionKey;
             TLinkData data = input.Data;
+            string groupLabel = input.GroupLabel;
 
             SdkConfig sdkConfig = await this.GetConfigAsync();
 
             string workflowId = sdkConfig.WorkflowId;
             string configId = sdkConfig.ConfigId;
             string accountId = sdkConfig.AccountId;
-            string groupId = sdkConfig.GroupId;
+            string groupId = sdkConfig.GetGroupId(groupLabel);
 
             // upload files and transform data
             await this.UploadFilesInLinkData(data);
@@ -559,13 +560,14 @@ namespace Stratumn.Sdk
             //extract info from input
             string actionKey = input.ActionKey;
             TLinkData data = input.Data;
+            string groupLabel = input.GroupLabel;
 
             SdkConfig sdkConfig = await this.GetConfigAsync();
 
             string workflowId = sdkConfig.WorkflowId;
             string configId = sdkConfig.ConfigId;
             string accountId = sdkConfig.AccountId;
-            string groupId = sdkConfig.GroupId;
+            string groupId = sdkConfig.GetGroupId(groupLabel);
             // upload files and transform data
             await this.UploadFilesInLinkData(data);
 
@@ -792,13 +794,14 @@ namespace Stratumn.Sdk
 
             //extract info from input
             TLinkData data = input.Data;
+            string groupLabel = input.GroupLabel;
 
             SdkConfig sdkConfig = await this.GetConfigAsync();
 
             String workflowId = sdkConfig.WorkflowId;
             string configId = sdkConfig.ConfigId;
             String accountId = sdkConfig.AccountId;
-            String groupId = sdkConfig.GroupId;
+            String groupId = sdkConfig.GetGroupId(groupLabel);
 
             TraceLinkBuilderConfig<TLinkData> cfg = new TraceLinkBuilderConfig<TLinkData>()
             {
@@ -838,13 +841,14 @@ namespace Stratumn.Sdk
             TraceLink<TLinkData> parentLink = await this.GetHeadLinkAsync<TLinkData>(headLinkInput);
 
             TLinkData data = input.Data;
+            string groupLabel = input.GroupLabel;
 
             SdkConfig sdkConfig = await this.GetConfigAsync();
 
             String workflowId = sdkConfig.WorkflowId;
             string configId = sdkConfig.ConfigId;
             String accountId = sdkConfig.AccountId;
-            String groupId = sdkConfig.GroupId;
+            String groupId = sdkConfig.GetGroupId(groupLabel);
 
             TraceLinkBuilderConfig<TLinkData> cfg = new TraceLinkBuilderConfig<TLinkData>()
             {
