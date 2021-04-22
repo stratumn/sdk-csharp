@@ -61,6 +61,7 @@ namespace SdkTest
                 Media = MEDIA_URL,
             };
             opts.EnableDebuging = true;
+            opts.GroupLabel = MY_GROUP_LABEL;
             Sdk<T> sdk = new Sdk<T>(opts);
 
             return sdk;
