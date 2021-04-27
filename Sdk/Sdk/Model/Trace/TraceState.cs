@@ -17,10 +17,11 @@ namespace Stratumn.Sdk.Model.Trace
         private ITraceLink<TLinkData> headLink;
         private DateTime updatedAt;
         private Account updatedBy;
+        private String updatedByGroupId;
         private TState data;
         private string[] tags;
 
-         public TraceState(string traceId, ITraceLink<TLinkData> headLink, DateTime updatedAt, Account updatedBy, TState data, string[] tags)
+        public TraceState(string traceId, ITraceLink<TLinkData> headLink, DateTime updatedAt, Account updatedBy, TState data, string[] tags, String updatedByGroupId)
         {
             if (string.ReferenceEquals(traceId, null))
             {
@@ -33,6 +34,7 @@ namespace Stratumn.Sdk.Model.Trace
             this.updatedBy = updatedBy;
             this.data = data;
             this.tags = tags;
+            this.updatedByGroupId = updatedByGroupId;
 
         }
 
@@ -108,9 +110,21 @@ namespace Stratumn.Sdk.Model.Trace
             }
         }
 
+        public virtual string UpdatedByGroupId
+        {
+            get
+            {
+                return updatedByGroupId;
+            }
+            set
+            {
+                this.updatedByGroupId = value;
+            }
+        }
+
         public override string ToString()
         {
-            return "TraceState [traceId=" + traceId + ", headLink=" + headLink + ", updatedAt=" + updatedAt + ", updatedBy=" + updatedBy + ", data=" + data + ", tags=" + tags.ToString() + "]";
+            return "TraceState [traceId=" + traceId + ", headLink=" + headLink + ", updatedAt=" + updatedAt + ", updatedBy=" + updatedBy + ", data=" + data + ", tags=" + tags.ToString() + ", updatedByGroupId=" + updatedByGroupId + "]";
         }
     }
 }

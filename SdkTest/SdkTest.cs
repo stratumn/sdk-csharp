@@ -20,13 +20,17 @@ namespace SdkTest
     {
         private const string WORKFLOW_ID = "591";
         private const string ACTION_KEY = "action1";
+        private const string COMMENT_ACTION_KEY = "3HflvBg1mU";
+        private const string MY_GROUP = "1744";
+        private const string MY_GROUP_LABEL = "group1";
 
         private const string TRACE_ID = "191516ec-5f8c-4757-9061-8c7ab06cf0a0";
 
-        private static String PEM_PRIVATEKEY = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRAjgtjpc1iOR4zYm+21McRGoWr0WM1NBkm26uZmFAx\n853QZ8CRL/HWGCPpEt18JrHZr9ZwA9UyoEosPR8gPakZFQ==\n-----END ED25519 PRIVATE KEY-----\n";
+        private const string PEM_PRIVATEKEY = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRAjgtjpc1iOR4zYm+21McRGoWr0WM1NBkm26uZmFAx\n853QZ8CRL/HWGCPpEt18JrHZr9ZwA9UyoEosPR8gPakZFQ==\n-----END ED25519 PRIVATE KEY-----\n";
 
-        private static String PEM_PRIVATEKEY_2 = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRArbo87/1Yd/nOqFwmmcuxm01T9/pqkeARQxK9y4iG\nF3Xe1W+/2UOr/rYuQPFHQC4a/F0r6nVJGgCI1Ghc/luHZw==\n-----END ED25519 PRIVATE KEY-----\n";
-        private static String OTHER_GROUP = "1785";
+        private const string PEM_PRIVATEKEY_2 = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRArbo87/1Yd/nOqFwmmcuxm01T9/pqkeARQxK9y4iG\nF3Xe1W+/2UOr/rYuQPFHQC4a/F0r6nVJGgCI1Ghc/luHZw==\n-----END ED25519 PRIVATE KEY-----\n";
+        private const string OTHER_GROUP = "1785";
+        private const string OTHER_GROUP_LABEL = "stp";
 
         private const string TRACE_URL = "https://trace-api.staging.stratumn.com";
         private const string ACCOUNT_URL = "https://account-api.staging.stratumn.com";
@@ -57,6 +61,7 @@ namespace SdkTest
                 Media = MEDIA_URL,
             };
             opts.EnableDebuging = true;
+            opts.GroupLabel = MY_GROUP_LABEL;
             Sdk<T> sdk = new Sdk<T>(opts);
 
             return sdk;
@@ -73,24 +78,8 @@ namespace SdkTest
                 Media = MEDIA_URL,
             };
             opts.EnableDebuging = true;
+            opts.GroupLabel = MY_GROUP_LABEL;
             Sdk<object> sdk = new Sdk<object>(opts);
-
-            return sdk;
-        }
-
-        public Sdk<T> GetOtherGroupSdk<T>()
-        {
-            Secret s = Secret.NewPrivateKeySecret(PEM_PRIVATEKEY_2);
-
-            SdkOptions opts = new SdkOptions(WORKFLOW_ID, s);
-            opts.Endpoints = new Endpoints
-            {
-                Trace = TRACE_URL,
-                Account = ACCOUNT_URL,
-                Media = MEDIA_URL,
-            };
-            opts.EnableDebuging = true;
-            Sdk<T> sdk = new Sdk<T>(opts);
 
             return sdk;
         }
@@ -106,6 +95,7 @@ namespace SdkTest
                 Media = MEDIA_URL,
             };
             opts.EnableDebuging = true;
+            opts.GroupLabel = MY_GROUP_LABEL;
             Sdk<object> sdk = new Sdk<object>(opts);
 
             return sdk;
@@ -450,6 +440,34 @@ namespace SdkTest
 
             Assert.Equal(1, res.TotalCount);
             Assert.Equal("5bf6d482-cfdc-4edc-a5ef-c96539da94d8", res.Traces[0].TraceId);
+        }
+
+        [Fact]
+        public async Task changeGroupTest()
+        {
+            await NewTraceTest();
+            Assert.NotNull(someTraceState);
+            Assert.Equal(someTraceState.UpdatedByGroupId, MY_GROUP);
+            Sdk<StateExample> sdk = GetSdk<StateExample>();
+            // Appendlink
+            Dictionary<string, object> dataMap = new Dictionary<string, object>
+            {
+                ["comment"] = "commment"
+            };
+
+            AppendLinkInput<Dictionary<string, object>> appLinkInput = new AppendLinkInput<Dictionary<string, object>>(
+                  COMMENT_ACTION_KEY, dataMap, someTraceState.TraceId);
+            // change group for action
+            appLinkInput.GroupLabel = OTHER_GROUP_LABEL;
+            TraceState<StateExample, Dictionary<string, object>> state = await sdk.AppendLinkAsync(appLinkInput);
+            // should equal group2 id
+            Assert.Equal(state.UpdatedByGroupId, OTHER_GROUP);
+            AppendLinkInput<Dictionary<string, object>> appLinkInputWithGroupLabel = new AppendLinkInput<Dictionary<string, object>>(
+                  COMMENT_ACTION_KEY, dataMap, someTraceState.TraceId);
+            appLinkInputWithGroupLabel.GroupLabel = MY_GROUP_LABEL;
+            state = await sdk.AppendLinkAsync(appLinkInputWithGroupLabel);
+            // should equal group2 id
+            Assert.Equal(state.UpdatedByGroupId, MY_GROUP);
         }
     }
 }

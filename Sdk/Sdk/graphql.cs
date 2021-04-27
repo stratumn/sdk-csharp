@@ -33,6 +33,7 @@ namespace Stratumn.Sdk
                 head {
                     raw
                     data
+                    groupId
                 }
                 # TODO: temporary, remove once state computation
                 # is handled server side
@@ -100,6 +101,7 @@ namespace Stratumn.Sdk
                     groups {
                         nodes {
                             groupId: rowId
+                            label
                             members {
                                 nodes {
                                     accountId

@@ -31,6 +31,7 @@ namespace Stratumn.Sdk.Model.Trace
         private TLinkData data;
         private string traceId;
         private ITraceLink<TLinkData> prevLink;
+        private string groupLabel;
 
         public AppendLinkInput(string actionKey, TLinkData data, string traceId)
         {
@@ -114,6 +115,18 @@ namespace Stratumn.Sdk.Model.Trace
             set
             {
                 this.prevLink = value;
+            }
+        }
+
+        public string GroupLabel
+        {
+            get
+            {
+                return this.groupLabel;
+            }
+            set
+            {
+                this.groupLabel = value;
             }
         }
     }
