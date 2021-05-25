@@ -4,17 +4,18 @@ namespace SdkTest
     {
         // Env dependant
         // FIXME : set these in semaphore ?
-        public const string WORKFLOW_ID = "261";
-        public const string MY_GROUP = "4285";
-        public const string TRACE_ID = "61e22f38-60fb-441f-bd42-65b8e9d37a8f";
-        public const string OTHER_GROUP = "4286";
+        public const string WORKFLOW_ID = "812";
+        public const string MY_GROUP = "4822";
+        public const string TRACE_ID = "f1c1d4fa-961e-4b2c-9519-ccbda4ecc2d4";
+        public const string OTHER_GROUP = "4823";
 
-        // public const string TRACE_URL = "https://trace-api.staging.stratumn.com";
-        // public const string ACCOUNT_URL = "https://account-api.staging.stratumn.com";
-        // public const string MEDIA_URL = "https://media-api.staging.stratumn.com";
-        public const string TRACE_URL = "http://trace-api.local.stratumn.com:4100";
-        public const string ACCOUNT_URL = "http://account-api.local.stratumn.com:4200";
-        public const string MEDIA_URL = "http://media-api.local.stratumn.com:4500";
+        public const string TRACE_URL = "https://trace-api.staging.stratumn.com";
+        public const string ACCOUNT_URL = "https://account-api.staging.stratumn.com";
+        public const string MEDIA_URL = "https://media-api.staging.stratumn.com";
+
+        // public const string TRACE_URL = "http://trace-api.local.stratumn.com:4100";
+        // public const string ACCOUNT_URL = "http://account-api.local.stratumn.com:4200";
+        // public const string MEDIA_URL = "http://media-api.local.stratumn.com:4500";
 
         // Non env dependant
         public const string COMMENT_ACTION_KEY = "comment";

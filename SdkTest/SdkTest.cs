@@ -147,8 +147,6 @@ namespace SdkTest
 
             TraceState<object, object> state = await sdk.NewTraceAsync<object>(input);
             someTraceState = state;
-
-            Assert.NotNull(state.TraceId);
         }
 
         [Fact]
