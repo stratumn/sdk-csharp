@@ -1,14 +1,17 @@
-﻿namespace Stratumn.Sdk.Model.File
+﻿using System;
+
+namespace Stratumn.Sdk.Model.File
 {
     /// <summary>
     /// A file information interface.
     /// </summary>
-    public class FileInfo 
+    public class FileInfo
     {
         private string mimetype;
         private long size;
         private string name;
         private string key;
+        private DateTime createdAt;
 
         public FileInfo(string name, long size, string mimetype, string key)
         {
@@ -25,6 +28,7 @@
             this.size = size;
             this.mimetype = mimetype;
             this.key = key;
+            this.createdAt = DateTime.UtcNow;
         }
 
         public virtual string Mimetype
@@ -72,6 +76,18 @@
             set
             {
                 this.key = value;
+            }
+        }
+
+        public virtual DateTime CreatedAt
+        {
+            get
+            {
+                return createdAt;
+            }
+            set
+            {
+                this.createdAt = value;
             }
         }
     }
