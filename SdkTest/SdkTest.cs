@@ -18,23 +18,6 @@ namespace SdkTest
 {
     public class SdkTest
     {
-        private const string WORKFLOW_ID = "591";
-        private const string ACTION_KEY = "action1";
-        private const string COMMENT_ACTION_KEY = "3HflvBg1mU";
-        private const string MY_GROUP = "1744";
-        private const string MY_GROUP_LABEL = "group1";
-
-        private const string TRACE_ID = "191516ec-5f8c-4757-9061-8c7ab06cf0a0";
-
-        private const string PEM_PRIVATEKEY = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRAjgtjpc1iOR4zYm+21McRGoWr0WM1NBkm26uZmFAx\n853QZ8CRL/HWGCPpEt18JrHZr9ZwA9UyoEosPR8gPakZFQ==\n-----END ED25519 PRIVATE KEY-----\n";
-
-        private const string PEM_PRIVATEKEY_2 = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRArbo87/1Yd/nOqFwmmcuxm01T9/pqkeARQxK9y4iG\nF3Xe1W+/2UOr/rYuQPFHQC4a/F0r6nVJGgCI1Ghc/luHZw==\n-----END ED25519 PRIVATE KEY-----\n";
-        private const string OTHER_GROUP = "1785";
-        private const string OTHER_GROUP_LABEL = "stp";
-
-        private const string TRACE_URL = "https://trace-api.staging.stratumn.com";
-        private const string ACCOUNT_URL = "https://account-api.staging.stratumn.com";
-        private const string MEDIA_URL = "https://media-api.staging.stratumn.com";
 
         private string GetTestFilePath(
             // This is a weird hack to get the location of this source file
@@ -49,36 +32,31 @@ namespace SdkTest
             );
         }
 
-        public Sdk<T> GetSdk<T>()
+        private string GetTaFilePath(
+           // This is a weird hack to get the location of this source file
+           // https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.callerfilepathattribute?view=netstandard-2.0
+           [CallerFilePath] string callerFilePath = ""
+        )
         {
-            Secret s = Secret.NewPrivateKeySecret(PEM_PRIVATEKEY);
-
-            SdkOptions opts = new SdkOptions(WORKFLOW_ID, s);
-            opts.Endpoints = new Endpoints
-            {
-                Trace = TRACE_URL,
-                Account = ACCOUNT_URL,
-                Media = MEDIA_URL,
-            };
-            opts.EnableDebuging = true;
-            opts.GroupLabel = MY_GROUP_LABEL;
-            Sdk<T> sdk = new Sdk<T>(opts);
-
-            return sdk;
+            return Path.Combine(
+                Directory.GetParent(callerFilePath).FullName,
+                "Resources",
+                "TA.csv"
+            );
         }
 
         public Sdk<object> GetSdk()
         {
-            Secret s = Secret.NewPrivateKeySecret(PEM_PRIVATEKEY);
-            SdkOptions opts = new SdkOptions(WORKFLOW_ID, s);
+            Secret s = Secret.NewPrivateKeySecret(ConfigTest.PEM_PRIVATEKEY);
+            SdkOptions opts = new SdkOptions(ConfigTest.WORKFLOW_ID, s);
             opts.Endpoints = new Endpoints
             {
-                Trace = TRACE_URL,
-                Account = ACCOUNT_URL,
-                Media = MEDIA_URL,
+                Trace = ConfigTest.TRACE_URL,
+                Account = ConfigTest.ACCOUNT_URL,
+                Media = ConfigTest.MEDIA_URL,
             };
             opts.EnableDebuging = true;
-            opts.GroupLabel = MY_GROUP_LABEL;
+            opts.GroupLabel = ConfigTest.MY_GROUP_LABEL;
             Sdk<object> sdk = new Sdk<object>(opts);
 
             return sdk;
@@ -86,16 +64,16 @@ namespace SdkTest
 
         public Sdk<object> GetOtherGroupSdk()
         {
-            Secret s = Secret.NewPrivateKeySecret(PEM_PRIVATEKEY_2);
-            SdkOptions opts = new SdkOptions(WORKFLOW_ID, s);
+            Secret s = Secret.NewPrivateKeySecret(ConfigTest.PEM_PRIVATEKEY_2);
+            SdkOptions opts = new SdkOptions(ConfigTest.WORKFLOW_ID, s);
             opts.Endpoints = new Endpoints
             {
-                Trace = TRACE_URL,
-                Account = ACCOUNT_URL,
-                Media = MEDIA_URL,
+                Trace = ConfigTest.TRACE_URL,
+                Account = ConfigTest.ACCOUNT_URL,
+                Media = ConfigTest.MEDIA_URL,
             };
             opts.EnableDebuging = true;
-            opts.GroupLabel = MY_GROUP_LABEL;
+            opts.GroupLabel = ConfigTest.MY_GROUP_LABEL;
             Sdk<object> sdk = new Sdk<object>(opts);
 
             return sdk;
@@ -108,48 +86,6 @@ namespace SdkTest
             string token = await sdk.LoginAsync();
             Debug.WriteLine(token);
             Assert.NotNull(token);
-        }
-
-        // used to pass the trace from one test method to another
-        private TraceState<StateExample, SomeClass> someTraceState2;
-
-        [Fact]
-        public async Task NewTraceTestWithGenericType()
-        {
-            var sdk = GetSdk<StateExample>();
-
-            Dictionary<string, object> data = new Dictionary<string, object>
-            {
-                ["weight"] = "123",
-                ["valid"] = true,
-                ["operators"] = new string[] { "1", "2" },
-                ["operation"] = "my new operation 1"
-            };
-
-            SomeClass d = new SomeClass()
-            {
-                f11 = 1,
-                f22 = data
-            };
-
-            NewTraceInput<SomeClass> input = new NewTraceInput<SomeClass>(ACTION_KEY, d);
-
-            TraceState<StateExample, SomeClass> state = await sdk.NewTraceAsync<SomeClass>(input);
-            someTraceState2 = state;
-
-            Assert.NotNull(state.TraceId);
-        }
-
-        public class SomeClass
-        {
-            public int f11;
-            public Dictionary<string, object> f22;
-        }
-
-        public class StateExample
-        {
-            public string f1;
-            public SomeClass f2;
         }
 
         [Fact]
@@ -172,9 +108,8 @@ namespace SdkTest
         [Fact]
         public async Task GetTraceStateTest()
         {
-
             Sdk<object> sdk = GetSdk();
-            string traceId = TRACE_ID;
+            string traceId = ConfigTest.TRACE_ID;
             GetTraceStateInput input = new GetTraceStateInput(traceId);
             TraceState<object, object> state = await sdk.GetTraceStateAsync<object>(input);
             Assert.Equal(state.TraceId, traceId);
@@ -184,7 +119,7 @@ namespace SdkTest
         public async Task GetTraceDetails()
         {
             var sdk = GetSdk();
-            string traceId = TRACE_ID;
+            string traceId = ConfigTest.TRACE_ID;
 
             GetTraceDetailsInput input = new GetTraceDetailsInput(traceId, 5, null, null, null);
 
@@ -193,56 +128,22 @@ namespace SdkTest
             Assert.NotNull(details);
         }
 
-        [Fact]
-        public async Task GetIncomingTracesTest()
-        {
-            Sdk<object> sdk = GetSdk();
-            PaginationInfo paginationInfo = new PaginationInfo(10, null, null, null);
-            TracesState<object, object> state = await sdk.GetIncomingTracesAsync<object>(paginationInfo);
-            Assert.NotNull(state);
-        }
-
-        [Fact]
-        public async Task GetOutgoingTracesTest()
-        {
-            Sdk<object> sdk = GetSdk();
-            PaginationInfo paginationInfo = new PaginationInfo(10, null, null, null);
-            TracesState<object, object> state = await sdk.GetOutgoingTracesAsync<object>(paginationInfo);
-            Assert.NotNull(state);
-        }
-
-        [Fact]
-        public async Task GetAttestationTracesTest()
-        {
-            Sdk<object> sdk = GetSdk();
-            PaginationInfo paginationInfo = new PaginationInfo(10, null, null, null);
-            TracesState<object, object> state = await sdk.GetAttestationTracesAsync<object>(ACTION_KEY, paginationInfo);
-            Assert.NotNull(state);
-        }
-
-        [Fact]
-        public async Task GetBackLogTraceTest()
-        {
-            var sdk = GetSdk();
-            PaginationInfo info = new PaginationInfo(2, null, null, null);
-            var state = await sdk.GetBacklogTracesAsync<object>(info);
-            Assert.NotNull(state);
-        }
-
         //used to pass the trace from one test method to another
         private TraceState<object, object> someTraceState;
-        [Fact]
+        private TraceState<object, object> traceStateWithFile;
+
         public async Task NewTraceTest()
         {
             var sdk = GetSdk();
             IDictionary<string, object> data = new Dictionary<string, object>
             {
-                ["weight"] = "123",
-                ["valid"] = true,
-                ["operators"] = new string[] { "1", "2" },
-                ["operation"] = "my new operation 1"
+                ["entity"] = ConfigTest.OTHER_GROUP_NAME,
+                ["submissionPeriod"] = "2021.Q4",
+                ["startDate"] = "2021-01-30",
+                ["deadline"] = "2021-06-30",
+                ["comment"] = "init comment"
             };
-            NewTraceInput<object> input = new NewTraceInput<object>(ACTION_KEY, data);
+            NewTraceInput<object> input = new NewTraceInput<object>(ConfigTest.INIT_ACTION_KEY, data);
 
             TraceState<object, object> state = await sdk.NewTraceAsync<object>(input);
             someTraceState = state;
@@ -250,139 +151,60 @@ namespace SdkTest
             Assert.NotNull(state.TraceId);
         }
 
-
         [Fact]
         public async Task AppendLinkTest()
         {
             await NewTraceTest();
             Assert.NotNull(someTraceState);
-            Dictionary<string, object> data;
-            string json = "{ operation: \"XYZ shipment departed port for ABC\"," + "    destination: \"ABC\", " + "    customsCheck: true, "
-               + "    eta: \"2019-07-02T12:00:00.000Z\"" + "  }";
-            data = JsonHelper.ObjectToMap(json);
-            AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(ACTION_KEY, data, someTraceState.TraceId);
+            Dictionary<string, object> data = new Dictionary<string, object>
+            {
+                ["comment"] = "comment"
+            };
+            AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(ConfigTest.COMMENT_ACTION_KEY, data, someTraceState.TraceId);
             TraceState<object, object> state = await GetSdk().AppendLinkAsync(appLinkInput);
             Assert.NotNull(state.TraceId);
-
-        }
-
-
-        [Fact]
-        public async Task PushTraceTest()
-        {
-            await NewTraceTest();
-            Assert.NotNull(someTraceState);
-
-            PushTransferInput<object> push = new PushTransferInput<object>(someTraceState.TraceId, OTHER_GROUP, new object(), null);
-            someTraceState = await GetSdk().PushTraceAsync<object>(push);
-
-            Assert.NotNull(push.TraceId);
-        }
-
-
-        [Fact]
-        [Obsolete("AcceptTransferTest is deprecated")]
-        public async Task AcceptTransferTest()
-        {
-            await PushTraceTest();
-            TransferResponseInput<Object> trInput = new TransferResponseInput<Object>(someTraceState.TraceId, null, null);
-            TraceState<Object, Object> stateAccept = await GetOtherGroupSdk().AcceptTransferAsync(trInput);
-
-            Assert.NotNull(stateAccept.TraceId);
-        }
-
-        [Fact]
-        [Obsolete("RejectTransferTest is deprecated")]
-        public async Task RejectTransferTest()
-        {
-            PaginationInfo paginationInfo = new PaginationInfo(10, null, null, null);
-            TracesState<Object, Object> tracesIn = await GetSdk().GetIncomingTracesAsync<Object>(paginationInfo);
-
-            string traceId = null;
-            if (tracesIn.TotalCount == 0)
-            {
-                await PushTraceTest();
-                traceId = someTraceState.TraceId;
-            }
-            else
-            {
-                someTraceState = tracesIn.Traces[0];
-                traceId = someTraceState.TraceId;
-            }
-            TransferResponseInput<Object> trInput = new TransferResponseInput<Object>(traceId, null, null);
-            TraceState<Object, Object> stateReject = await GetOtherGroupSdk().RejectTransferAsync(trInput);
-
-            Assert.NotNull(stateReject.TraceId);
-        }
-
-        [Fact]
-        [Obsolete("CancelTransferTest is deprecated")]
-        public async Task CancelTransferTest()
-        {
-            await PushTraceTest();
-
-            TransferResponseInput<Object> responseInput = new TransferResponseInput<Object>(someTraceState.TraceId, null, null);
-            TraceState<Object, Object> statecancel = await GetSdk().CancelTransferAsync(responseInput);
-
-            Assert.NotNull(statecancel.TraceId);
         }
 
         [Fact]
         public async Task NewTraceUploadTest()
         {
-            Sdk<Object> sdk = GetSdk();
+            await NewTraceTest();
 
-            IDictionary<string, object> data = new Dictionary<string, object>
-            {
-                ["weight"] = "123",
-                ["valid"] = true,
-                ["operators"] = new string[] { "1", "2" },
-                ["operation"] = "my new operation 1"
-            };
+            IDictionary<string, object> data = new Dictionary<string, object>();
+            data.Add("documents", new Identifiable[] { FileWrapper.FromFilePath(GetTestFilePath()) });
 
-            data.Add("certificate1", FileWrapper.FromFilePath(GetTestFilePath()));
-            data.Add("certificates", new Identifiable[] { FileWrapper.FromFilePath(GetTestFilePath()) });
-
-            NewTraceInput<Object> newTraceInput = new NewTraceInput<Object>(ACTION_KEY, data);
-
-            TraceState<object, object> state = await sdk.NewTraceAsync<object>(newTraceInput);
+            AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(ConfigTest.UPLOAD_DOCUMENTS_ACTION_KEY, data, someTraceState.TraceId);
+            TraceState<object, object> state = await GetOtherGroupSdk().AppendLinkAsync<object>(appLinkInput);
             Assert.NotNull(state.TraceId);
-            someTraceState = state;
+            traceStateWithFile = state;
         }
 
         [Fact]
         public async Task UploadFilesInLinkDataTest()
         {
-            Sdk<Object> sdk = GetSdk();
+            await NewTraceTest();
             IDictionary<string, object> data = new Dictionary<string, object>
             {
-                ["weight"] = "123",
-                ["valid"] = true,
-                ["operators"] = new string[] { "1", "2" },
-                ["operation"] = "my new operation 1"
+                ["comment"] = "upload file comment"
             };
+            data.Add("documents", new Identifiable[] { FileWrapper.FromFilePath(GetTestFilePath()) });
 
-            data.Add("Certificate1", FileWrapper.FromFilePath(GetTestFilePath()));
-            data.Add("Certificates", new Identifiable[] { FileWrapper.FromFilePath(GetTestFilePath()) });
+            await GetOtherGroupSdk().UploadFilesInLinkData(data);
 
-            await sdk.UploadFilesInLinkData(data);
-
-            Assert.True(FileRecord.IsFileRecord(data["Certificate1"]));
-            Assert.True(FileRecord.IsFileRecord(((object[])data["Certificates"])[0]));
+            Assert.True(FileRecord.IsFileRecord(((object[])data["documents"])[0]));
 
             Debug.WriteLine(JsonHelper.ToJson(data));
         }
-
 
         [Fact]
         public async Task downloadFilesInObjectTest()
         {
             TraceState<Object, Object> state;
-            if (someTraceState == null)
+            if (traceStateWithFile == null)
             {
                 await NewTraceUploadTest();
             }
-            state = someTraceState;
+            state = traceStateWithFile;
 
             Object dataWithRecords = state.HeadLink.FormData();
 
@@ -398,6 +220,26 @@ namespace SdkTest
             }
         }
 
+        [Fact]
+        public async Task ImportDataCsvTest()
+        {
+            await NewTraceTest();
+
+            IDictionary<string, object> data = new Dictionary<string, object>();
+
+            // dirty simulate loading from csv
+            IDictionary<string, object> taSummary = new Dictionary<string, object>();
+            string json = "[{ reference: \"reference\", entityName: \"entity\", currency: \"EUR\", amount: 500, endDate: \"2020-06-25\"},"
+            + "{reference: \"reference 2\", entityName: \"entity 2\", currency: \"EUR\", amount: 1300, endDate: \"2020-06-28\""
+          + "}]";
+
+            data.Add("taSummary", JsonHelper.FromJson<Object>(json));
+            data.Add("file", FileWrapper.FromFilePath(GetTaFilePath()));
+
+            AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(ConfigTest.IMPORT_TA_ACTION_KEY, data, someTraceState.TraceId);
+            TraceState<object, object> state = await GetSdk().AppendLinkAsync<object>(appLinkInput);
+            Assert.NotNull(state.TraceId);
+        }
 
         [Fact]
         public async Task traceTagsRWTest()
@@ -405,10 +247,10 @@ namespace SdkTest
             Sdk<object> sdk = GetSdk();
 
             // Add a tag to a trace
-            string traceId = TRACE_ID;
+            string traceId = ConfigTest.TRACE_ID;
             Guid uuid = System.Guid.NewGuid();
             string randomUUIDString = uuid.ToString();
-            AddTagsToTraceInput input = new AddTagsToTraceInput(traceId, new string[] { randomUUIDString });
+            AddTagsToTraceInput input = new AddTagsToTraceInput(traceId, new string[] { randomUUIDString, "tag1", "tag2" });
 
             TraceState<Object, Object> state = await sdk.AddTagsToTraceAsync<Object>(input);
 
@@ -427,7 +269,7 @@ namespace SdkTest
         [Fact]
         public async Task searchByMultipletagsTest()
         {
-            Sdk<Object> sdk = GetSdk<Object>();
+            Sdk<Object> sdk = GetSdk();
 
             // search the trace by tags
             List<String> tags = new List<string>();
@@ -439,7 +281,7 @@ namespace SdkTest
             TracesState<Object, Object> res = await sdk.SearchTracesAsync<Object>(f, new PaginationInfo());
 
             Assert.Equal(1, res.TotalCount);
-            Assert.Equal("5bf6d482-cfdc-4edc-a5ef-c96539da94d8", res.Traces[0].TraceId);
+            Assert.Equal(ConfigTest.TRACE_ID, res.Traces[0].TraceId);
         }
 
         [Fact]
@@ -447,8 +289,8 @@ namespace SdkTest
         {
             await NewTraceTest();
             Assert.NotNull(someTraceState);
-            Assert.Equal(someTraceState.UpdatedByGroupId, MY_GROUP);
-            Sdk<StateExample> sdk = GetSdk<StateExample>();
+            Assert.Equal(someTraceState.UpdatedByGroupId, ConfigTest.MY_GROUP);
+            Sdk<Object> sdk = GetSdk();
             // Appendlink
             Dictionary<string, object> dataMap = new Dictionary<string, object>
             {
@@ -456,18 +298,18 @@ namespace SdkTest
             };
 
             AppendLinkInput<Dictionary<string, object>> appLinkInput = new AppendLinkInput<Dictionary<string, object>>(
-                  COMMENT_ACTION_KEY, dataMap, someTraceState.TraceId);
+                  ConfigTest.COMMENT_ACTION_KEY, dataMap, someTraceState.TraceId);
             // change group for action
-            appLinkInput.GroupLabel = OTHER_GROUP_LABEL;
-            TraceState<StateExample, Dictionary<string, object>> state = await sdk.AppendLinkAsync(appLinkInput);
+            appLinkInput.GroupLabel = ConfigTest.OTHER_GROUP_LABEL;
+            TraceState<Object, Dictionary<string, object>> state = await sdk.AppendLinkAsync(appLinkInput);
             // should equal group2 id
-            Assert.Equal(state.UpdatedByGroupId, OTHER_GROUP);
+            Assert.Equal(state.UpdatedByGroupId, ConfigTest.OTHER_GROUP);
             AppendLinkInput<Dictionary<string, object>> appLinkInputWithGroupLabel = new AppendLinkInput<Dictionary<string, object>>(
-                  COMMENT_ACTION_KEY, dataMap, someTraceState.TraceId);
-            appLinkInputWithGroupLabel.GroupLabel = MY_GROUP_LABEL;
+                  ConfigTest.COMMENT_ACTION_KEY, dataMap, someTraceState.TraceId);
+            appLinkInputWithGroupLabel.GroupLabel = ConfigTest.MY_GROUP_LABEL;
             state = await sdk.AppendLinkAsync(appLinkInputWithGroupLabel);
             // should equal group2 id
-            Assert.Equal(state.UpdatedByGroupId, MY_GROUP);
+            Assert.Equal(state.UpdatedByGroupId, ConfigTest.MY_GROUP);
         }
     }
 }
