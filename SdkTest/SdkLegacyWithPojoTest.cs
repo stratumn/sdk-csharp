@@ -106,26 +106,6 @@ namespace SdkTest
             public DataClass f2;
         }
 
-        [Fact]
-        public async Task GetTraceStateTestWithPojo()
-        {
-            Sdk<StateExample> sdk = GetSdk<StateExample>();
-            GetTraceStateInput input = new GetTraceStateInput(TRACE_ID);
-            TraceState<StateExample, HeadLinkData> state = await sdk.GetTraceStateAsync<HeadLinkData>(input);
-            Assert.Equal(state.TraceId, TRACE_ID);
-        }
-
-        [Fact]
-        public async Task GetTraceDetailsWithPojo()
-        {
-            Sdk<StateExample> sdk = GetSdk<StateExample>();
-
-            GetTraceDetailsInput input = new GetTraceDetailsInput(TRACE_ID, 5, null, null, null);
-
-            TraceDetails<HeadLinkData> details = await sdk.GetTraceDetailsAsync<HeadLinkData>(input);
-            Debug.WriteLine(JsonHelper.ToJson(details));
-            Assert.NotNull(details);
-        }
 
         [Fact]
         public async Task GetIncomingTracesTestWithPojo()

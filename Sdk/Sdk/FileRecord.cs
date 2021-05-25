@@ -27,7 +27,7 @@ namespace Stratumn.Sdk
             this.Mimetype = info.Mimetype;
             this.Size = info.Size;
             this.Key = info.Key;
-            this.CreatedAt = info.CreatedAt;
+            this.CreatedAt = info.CreatedAt.ToString("o"); ;
         }
 
         public FileInfo GetFileInfo()
@@ -61,7 +61,7 @@ namespace Stratumn.Sdk
         public string Digest { get; private set; }
 
         [JsonProperty(PropertyName = "createdAt")]
-        public DateTime CreatedAt { get; private set; }
+        public string CreatedAt { get; private set; }
 
         public static FileRecord FromObject(Object obj)
         {

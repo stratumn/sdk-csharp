@@ -10,7 +10,6 @@ using Stratumn.Sdk;
 using Stratumn.Sdk.Model.Client;
 using Stratumn.Sdk.Model.Sdk;
 using Stratumn.Sdk.Model.Trace;
-using Stratumn.Chainscript.utils;
 
 namespace SdkTest
 {
@@ -82,77 +81,6 @@ namespace SdkTest
             return sdk;
         }
 
-        [Fact]
-        public async Task NewTraceTestWithGenericType()
-        {
-            var sdk = GetSdk();
-
-            Dictionary<string, object> data = new Dictionary<string, object>
-            {
-                ["weight"] = "123",
-                ["valid"] = true,
-                ["operators"] = new string[] { "1", "2" },
-                ["operation"] = "my new operation 1"
-            };
-
-            SomeClass d = new SomeClass()
-            {
-                f11 = 1,
-                f22 = data
-            };
-
-            NewTraceInput<object> input = new NewTraceInput<object>(ACTION_KEY, d);
-
-            TraceState<object, object> state = await sdk.NewTraceAsync<object>(input);
-            Assert.NotNull(state.TraceId);
-        }
-
-        public class SomeClass
-        {
-            public int f11;
-            public Dictionary<string, object> f22;
-        }
-
-        [Fact]
-        public async Task LoginWithCredentialsDemo()
-        {
-            var sdk = GetSdk();
-            string token = await sdk.LoginAsync();
-            Debug.WriteLine(token);
-            Assert.NotNull(token);
-        }
-
-        [Fact]
-        public async Task TestGetConfigAsync()
-        {
-            var sdk = GetSdk();
-            SdkConfig config = await sdk.GetConfigAsync();
-            Assert.NotNull(config);
-        }
-
-        [Fact]
-        public async Task GetTraceStateTest()
-        {
-
-            Sdk<object> sdk = GetSdk();
-            string traceId = TRACE_ID;
-            GetTraceStateInput input = new GetTraceStateInput(traceId);
-            TraceState<object, object> state = await sdk.GetTraceStateAsync<object>(input);
-            Assert.Equal(state.TraceId, traceId);
-        }
-
-        [Fact]
-        public async Task GetTraceDetails()
-        {
-            var sdk = GetSdk();
-            string traceId = TRACE_ID;
-
-            GetTraceDetailsInput input = new GetTraceDetailsInput(traceId, 5, null, null, null);
-
-            TraceDetails<object> details = await sdk.GetTraceDetailsAsync<object>(input);
-            Debug.WriteLine(JsonHelper.ToJson(details));
-            Assert.NotNull(details);
-        }
 
         [Fact]
         public async Task GetIncomingTracesTest()

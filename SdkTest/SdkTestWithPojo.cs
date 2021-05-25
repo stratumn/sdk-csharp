@@ -124,14 +124,6 @@ namespace SdkTest
             public Object taSummary;
             public StatusClass status;
             public Object[] comments;
-
-        }
-        public class HeadLinkData
-        {
-            public bool Valid { get; set; }
-            public string Weight { get; set; }
-            public string Operation { get; set; }
-            public String[] Operators;
         }
 
         [Fact]
@@ -139,7 +131,7 @@ namespace SdkTest
         {
             Sdk<StateExample> sdk = GetSdk<StateExample>();
             GetTraceStateInput input = new GetTraceStateInput(ConfigTest.TRACE_ID);
-            TraceState<StateExample, HeadLinkData> state = await sdk.GetTraceStateAsync<HeadLinkData>(input);
+            TraceState<StateExample, StateExample> state = await sdk.GetTraceStateAsync<StateExample>(input);
             Assert.Equal(state.TraceId, ConfigTest.TRACE_ID);
         }
 
@@ -150,7 +142,7 @@ namespace SdkTest
 
             GetTraceDetailsInput input = new GetTraceDetailsInput(ConfigTest.TRACE_ID, 5, null, null, null);
 
-            TraceDetails<HeadLinkData> details = await sdk.GetTraceDetailsAsync<HeadLinkData>(input);
+            TraceDetails<StateExample> details = await sdk.GetTraceDetailsAsync<StateExample>(input);
             Debug.WriteLine(JsonHelper.ToJson(details));
             Assert.NotNull(details);
         }
