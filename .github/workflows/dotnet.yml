@@ -12,6 +12,8 @@ env:
   NUGET_FEED: https://api.nuget.org/v3/index.json
   # Access key to publish to nuget
   NUGET_KEY: ${{ secrets.NUGET_API_KEY }}
+  # .env file for tests
+  SDK_TESTS_DOTENV_STAGING: ${{ secrets.SDK_TESTS_DOTENV_STAGING }}
 
 on:
   pull_request:
@@ -37,6 +39,8 @@ jobs:
         run: dotnet restore
       - name: Build
         run: dotnet build --configuration Release --no-restore
+      - name: Write .env file from env var
+        run: echo $SDK_TESTS_DOTENV_STAGING | base64 --decode > .env
       - name: Test
         run: dotnet test --configuration Release --no-build --no-restore --verbosity normal SdkTest/SdkTest.csproj
 
