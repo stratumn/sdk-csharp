@@ -43,12 +43,10 @@ namespace SdkTest
             var dotenvPath = GetEnvFilePath();
 
             DotEnv.Load(options: new DotEnvOptions(
-                envFilePaths: new[] { dotenvPath },
-                ignoreExceptions: false
+                envFilePaths: new[] { dotenvPath }
             ));
             var dotenv = DotEnv.Read(options: new DotEnvOptions(
-                envFilePaths: new[] { dotenvPath },
-                ignoreExceptions: false
+                envFilePaths: new[] { dotenvPath }
             ));
 
             WORKFLOW_ID = dotenv["WORKFLOW_ID"];
