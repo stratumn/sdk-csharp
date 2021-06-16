@@ -50,8 +50,6 @@ namespace SdkTest
                 envFilePaths: new[] { dotenvPath }
             ));
 
-            Console.Write("dotenv = ", dotenv);
-
             WORKFLOW_ID = dotenv["WORKFLOW_ID"];
             TRACE_ID = dotenv["TRACE_ID"];
             MY_GROUP = dotenv["MY_GROUP"];
