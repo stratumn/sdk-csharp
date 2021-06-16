@@ -1,36 +1,69 @@
+using dotenv.net;
+using System.IO;
+using System.Runtime.CompilerServices;
+
 namespace SdkTest
 {
     public class ConfigTest
     {
-        // Env dependant
-        // FIXME : set these in semaphore ?
-        public const string WORKFLOW_ID = "812";
-        public const string MY_GROUP = "4822";
-        public const string TRACE_ID = "f1c1d4fa-961e-4b2c-9519-ccbda4ecc2d4";
-        public const string OTHER_GROUP = "4823";
-
-        public const string TRACE_URL = "https://trace-api.staging.stratumn.com";
-        public const string ACCOUNT_URL = "https://account-api.staging.stratumn.com";
-        public const string MEDIA_URL = "https://media-api.staging.stratumn.com";
-
-        // public const string TRACE_URL = "http://trace-api.local.stratumn.com:4100";
-        // public const string ACCOUNT_URL = "http://account-api.local.stratumn.com:4200";
-        // public const string MEDIA_URL = "http://media-api.local.stratumn.com:4500";
+        public string WORKFLOW_ID;
+        public string MY_GROUP;
+        public string TRACE_ID;
+        public string OTHER_GROUP;
+        public string ACCOUNT_API_URL;
+        public string TRACE_API_URL;
+        public string MEDIA_API_URL;
 
         // Non env dependant
-        public const string COMMENT_ACTION_KEY = "comment";
-        public const string INIT_ACTION_KEY = "init";
-        public const string UPLOAD_DOCUMENTS_ACTION_KEY = "uploadDocuments";
+        public string COMMENT_ACTION_KEY = "comment";
+        public string INIT_ACTION_KEY = "init";
+        public string UPLOAD_DOCUMENTS_ACTION_KEY = "uploadDocuments";
+        public string IMPORT_TA_ACTION_KEY = "importTa";
+        public string MY_GROUP_LABEL = "group1";
+        public string OTHER_GROUP_LABEL = "group2";
+        public string OTHER_GROUP_NAME = "SDKs Group 2";
 
-        public const string IMPORT_TA_ACTION_KEY = "importTa";
-        // public const string PEM_PRIVATEKEY = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRAjgtjpc1iOR4zYm+21McRGoWr0WM1NBkm26uZmFAx\n853QZ8CRL/HWGCPpEt18JrHZr9ZwA9UyoEosPR8gPakZFQ==\n-----END ED25519 public KEY-----\n";
-        // Bot 1 
-        public const string PEM_PRIVATEKEY = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRAP7BEfm6Smg9h3mmOM3zayeAyPk4/VvT927NN5Y8e\nsgqwoZr++UHatd9r9cg2NZvCleMojySIsLKQpZYEwr21uw==\n-----END ED25519 PRIVATE KEY-----\n";
-        // public const string PEM_PRIVATEKEY_2 = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRArbo87/1Yd/nOqFwmmcuxm01T9/pqkeARQxK9y4iG\nF3Xe1W+/2UOr/rYuQPFHQC4a/F0r6nVJGgCI1Ghc/luHZw==\n-----END ED25519 public KEY-----\n";
-        // Bot 2
-        public const string PEM_PRIVATEKEY_2 = "-----BEGIN ED25519 PRIVATE KEY-----\nMFACAQAwBwYDK2VwBQAEQgRAtMoOToj7bv+A+7dOrM5UyG2buHgsSu0OriTJfv7/\nEqKUzdjgxvAvTtOA7RCIY1/FoDWjHZ/wG5hPcA3Bj3BRkQ==\n-----END ED25519 PRIVATE KEY-----\n";
-        public const string MY_GROUP_LABEL = "group1";
-        public const string OTHER_GROUP_LABEL = "group2";
-        public const string OTHER_GROUP_NAME = "SDKs Group 2";
+        public string PEM_PRIVATEKEY_2;
+        public string PEM_PRIVATEKEY;
+
+        private string GetEnvFilePath(
+                    // This is a weird hack to get the location of this source file
+                    // https://docs.microsoft.com/en-us/dotnet/api/system.runtime.compilerservices.callerfilepathattribute?view=netstandard-2.0
+                    [CallerFilePath] string callerFilePath = ""
+                )
+        {
+            return Path.Combine(
+                Directory.GetParent(callerFilePath).FullName,
+                ".env"
+            );
+        }
+
+        public ConfigTest()
+        {
+            var dotenvPath = GetEnvFilePath();
+
+            DotEnv.Load(options: new DotEnvOptions(
+                envFilePaths: new[] { dotenvPath },
+                ignoreExceptions: false
+            ));
+            var dotenv = DotEnv.Read(options: new DotEnvOptions(
+                envFilePaths: new[] { dotenvPath },
+                ignoreExceptions: false
+            ));
+
+            WORKFLOW_ID = dotenv["WORKFLOW_ID"];
+            TRACE_ID = dotenv["TRACE_ID"];
+            MY_GROUP = dotenv["MY_GROUP"];
+            OTHER_GROUP = dotenv["OTHER_GROUP"];
+            ACCOUNT_API_URL = dotenv["ACCOUNT_API_URL"];
+            TRACE_API_URL = dotenv["TRACE_API_URL"];
+            MEDIA_API_URL = dotenv["MEDIA_API_URL"];
+
+            // Bot 1
+            PEM_PRIVATEKEY = dotenv["PEM_PRIVATEKEY"].Replace("\\n", "\n");
+
+            // // Bot 2
+            PEM_PRIVATEKEY_2 = dotenv["PEM_PRIVATEKEY_2"].Replace("\\n", "\n");
+        }
     }
 }

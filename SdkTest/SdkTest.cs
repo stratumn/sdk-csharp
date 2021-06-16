@@ -18,6 +18,7 @@ namespace SdkTest
 {
     public class SdkTest
     {
+        private ConfigTest config = new ConfigTest();
 
         private string GetTestFilePath(
             // This is a weird hack to get the location of this source file
@@ -47,16 +48,16 @@ namespace SdkTest
 
         public Sdk<object> GetSdk()
         {
-            Secret s = Secret.NewPrivateKeySecret(ConfigTest.PEM_PRIVATEKEY);
-            SdkOptions opts = new SdkOptions(ConfigTest.WORKFLOW_ID, s);
+            Secret s = Secret.NewPrivateKeySecret(config.PEM_PRIVATEKEY);
+            SdkOptions opts = new SdkOptions(config.WORKFLOW_ID, s);
             opts.Endpoints = new Endpoints
             {
-                Trace = ConfigTest.TRACE_URL,
-                Account = ConfigTest.ACCOUNT_URL,
-                Media = ConfigTest.MEDIA_URL,
+                Trace = config.TRACE_API_URL,
+                Account = config.ACCOUNT_API_URL,
+                Media = config.MEDIA_API_URL,
             };
             opts.EnableDebuging = true;
-            opts.GroupLabel = ConfigTest.MY_GROUP_LABEL;
+            opts.GroupLabel = config.MY_GROUP_LABEL;
             Sdk<object> sdk = new Sdk<object>(opts);
 
             return sdk;
@@ -64,16 +65,16 @@ namespace SdkTest
 
         public Sdk<object> GetOtherGroupSdk()
         {
-            Secret s = Secret.NewPrivateKeySecret(ConfigTest.PEM_PRIVATEKEY_2);
-            SdkOptions opts = new SdkOptions(ConfigTest.WORKFLOW_ID, s);
+            Secret s = Secret.NewPrivateKeySecret(config.PEM_PRIVATEKEY_2);
+            SdkOptions opts = new SdkOptions(config.WORKFLOW_ID, s);
             opts.Endpoints = new Endpoints
             {
-                Trace = ConfigTest.TRACE_URL,
-                Account = ConfigTest.ACCOUNT_URL,
-                Media = ConfigTest.MEDIA_URL,
+                Trace = config.TRACE_API_URL,
+                Account = config.ACCOUNT_API_URL,
+                Media = config.MEDIA_API_URL,
             };
             opts.EnableDebuging = true;
-            opts.GroupLabel = ConfigTest.MY_GROUP_LABEL;
+            opts.GroupLabel = config.MY_GROUP_LABEL;
             Sdk<object> sdk = new Sdk<object>(opts);
 
             return sdk;
@@ -109,7 +110,7 @@ namespace SdkTest
         public async Task GetTraceStateTest()
         {
             Sdk<object> sdk = GetSdk();
-            string traceId = ConfigTest.TRACE_ID;
+            string traceId = config.TRACE_ID;
             GetTraceStateInput input = new GetTraceStateInput(traceId);
             TraceState<object, object> state = await sdk.GetTraceStateAsync<object>(input);
             Assert.Equal(state.TraceId, traceId);
@@ -119,7 +120,7 @@ namespace SdkTest
         public async Task GetTraceDetails()
         {
             var sdk = GetSdk();
-            string traceId = ConfigTest.TRACE_ID;
+            string traceId = config.TRACE_ID;
 
             GetTraceDetailsInput input = new GetTraceDetailsInput(traceId, 5, null, null, null);
 
@@ -137,13 +138,13 @@ namespace SdkTest
             var sdk = GetSdk();
             IDictionary<string, object> data = new Dictionary<string, object>
             {
-                ["entity"] = ConfigTest.OTHER_GROUP_NAME,
+                ["entity"] = config.OTHER_GROUP_NAME,
                 ["submissionPeriod"] = "2021.Q4",
                 ["startDate"] = "2021-01-30",
                 ["deadline"] = "2021-06-30",
                 ["comment"] = "init comment"
             };
-            NewTraceInput<object> input = new NewTraceInput<object>(ConfigTest.INIT_ACTION_KEY, data);
+            NewTraceInput<object> input = new NewTraceInput<object>(config.INIT_ACTION_KEY, data);
 
             TraceState<object, object> state = await sdk.NewTraceAsync<object>(input);
             someTraceState = state;
@@ -158,7 +159,7 @@ namespace SdkTest
             {
                 ["comment"] = "comment"
             };
-            AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(ConfigTest.COMMENT_ACTION_KEY, data, someTraceState.TraceId);
+            AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(config.COMMENT_ACTION_KEY, data, someTraceState.TraceId);
             TraceState<object, object> state = await GetSdk().AppendLinkAsync(appLinkInput);
             Assert.NotNull(state.TraceId);
         }
@@ -171,7 +172,7 @@ namespace SdkTest
             IDictionary<string, object> data = new Dictionary<string, object>();
             data.Add("documents", new Identifiable[] { FileWrapper.FromFilePath(GetTestFilePath()) });
 
-            AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(ConfigTest.UPLOAD_DOCUMENTS_ACTION_KEY, data, someTraceState.TraceId);
+            AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(config.UPLOAD_DOCUMENTS_ACTION_KEY, data, someTraceState.TraceId);
             TraceState<object, object> state = await GetOtherGroupSdk().AppendLinkAsync<object>(appLinkInput);
             Assert.NotNull(state.TraceId);
             traceStateWithFile = state;
@@ -234,7 +235,7 @@ namespace SdkTest
             data.Add("taSummary", JsonHelper.FromJson<Object>(json));
             data.Add("file", FileWrapper.FromFilePath(GetTaFilePath()));
 
-            AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(ConfigTest.IMPORT_TA_ACTION_KEY, data, someTraceState.TraceId);
+            AppendLinkInput<object> appLinkInput = new AppendLinkInput<object>(config.IMPORT_TA_ACTION_KEY, data, someTraceState.TraceId);
             TraceState<object, object> state = await GetSdk().AppendLinkAsync<object>(appLinkInput);
             Assert.NotNull(state.TraceId);
         }
@@ -245,7 +246,7 @@ namespace SdkTest
             Sdk<object> sdk = GetSdk();
 
             // Add a tag to a trace
-            string traceId = ConfigTest.TRACE_ID;
+            string traceId = config.TRACE_ID;
             Guid uuid = System.Guid.NewGuid();
             string randomUUIDString = uuid.ToString();
             AddTagsToTraceInput input = new AddTagsToTraceInput(traceId, new string[] { randomUUIDString, "tag1", "tag2" });
@@ -279,7 +280,7 @@ namespace SdkTest
             TracesState<Object, Object> res = await sdk.SearchTracesAsync<Object>(f, new PaginationInfo());
 
             Assert.Equal(1, res.TotalCount);
-            Assert.Equal(ConfigTest.TRACE_ID, res.Traces[0].TraceId);
+            Assert.Equal(config.TRACE_ID, res.Traces[0].TraceId);
         }
 
         [Fact]
@@ -287,7 +288,7 @@ namespace SdkTest
         {
             await NewTraceTest();
             Assert.NotNull(someTraceState);
-            Assert.Equal(someTraceState.UpdatedByGroupId, ConfigTest.MY_GROUP);
+            Assert.Equal(someTraceState.UpdatedByGroupId, config.MY_GROUP);
             Sdk<Object> sdk = GetSdk();
             // Appendlink
             Dictionary<string, object> dataMap = new Dictionary<string, object>
@@ -296,18 +297,18 @@ namespace SdkTest
             };
 
             AppendLinkInput<Dictionary<string, object>> appLinkInput = new AppendLinkInput<Dictionary<string, object>>(
-                  ConfigTest.COMMENT_ACTION_KEY, dataMap, someTraceState.TraceId);
+                  config.COMMENT_ACTION_KEY, dataMap, someTraceState.TraceId);
             // change group for action
-            appLinkInput.GroupLabel = ConfigTest.OTHER_GROUP_LABEL;
+            appLinkInput.GroupLabel = config.OTHER_GROUP_LABEL;
             TraceState<Object, Dictionary<string, object>> state = await sdk.AppendLinkAsync(appLinkInput);
             // should equal group2 id
-            Assert.Equal(state.UpdatedByGroupId, ConfigTest.OTHER_GROUP);
+            Assert.Equal(state.UpdatedByGroupId, config.OTHER_GROUP);
             AppendLinkInput<Dictionary<string, object>> appLinkInputWithGroupLabel = new AppendLinkInput<Dictionary<string, object>>(
-                  ConfigTest.COMMENT_ACTION_KEY, dataMap, someTraceState.TraceId);
-            appLinkInputWithGroupLabel.GroupLabel = ConfigTest.MY_GROUP_LABEL;
+                  config.COMMENT_ACTION_KEY, dataMap, someTraceState.TraceId);
+            appLinkInputWithGroupLabel.GroupLabel = config.MY_GROUP_LABEL;
             state = await sdk.AppendLinkAsync(appLinkInputWithGroupLabel);
             // should equal group2 id
-            Assert.Equal(state.UpdatedByGroupId, ConfigTest.MY_GROUP);
+            Assert.Equal(state.UpdatedByGroupId, config.MY_GROUP);
         }
     }
 }
