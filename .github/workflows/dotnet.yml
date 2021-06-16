@@ -43,7 +43,7 @@ jobs:
         # run: echo $SDK_TESTS_DOTENV_STAGING | base64 --decode > .env
         run: |
           touch .env 
-          echo $SDK_TESTS_DOTENV_STAGING >> .env
+          echo $SDK_TESTS_DOTENV_STAGING | base64 --decode >> .env
       - name: debug env
         run: cat .env
       - name: Test
