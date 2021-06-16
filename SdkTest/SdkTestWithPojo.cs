@@ -191,7 +191,7 @@ namespace SdkTest
             data.comment = "upload comment";
 
             AppendLinkInput<UploadDocumentsClass> appLinkInput = new AppendLinkInput<UploadDocumentsClass>(config.UPLOAD_DOCUMENTS_ACTION_KEY, data, initTraceState.TraceId);
-            TraceState<StateExample, UploadDocumentsClass> state = await GetOtherGroupSdk<StateExample>().AppendLinkAsync<UploadDocumentsClass>(appLinkInput);
+            TraceState<StateExample, UploadDocumentsClass> state = await GetOtherGroupSdk<StateExample>().AppendLinkAsync(appLinkInput);
             Assert.NotNull(state.TraceId);
         }
 
@@ -202,10 +202,9 @@ namespace SdkTest
 
             ImportTaClass data = new ImportTaClass();
             // dirty simulate loading from csv
-            IDictionary<string, object> taSummary = new Dictionary<string, object>();
             string json = "[{ reference: \"reference\", entityName: \"entity\", currency: \"EUR\", amount: 500, endDate: \"2020-06-25\"},"
             + "{reference: \"reference 2\", entityName: \"entity 2\", currency: \"EUR\", amount: 1300, endDate: \"2020-06-28\""
-          + "}]";
+            + "}]";
 
             data.taSummary = JsonHelper.FromJson<Object>(json);
             data.file = FileWrapper.FromFilePath(GetTaFilePath());

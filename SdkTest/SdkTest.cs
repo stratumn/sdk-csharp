@@ -74,7 +74,7 @@ namespace SdkTest
                 Media = config.MEDIA_API_URL,
             };
             opts.EnableDebuging = true;
-            opts.GroupLabel = config.MY_GROUP_LABEL;
+            opts.GroupLabel = config.OTHER_GROUP_LABEL;
             Sdk<object> sdk = new Sdk<object>(opts);
 
             return sdk;
@@ -148,6 +148,8 @@ namespace SdkTest
 
             TraceState<object, object> state = await sdk.NewTraceAsync<object>(input);
             someTraceState = state;
+            Debug.WriteLine(JsonHelper.ToJson(state));
+            Assert.NotNull(state.TraceId);
         }
 
         [Fact]
@@ -230,7 +232,7 @@ namespace SdkTest
             IDictionary<string, object> taSummary = new Dictionary<string, object>();
             string json = "[{ reference: \"reference\", entityName: \"entity\", currency: \"EUR\", amount: 500, endDate: \"2020-06-25\"},"
             + "{reference: \"reference 2\", entityName: \"entity 2\", currency: \"EUR\", amount: 1300, endDate: \"2020-06-28\""
-          + "}]";
+            + "}]";
 
             data.Add("taSummary", JsonHelper.FromJson<Object>(json));
             data.Add("file", FileWrapper.FromFilePath(GetTaFilePath()));
