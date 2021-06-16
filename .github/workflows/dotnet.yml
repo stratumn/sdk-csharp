@@ -43,7 +43,7 @@ jobs:
         # run: echo $SDK_TESTS_DOTENV_STAGING | base64 --decode > .env
         run: echo $SDK_TESTS_DOTENV_STAGING > ./SdkTest/.env
       - name: debug env
-        run: cat .env
+        run: cat ./SdkTest/.env
       - name: Test
         run: dotnet test --configuration Release --no-build --no-restore --verbosity normal SdkTest/SdkTest.csproj
 
