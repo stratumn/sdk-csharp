@@ -40,8 +40,8 @@ jobs:
       - name: Build
         run: dotnet build --configuration Release --no-restore
       - name: Write .env file from env var
-        # run: echo $SDK_TESTS_DOTENV_STAGING | base64 --decode > .env
-        run: echo $SDK_TESTS_DOTENV_STAGING > ./SdkTest/.env
+        run: 'echo "$SDK_TESTS_DOTENV_STAGING" > ./SdkTest/.env'
+        shell: bash
       - name: debug env
         run: cat ./SdkTest/.env
       - name: Test

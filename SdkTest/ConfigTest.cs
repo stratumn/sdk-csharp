@@ -1,4 +1,5 @@
 using dotenv.net;
+using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 
@@ -48,6 +49,8 @@ namespace SdkTest
             var dotenv = DotEnv.Read(options: new DotEnvOptions(
                 envFilePaths: new[] { dotenvPath }
             ));
+
+            Console.Write("dotenv = ", dotenv);
 
             WORKFLOW_ID = dotenv["WORKFLOW_ID"];
             TRACE_ID = dotenv["TRACE_ID"];
