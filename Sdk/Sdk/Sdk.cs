@@ -130,6 +130,7 @@ namespace Stratumn.Sdk
                 // // there must be at least one group!
                 if (myGroups.Count == 0)
                 {
+                    Console.Write("Groups", groups.nodes);
                     throw new Exception("No group to choose from.");
                 }
 
