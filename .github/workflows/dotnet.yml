@@ -42,10 +42,6 @@ jobs:
       - name: Write .env file from env var
         run: 'echo "$SDK_TESTS_DOTENV_STAGING" > ./SdkTest/.env'
         shell: bash
-      - name: debug env
-        run: cat ./SdkTest/.env
-      - name: debug ConfigTest
-        run: cat ./SdkTest/ConfigTest.cs
       - name: Test
         run: dotnet test --configuration Release --no-build --no-restore --verbosity normal SdkTest/SdkTest.csproj
 
