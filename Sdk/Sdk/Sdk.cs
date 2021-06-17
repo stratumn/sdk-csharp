@@ -130,7 +130,7 @@ namespace Stratumn.Sdk
                 // // there must be at least one group!
                 if (myGroups.Count == 0)
                 {
-                    throw new Exception("No group to choose from.", groups.nodes);
+                    throw new Exception("No group to choose from.");
                 }
 
                 Ed25519PrivateKeyParameters signingPrivateKey;
