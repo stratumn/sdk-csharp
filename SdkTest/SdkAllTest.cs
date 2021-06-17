@@ -16,7 +16,7 @@ using Stratumn.Sdk.Model.Misc;
 
 namespace SdkTest
 {
-    public class SdkRunTest
+    public class SdkAllTest
     {
         private ConfigTest config = new ConfigTest();
 
