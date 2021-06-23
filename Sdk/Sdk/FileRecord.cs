@@ -27,6 +27,7 @@ namespace Stratumn.Sdk
             this.Mimetype = info.Mimetype;
             this.Size = info.Size;
             this.Key = info.Key;
+            this.CreatedAt = info.CreatedAt.ToString("o"); ;
         }
 
         public FileInfo GetFileInfo()
@@ -58,6 +59,9 @@ namespace Stratumn.Sdk
 
         [JsonProperty(PropertyName = "digest")]
         public string Digest { get; private set; }
+
+        [JsonProperty(PropertyName = "createdAt")]
+        public string CreatedAt { get; private set; }
 
         public static FileRecord FromObject(Object obj)
         {
@@ -103,7 +107,8 @@ namespace Stratumn.Sdk
                             ob.Digest != null &&
                             ob.Name != null &&
                             ob.Size != 0 &&
-                            ob.Mimetype != null
+                            ob.Mimetype != null &&
+                            ob.CreatedAt != null
                         )
                         {
                             isFileRecord = true;
