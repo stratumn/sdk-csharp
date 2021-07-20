@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -12,9 +12,8 @@
     <RepositoryUrl>https://github.com/stratumn/sdk-csharp</RepositoryUrl>
     <PackageTags>stratumn;sdk</PackageTags>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="GraphQL.Client" Version="3.0.1" />
+    <PackageReference Include="GraphQL.Client" Version="3.2.4" />
     <PackageReference Include="GraphQL.Client.Serializer.Newtonsoft" Version="3.0.1" />
     <PackageReference Include="Microsoft.CSharp" Version="4.7.0" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
@@ -22,5 +21,4 @@
     <PackageReference Include="Stratumn.CanonicalJson" Version="0.0.8" />
     <PackageReference Include="Stratumn.Chainscript" Version="0.0.11.0" />
   </ItemGroup>
-
 </Project>
