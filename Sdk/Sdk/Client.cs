@@ -635,15 +635,14 @@ namespace Stratumn.Sdk
             try
             {
                 response = await GraphqlExecute(gqlUrl, query, variables, opts);
-
             }
-            catch (GraphQLHttpException e)
+            catch (GraphQLHttpRequestException e)
             {
                 int retry = opts.Retry;
                 // handle errors explicitly 
                 // extract the status from the error response 
                 // if 401 and retry > 0 then we can retry
-                if (e.HttpResponseMessage.StatusCode == HttpStatusCode.Unauthorized && retry > 0)
+                if (e.StatusCode == HttpStatusCode.Unauthorized && retry > 0)
                 {
                     // unauthenticated request might be because token expired
                     // clear token and retry
@@ -652,7 +651,7 @@ namespace Stratumn.Sdk
                     return await this.GraphqlAsync(query, variables, opts, tclass);
                 }
                 // otherwise rethrow
-                throw new TraceSdkException(e.HttpResponseMessage.ReasonPhrase);
+                throw new TraceSdkException(e.Content);
             }
 
 
@@ -689,7 +688,7 @@ namespace Stratumn.Sdk
                 };
             else
                 httpHandler = new HttpClientHandler();
-            
+
             return httpHandler;
         }
 
@@ -713,7 +712,7 @@ namespace Stratumn.Sdk
             {
                 return await graphClient.SendQueryAsync<dynamic>(request);
             }
-            catch (GraphQLHttpException e)
+            catch (GraphQLHttpRequestException e)
             {
                 if (opts == null)
                 {
@@ -723,7 +722,7 @@ namespace Stratumn.Sdk
                 // handle errors explicitly 
                 // extract the status from the error response 
                 // if 401 and retry > 0 then we can retry
-                if (e.HttpResponseMessage.StatusCode == HttpStatusCode.Unauthorized && retry > 0)
+                if (e.StatusCode == HttpStatusCode.Unauthorized && retry > 0)
                 {
                     // unauthenticated request might be because token expired
                     // clear token and retry
@@ -733,7 +732,7 @@ namespace Stratumn.Sdk
                 }
 
                 // otherwise rethrow
-                throw new TraceSdkException(e.HttpResponseMessage.ReasonPhrase);
+                throw new TraceSdkException(e.Content);
             }
         }
     }
